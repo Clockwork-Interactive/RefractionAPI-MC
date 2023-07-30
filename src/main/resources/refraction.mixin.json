@@ -1,0 +1,16 @@
+ {
+  "required": true,
+  "package": "net.refractionapi.refraction.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "GameRendererMixin"
+  ],
+  "server": [
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "refraction.refmap.json"
+}
