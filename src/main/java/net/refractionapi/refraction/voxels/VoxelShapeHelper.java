@@ -1,9 +1,9 @@
 package net.refractionapi.refraction.voxels;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * Can and does use up a lot of computational time, only designed to run during startup and never mid-game.
@@ -78,39 +78,39 @@ public class VoxelShapeHelper {
     }
 
     private static VoxelShape rotateShapeY(VoxelShape shape, double angle) {
-        VoxelShape[] buffer = new VoxelShape[]{ shape, VoxelShapes.empty() };
-        int times = MathHelper.floor(angle / 90.0D);
+        VoxelShape[] buffer = new VoxelShape[]{ shape, Shapes.empty() };
+        int times = Mth.floor(angle / 90.0D);
         for (int i = 0; i < times; i++) {
             buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] =
-                    VoxelShapes.or(buffer[1], VoxelShapes.box(1-maxZ, minY, minX, 1-minZ, maxY, maxX)));
+                    Shapes.or(buffer[1], Shapes.box(1-maxZ, minY, minX, 1-minZ, maxY, maxX)));
             buffer[0] = buffer[1];
-            buffer[1] = VoxelShapes.empty();
+            buffer[1] = Shapes.empty();
         }
 
         return buffer[0];
     }
 
     private static VoxelShape rotateShapeX(VoxelShape shape, double angle) {
-        VoxelShape[] buffer = new VoxelShape[]{ shape, VoxelShapes.empty() };
-        int times = MathHelper.floor(angle / 90.0D);
+        VoxelShape[] buffer = new VoxelShape[]{ shape, Shapes.empty() };
+        int times = Mth.floor(angle / 90.0D);
         for (int i = 0; i < times; i++) {
             buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] =
-                    VoxelShapes.or(buffer[1], VoxelShapes.box(minX, minZ, 1-maxY, maxX, maxZ, 1-minY)));
+                    Shapes.or(buffer[1], Shapes.box(minX, minZ, 1-maxY, maxX, maxZ, 1-minY)));
             buffer[0] = buffer[1];
-            buffer[1] = VoxelShapes.empty();
+            buffer[1] = Shapes.empty();
         }
 
         return buffer[0];
     }
 
     private static VoxelShape rotateShapeZ(VoxelShape shape, double angle) {
-        VoxelShape[] buffer = new VoxelShape[]{ shape, VoxelShapes.empty() };
-        int times = MathHelper.floor(angle / 90.0D);
+        VoxelShape[] buffer = new VoxelShape[]{ shape, Shapes.empty() };
+        int times = Mth.floor(angle / 90.0D);
         for (int i = 0; i < times; i++) {
             buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] =
-                    VoxelShapes.or(buffer[1], VoxelShapes.box(minY, 1-maxX, minZ, maxY, 1-minX, maxZ)));
+                    Shapes.or(buffer[1], Shapes.box(minY, 1-maxX, minZ, maxY, 1-minX, maxZ)));
             buffer[0] = buffer[1];
-            buffer[1] = VoxelShapes.empty();
+            buffer[1] = Shapes.empty();
         }
 
         return buffer[0];

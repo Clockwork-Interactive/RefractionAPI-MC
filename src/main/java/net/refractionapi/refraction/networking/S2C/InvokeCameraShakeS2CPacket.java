@@ -1,13 +1,12 @@
 package net.refractionapi.refraction.networking.S2C;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 import net.refractionapi.refraction.mixininterfaces.ICameraMixin;
+import net.refractionapi.refraction.networking.Packet;
 
-import java.util.function.Supplier;
-
-public class InvokeCameraShakeS2CPacket {
+public class InvokeCameraShakeS2CPacket extends Packet {
     private int durationInTicks = 0;
     private int intensity = 0;
 
@@ -16,18 +15,19 @@ public class InvokeCameraShakeS2CPacket {
         this.intensity = intensity;
     }
 
-    public InvokeCameraShakeS2CPacket(PacketBuffer buf) {
+    public InvokeCameraShakeS2CPacket(FriendlyByteBuf buf) {
         durationInTicks = buf.readInt();
         intensity = buf.readInt();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    @Override
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(durationInTicks);
         buf.writeInt(intensity);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
+    @Override
+    public void handle(NetworkEvent.Context context) {
         context.enqueueWork(() -> {
             if (Minecraft.getInstance().gameRenderer.getMainCamera() instanceof ICameraMixin) {
                 ICameraMixin cameraMixin = (ICameraMixin) Minecraft.getInstance().gameRenderer.getMainCamera();

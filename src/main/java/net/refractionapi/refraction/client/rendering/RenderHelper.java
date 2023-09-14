@@ -1,25 +1,19 @@
 package net.refractionapi.refraction.client.rendering;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldVertexBufferUploader;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.vector.Matrix4f;
+import com.mojang.blaze3d.vertex.*;
+import net.minecraft.client.renderer.GameRenderer;
+import org.joml.Matrix4f;
 
 import java.awt.*;
 
 public class RenderHelper {
 
     public static void renderLine(double startX, double startY, double endX, double endY, double width, Color color) {
-        RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
-        RenderSystem.defaultBlendFunc();
-        Tessellator tessellator = Tessellator.getInstance();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuilder();
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         double changeInX = startX - endX;
         double changeInY = startY - endY;
@@ -45,9 +39,9 @@ public class RenderHelper {
     }
 
     /**
-     * Same as {@link ContainerScreen#fill(MatrixStack, int, int, int, int, int)}, but uses {@link Color} instead of integers.
+     *  Same as {@link net.minecraft.client.gui.GuiGraphics#fill(int, int, int, int, int)}, but uses {@link Color} instead of integers.
      */
-    public static void fill(MatrixStack stack, int minX, int minY, int maxX, int maxY, Color color) {
+    public static void fill(PoseStack stack, int minX, int minY, int maxX, int maxY, Color color) {
         Matrix4f matrix4f = stack.last().pose();
         if (minX < maxX) {
             int i = minX;
@@ -61,20 +55,16 @@ public class RenderHelper {
             maxY = j;
         }
 
-        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuilder();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
-        RenderSystem.defaultBlendFunc();
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        bufferbuilder.vertex(matrix4f, (float) minX, (float) maxY, 0.0F).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-        bufferbuilder.vertex(matrix4f, (float) maxX, (float) maxY, 0.0F).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-        bufferbuilder.vertex(matrix4f, (float) maxX, (float) minY, 0.0F).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-        bufferbuilder.vertex(matrix4f, (float) minX, (float) minY, 0.0F).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-        bufferbuilder.end();
-        WorldVertexBufferUploader.end(bufferbuilder);
-        RenderSystem.enableTexture();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        bufferbuilder.vertex(matrix4f, (float)minX, (float)minY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+        bufferbuilder.vertex(matrix4f, (float)minX, (float)maxY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+        bufferbuilder.vertex(matrix4f, (float)maxX, (float)maxY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+        bufferbuilder.vertex(matrix4f, (float)maxX, (float)minY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+        BufferUploader.drawWithShader(bufferbuilder.end());
         RenderSystem.disableBlend();
-
     }
 
 }

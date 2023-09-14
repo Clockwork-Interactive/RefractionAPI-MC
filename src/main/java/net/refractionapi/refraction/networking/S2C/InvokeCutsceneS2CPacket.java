@@ -1,12 +1,11 @@
 package net.refractionapi.refraction.networking.S2C;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
+import net.refractionapi.refraction.networking.Packet;
 
-import java.util.function.Supplier;
-
-public class InvokeCutsceneS2CPacket {
+public class InvokeCutsceneS2CPacket extends Packet {
     private final int cameraID;
     private final boolean start;
 
@@ -15,20 +14,19 @@ public class InvokeCutsceneS2CPacket {
         this.start = start;
     }
 
-    public InvokeCutsceneS2CPacket(PacketBuffer buf) {
+    public InvokeCutsceneS2CPacket(FriendlyByteBuf buf) {
         cameraID = buf.readInt();
         start = buf.readBoolean();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    @Override
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(cameraID);
         buf.writeBoolean(start);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
+    @Override
+    public void handle(NetworkEvent.Context context) {
         context.enqueueWork(() -> ClientCutsceneData.startCutscene(this.cameraID, this.start));
-
     }
-
 }

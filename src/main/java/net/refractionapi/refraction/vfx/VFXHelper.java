@@ -1,21 +1,22 @@
 package net.refractionapi.refraction.vfx;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
-import java.util.Vector;
 
 import static net.refractionapi.refraction.vec3.Vec3Helper.calculateViewVector;
+import static net.refractionapi.refraction.vec3.Vec3Helper.getDegreesBetweenTwoPoints;
 
 public class VFXHelper {
 
@@ -27,17 +28,16 @@ public class VFXHelper {
      * @param stack Stack to add glint to.
      */
     public static void addGlint(ItemStack stack) {
-        CompoundNBT tag = stack.getOrCreateTag();
-        tag.put("Enchantments", new ListNBT());
-        ListNBT listtag = tag.getList("Enchantments", 10);
-        listtag.add(new CompoundNBT());
+        CompoundTag tag = stack.getOrCreateTag();
+        tag.put("Enchantments", new ListTag());
+        ListTag listtag = tag.getList("Enchantments", 10);
+        listtag.add(new CompoundTag());
     }
-
 
     /**
      * Summon particles around given entity.
      */
-    public static void summonParticlesAroundEntity(Entity entity, IParticleData particleOptions, ServerWorld level, int ParticleAmount) {
+    public static void summonParticlesAroundEntity(LivingEntity entity, ParticleOptions particleOptions, ServerLevel level, int ParticleAmount) {
         for (int i = 0; i < ParticleAmount; ++i) {
             double d0 = random.nextGaussian() * 0.02D;
             double d1 = random.nextGaussian() * 0.02D;
@@ -46,23 +46,44 @@ public class VFXHelper {
         }
     }
 
-    public static void shootBeamOfParticles(LivingEntity livingEntity, IParticleData particleOptions, double range, double yOffset) {
-        if (livingEntity.level instanceof ServerWorld) {
-            ServerWorld serverLevel = (ServerWorld) livingEntity.level;
-            Vector3d vec3 = livingEntity.getEyePosition(1);
-
+    public static void shootBeamOfParticles(LivingEntity livingEntity, ParticleOptions particleOptions, double range, double yOffset) {
+        if (livingEntity.level() instanceof ServerLevel serverLevel) {
+            Vec3 vec3 = livingEntity.getEyePosition();
             for (int x = 0; x < range; x++) {
-                Vector3d vec31 = calculateViewVector(livingEntity.getViewXRot(1), livingEntity.getViewYRot(1)).scale(x);
-                Vector3d vec32 = vec3.add(vec31);
-                if (serverLevel.getBlockState(new BlockPos(vec32)).is(Blocks.AIR)) {
-                    serverLevel.sendParticles(particleOptions, vec32.x, vec32.y, vec32.z + yOffset, 1, 0, 0, 0, 0);
+                Vec3 vec31 = calculateViewVector(livingEntity.getXRot(), livingEntity.getYRot()).scale(x);
+                Vec3 vec32 = vec3.add(vec31);
+                if (serverLevel.getBlockState(BlockPos.containing(vec32.x, vec32.y, vec32.z)).isAir()) {
+                    sendLongDistanceParticles(serverLevel, particleOptions, vec32.x, vec32.y, vec32.z + yOffset, 1, 0, 0, 0, 0);
                 } else {
                     break;
                 }
             }
-
         }
     }
 
+    /**
+     * Creates a line of particles between two points.
+     */
+    public static void particleLine(BlockPos pos1, BlockPos pos2, ServerLevel serverLevel) {
+        int range = (int) Math.sqrt(pos1.distToCenterSqr(pos2.getCenter()));
+        float[] degrees = getDegreesBetweenTwoPoints(pos1, pos2);
+        for (int x = 0; x < range; x++) {
+            Vec3 vec3 = calculateViewVector(degrees[0], degrees[1]).scale(-x);
+            Vec3 vec31 = pos1.getCenter().add(vec3);
+            sendLongDistanceParticles(serverLevel, ParticleTypes.COMPOSTER, vec31.x, vec31.y, vec31.z, 1, 0, 0, 0, 0);
+        }
+    }
+
+
+    public static void sendLongDistanceParticles(ServerLevel serverLevel, ParticleOptions pType, double pPosX, double pPosY, double pPosZ, int pParticleCount, double pXOffset, double pYOffset, double pZOffset, double pSpeed) {
+        ClientboundLevelParticlesPacket clientboundlevelparticlespacket = new ClientboundLevelParticlesPacket(pType, true, pPosX, pPosY, pPosZ, (float) pXOffset, (float) pYOffset, (float) pZOffset, (float) pSpeed, pParticleCount);
+        for (int j = 0; j < serverLevel.players().size(); ++j) {
+            ServerPlayer serverplayer = serverLevel.players().get(j);
+        BlockPos blockpos = serverplayer.blockPosition();
+            if (blockpos.closerToCenterThan(new Vec3(pPosX, pPosY, pPosZ), 512.0D)) {
+                serverplayer.connection.send(clientboundlevelparticlespacket);
+            }
+        }
+    }
 
 }

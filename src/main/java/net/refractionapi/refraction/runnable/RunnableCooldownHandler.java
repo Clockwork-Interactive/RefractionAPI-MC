@@ -1,12 +1,12 @@
 package net.refractionapi.refraction.runnable;
 
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.thread.SidedThreadGroups;
-import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.util.thread.SidedThreadGroups;
 import net.refractionapi.refraction.Refraction;
 
 import java.util.Iterator;
@@ -60,7 +60,7 @@ public class RunnableCooldownHandler {
      * When a Dedicated server stops, clear the runnable map to avoid issues
      */
     @SubscribeEvent
-    public static void serverStopped(FMLServerStoppedEvent event) {
+    public static void serverStopped(ServerStoppedEvent event) {
         clear();
     }
 
@@ -68,7 +68,7 @@ public class RunnableCooldownHandler {
      * Could cause some issues with multiple dimensions, but at least server side specifically it will be ok
      */
     @SubscribeEvent
-    public static void levelChange(WorldEvent.Unload event) {
+    public static void levelChange(LevelEvent.Unload event) {
         clear();
     }
 

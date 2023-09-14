@@ -3,7 +3,7 @@
   "package": "net.refractionapi.refraction.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "GameRendererMixin"
+    "CameraMixin",
   ],
   "server": [
   ],
