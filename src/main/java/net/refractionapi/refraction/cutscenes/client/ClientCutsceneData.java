@@ -16,7 +16,7 @@ public class ClientCutsceneData {
                 Minecraft.getInstance().cameraEntity = Minecraft.getInstance().level.getEntity(cameraID);
             }
         } else {
-            Minecraft.getInstance().cameraEntity = Minecraft.getInstance().player;;
+            Minecraft.getInstance().cameraEntity = Minecraft.getInstance().player;
         }
     }
 

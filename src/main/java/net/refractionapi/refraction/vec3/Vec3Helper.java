@@ -40,8 +40,8 @@ public class Vec3Helper {
         return new Vector3d((f3 * f4), (-f5), (f2 * f4));
     }
 
-    public static void knockback(LivingEntity livingEntity, PlayerEntity player, float strength) {
-        livingEntity.knockback(strength, MathHelper.sin(player.getViewYRot(1) * ((float) Math.PI / 180F)), (-MathHelper.cos(player.getViewXRot(1) * ((float) Math.PI / 180F))));
+    public static void knockback(LivingEntity toKnockback, LivingEntity from, float strength) {
+        toKnockback.knockback(strength, MathHelper.sin(from.getViewYRot(1) * ((float) Math.PI / 180F)), (-MathHelper.cos(from.getViewXRot(1) * ((float) Math.PI / 180F))));
     }
 
     public static boolean isEntityMoving(LivingEntity livingEntity) {

@@ -22,7 +22,7 @@ public class VFXHelper {
     static Random random = new Random();
 
     /**
-     * Adds glint without enchantment.
+     * Adds glint without an enchantment.
      *
      * @param stack Stack to add glint to.
      */
