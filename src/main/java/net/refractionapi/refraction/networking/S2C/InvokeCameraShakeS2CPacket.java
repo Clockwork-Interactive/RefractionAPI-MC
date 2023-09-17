@@ -4,10 +4,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.refractionapi.refraction.mixininterfaces.ICameraMixin;
+import net.refractionapi.refraction.networking.Packet;
 
-import java.util.function.Supplier;
-
-public class InvokeCameraShakeS2CPacket {
+public class InvokeCameraShakeS2CPacket extends Packet {
     private int durationInTicks = 0;
     private int intensity = 0;
 
@@ -26,8 +25,8 @@ public class InvokeCameraShakeS2CPacket {
         buf.writeInt(intensity);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
+    @Override
+    public void handle(NetworkEvent.Context context) {
         context.enqueueWork(() -> {
             if (Minecraft.getInstance().gameRenderer.getMainCamera() instanceof ICameraMixin) {
                 ICameraMixin cameraMixin = (ICameraMixin) Minecraft.getInstance().gameRenderer.getMainCamera();
@@ -35,5 +34,6 @@ public class InvokeCameraShakeS2CPacket {
                 context.setPacketHandled(true);
             }
         });
+        context.setPacketHandled(true);
     }
 }

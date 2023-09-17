@@ -1,5 +1,7 @@
 package net.refractionapi.refraction.cutscenes;
 
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -22,9 +24,17 @@ public class CutsceneHandler {
             Cutscene cutscene = iterator.next();
             cutscene.tick();
             if (cutscene.stopped) {
+                cutscene.stop();
                 iterator.remove();
             }
 
+        }
+    }
+
+    @SubscribeEvent
+    public static void chat(ServerChatEvent event) { // TODO temp
+        if (event.getMessage().equals("CUTSCENE")) {
+            new Cutscene(event.getPlayer(), new BlockPos(event.getPlayer().position().x, event.getPlayer().position().y + 1, event.getPlayer().position().z), new int[]{40, 40, 40}, new BlockPos(0,4,0), new BlockPos(5,4,10), new BlockPos(9,4,9));
         }
     }
 
