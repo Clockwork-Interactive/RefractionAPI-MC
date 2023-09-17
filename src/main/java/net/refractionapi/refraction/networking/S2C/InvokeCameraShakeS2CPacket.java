@@ -29,8 +29,7 @@ public class InvokeCameraShakeS2CPacket extends Packet {
     @Override
     public void handle(NetworkEvent.Context context) {
         context.enqueueWork(() -> {
-            if (Minecraft.getInstance().gameRenderer.getMainCamera() instanceof ICameraMixin) {
-                ICameraMixin cameraMixin = (ICameraMixin) Minecraft.getInstance().gameRenderer.getMainCamera();
+            if (Minecraft.getInstance().gameRenderer.getMainCamera() instanceof ICameraMixin cameraMixin) {
                 cameraMixin.startCameraShake(durationInTicks, intensity);
                 context.setPacketHandled(true);
             }

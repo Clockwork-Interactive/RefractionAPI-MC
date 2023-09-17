@@ -22,9 +22,9 @@ public class CutsceneHandler {
             Cutscene cutscene = iterator.next();
             cutscene.tick();
             if (cutscene.stopped) {
+                cutscene.stop();
                 iterator.remove();
             }
-
         }
     }
 

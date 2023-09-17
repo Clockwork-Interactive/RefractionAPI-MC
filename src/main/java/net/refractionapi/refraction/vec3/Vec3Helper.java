@@ -42,7 +42,7 @@ public class Vec3Helper {
     public static void knockback(LivingEntity toKnockback, LivingEntity from, float strength) {
         toKnockback.knockback(strength, Mth.sin(from.getViewYRot(1) * ((float) Math.PI / 180F)), (-Mth.cos(from.getViewXRot(1) * ((float) Math.PI / 180F))));
     }
-    
+
     /**
      * @return float[0] = xRot; float[1] = yRot;
      */
@@ -52,6 +52,40 @@ public class Vec3Helper {
         double differenceInZ = pos1.getZ() - pos2.getZ();
         double length = Math.sqrt(differenceInX * differenceInX + differenceInZ * differenceInZ);
         return new float[]{Mth.wrapDegrees((float) (-(Mth.atan2(differenceInY, length) * (double) (180F / (float) Math.PI)))), Mth.wrapDegrees((float) (Mth.atan2(differenceInZ, differenceInX) * (double) (180F / (float) Math.PI)) - 90.0F)};
+    }
+
+    /**
+     * Determines if the entity is moving. <br>
+     * Not reliable on clients, use {@link Vec3Helper#isEntityMovingClient(LivingEntity)}.
+     *
+     * @param livingEntity Entity to check.
+     * @return If moving.
+     */
+    public static boolean isEntityMoving(LivingEntity livingEntity) {
+        return livingEntity.walkDist - livingEntity.walkDistO > 0;
+    }
+
+    /**
+     * Use this only on the server! <br>
+     * Gets the movement difference for an entity from previous to current tick. <br>
+     * Value for player sprint is >= 0.15
+     *
+     * @param livingEntity Entity to get difference for.
+     * @return Movement difference.
+     */
+    public static float getMovingDifference(LivingEntity livingEntity) {
+        return livingEntity.walkDist - livingEntity.walkDistO;
+    }
+
+    /**
+     * Use this only on the client! <br>
+     * Else use {@link Vec3Helper#isEntityMoving(LivingEntity)}
+     *
+     * @param livingEntity Entity to check.
+     * @return Is moving.
+     */
+    public static boolean isEntityMovingClient(LivingEntity livingEntity) {
+        return livingEntity.getX() - livingEntity.xOld > 0 || livingEntity.getY() - livingEntity.yOld > 0 || livingEntity.getZ() - livingEntity.zOld > 0;
     }
 
 }

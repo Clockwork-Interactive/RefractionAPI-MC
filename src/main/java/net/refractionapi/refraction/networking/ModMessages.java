@@ -12,7 +12,7 @@ import net.refractionapi.refraction.networking.S2C.InvokeCameraShakeS2CPacket;
 import net.refractionapi.refraction.networking.S2C.InvokeCutsceneS2CPacket;
 
 public class ModMessages {
-    private static SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder
+    private static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder
             .named(new ResourceLocation(Refraction.MOD_ID, "messages"))
             .networkProtocolVersion(() -> "1.0")
             .clientAcceptedVersions(s -> true)
