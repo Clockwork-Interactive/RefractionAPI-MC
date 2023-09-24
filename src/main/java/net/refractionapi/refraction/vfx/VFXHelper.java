@@ -1,7 +1,6 @@
 package net.refractionapi.refraction.vfx;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -13,9 +12,9 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.Random;
-import java.util.Vector;
 
 import static net.refractionapi.refraction.vec3.Vec3Helper.calculateViewVector;
+import static net.refractionapi.refraction.vec3.Vec3Helper.getDegreesBetweenTwoPoints;
 
 public class VFXHelper {
 
@@ -64,5 +63,17 @@ public class VFXHelper {
         }
     }
 
+    /**
+     * Creates a line of particles between two points.
+     */
+    public static void particleLine(BlockPos pos1, BlockPos pos2, ServerWorld serverLevel, IParticleData particle) {
+        int range = (int) Math.sqrt(pos1.distSqr(pos2));
+        float[] degrees = getDegreesBetweenTwoPoints(pos1, pos2);
+        for (int x = 0; x < range; x++) {
+            Vector3d vec3 = calculateViewVector(degrees[0], degrees[1]).scale(-x);
+            Vector3d vec31 = new Vector3d(pos1.getX(), pos1.getY(), pos1.getZ()).add(vec3);
+            serverLevel.sendParticles(particle, vec31.x, vec31.y, vec31.z, 1, 0, 0, 0, 0);
+        }
+    }
 
 }

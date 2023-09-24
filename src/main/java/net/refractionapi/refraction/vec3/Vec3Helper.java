@@ -46,6 +46,18 @@ public class Vec3Helper {
     }
 
     /**
+     * @return float[0] = xRot; float[1] = yRot;
+     */
+    public static float[] getDegreesBetweenTwoPoints(BlockPos pos1, BlockPos pos2) {
+        double differenceInX = pos1.getX() - pos2.getX();
+        double differenceInY = pos1.getY() - pos2.getY();
+        double differenceInZ = pos1.getZ() - pos2.getZ();
+        double length = Math.sqrt(differenceInX * differenceInX + differenceInZ * differenceInZ);
+        return new float[]{MathHelper.wrapDegrees((float) (-(MathHelper.atan2(differenceInY, length) * (double) (180F / (float) Math.PI)))), MathHelper.wrapDegrees((float) (MathHelper.atan2(differenceInZ, differenceInX) * (double) (180F / (float) Math.PI)) - 90.0F)};
+    }
+
+
+    /**
      * Calculates if a block position is in a certain angle. <br>
      * To check if an entity is not behind a wall, use {@link LivingEntity#canSee(Entity)}
      * Limits: 1 <= angle <= 360;
