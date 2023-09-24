@@ -1,6 +1,9 @@
 package net.refractionapi.refraction.vec3;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -40,6 +43,17 @@ public class Vec3Helper {
 
     public static void knockback(LivingEntity toKnockback, LivingEntity from, float strength) {
         toKnockback.knockback(strength, MathHelper.sin(from.getViewYRot(1) * ((float) Math.PI / 180F)), (-MathHelper.cos(from.getViewXRot(1) * ((float) Math.PI / 180F))));
+    }
+
+    /**
+     * Calculates if a block position is in a certain angle. <br>
+     * To check if an entity is not behind a wall, use {@link LivingEntity#canSee(Entity)}
+     * Limits: 1 <= angle <= 360;
+     */
+    public static boolean isInAngle(PlayerEntity player, BlockPos blockPos, double angle) {
+        Vector3d dirVec = new Vector3d(blockPos.getX() - player.getX(), blockPos.getY() - player.getY(), blockPos.getZ() - player.getZ()).normalize();
+        double dot = dirVec.dot(calculateViewVector(player.getViewXRot(1), player.getViewYRot(1)).normalize());
+        return dot >= (MathHelper.lerp(angle / 360, 1.0F, -1.0F));
     }
 
     /**
