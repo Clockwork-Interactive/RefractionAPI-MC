@@ -2,14 +2,13 @@ package net.refractionapi.refraction.vec3;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.refractionapi.refraction.Refraction;
 
 public class Vec3Helper {
-
-    public static Vec3 lerp(Vec3 from, Vec3 to, double delta) {
-        return new Vec3(Mth.lerp(delta, from.x, to.x), Mth.lerp(delta, from.y, to.y), Mth.lerp(delta, from.z, to.z));
-    }
 
     public static Vec3 getLookAtVec3(LivingEntity livingEntity, double range) {
         Vec3 vec3 = livingEntity.getEyePosition(0);
@@ -52,6 +51,17 @@ public class Vec3Helper {
         double differenceInZ = pos1.getZ() - pos2.getZ();
         double length = Math.sqrt(differenceInX * differenceInX + differenceInZ * differenceInZ);
         return new float[]{Mth.wrapDegrees((float) (-(Mth.atan2(differenceInY, length) * (double) (180F / (float) Math.PI)))), Mth.wrapDegrees((float) (Mth.atan2(differenceInZ, differenceInX) * (double) (180F / (float) Math.PI)) - 90.0F)};
+    }
+
+    /**
+     * Calculates if a block position is in a certain angle. <br>
+     * To check if an entity is not behind a wall, use {@link LivingEntity#hasLineOfSight(Entity)}
+     * Limits: 1 <= angle <= 360;
+     */
+    public static boolean isInAngle(Player player, BlockPos blockPos, double angle) {
+        Vec3 dirVec = new Vec3(blockPos.getX() - player.getX(), blockPos.getY() - player.getY(), blockPos.getZ() - player.getZ()).normalize();
+        double dot = dirVec.dot(calculateViewVector(player.getXRot(), player.getYRot()).normalize());
+        return dot >= (Mth.lerp(angle / 360, 1.0F, -1.0F));
     }
 
     /**
