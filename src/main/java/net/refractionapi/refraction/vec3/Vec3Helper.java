@@ -11,20 +11,20 @@ import net.refractionapi.refraction.Refraction;
 public class Vec3Helper {
 
     public static Vec3 getLookAtVec3(LivingEntity livingEntity, double range) {
-        Vec3 vec3 = livingEntity.getEyePosition(0);
-        Vec3 vec31 = livingEntity.getViewVector(1);
+        Vec3 vec3 = livingEntity.getEyePosition();
+        Vec3 vec31 = calculateViewVector(livingEntity.getXRot(), livingEntity.getYRot()).scale(range);
         return vec3.add(vec31);
     }
 
     public static Vec3 getLookAtVec3NoXRot(LivingEntity livingEntity, double range) {
-        Vec3 vec3 = livingEntity.getEyePosition(0);
-        Vec3 vec31 = calculateViewVector(0, livingEntity.getViewYRot(1)).scale(range);
+        Vec3 vec3 = livingEntity.getEyePosition();
+        Vec3 vec31 = calculateViewVector(0, livingEntity.getYRot()).scale(range);
         return vec3.add(vec31);
     }
 
     public static Vec3 getLookAtVec3NoYRot(LivingEntity livingEntity, double range) {
-        Vec3 vec3 = livingEntity.getEyePosition(0);
-        Vec3 vec31 = calculateViewVector(livingEntity.getViewXRot(1), 0).scale(range);
+        Vec3 vec3 = livingEntity.getEyePosition();
+        Vec3 vec31 = calculateViewVector(livingEntity.getXRot(), 0).scale(range);
         return vec3.add(vec31);
     }
 
@@ -58,9 +58,9 @@ public class Vec3Helper {
      * To check if an entity is not behind a wall, use {@link LivingEntity#hasLineOfSight(Entity)}
      * Limits: 1 <= angle <= 360;
      */
-    public static boolean isInAngle(Player player, BlockPos blockPos, double angle) {
-        Vec3 dirVec = new Vec3(blockPos.getX() - player.getX(), blockPos.getY() - player.getY(), blockPos.getZ() - player.getZ()).normalize();
-        double dot = dirVec.dot(calculateViewVector(player.getXRot(), player.getYRot()).normalize());
+    public static boolean isInAngle(Entity entity, BlockPos blockPos, double angle) {
+        Vec3 dirVec = new Vec3(blockPos.getX() - entity.getX(), blockPos.getY() - entity.getY(), blockPos.getZ() - entity.getZ()).normalize();
+        double dot = dirVec.dot(calculateViewVector(entity.getXRot(), entity.getYRot()).normalize());
         return dot >= (Mth.lerp(angle / 360, 1.0F, -1.0F));
     }
 
@@ -95,7 +95,7 @@ public class Vec3Helper {
      * @return Is moving.
      */
     public static boolean isEntityMovingClient(LivingEntity livingEntity) {
-        return livingEntity.getX() - livingEntity.xOld > 0 || livingEntity.getY() - livingEntity.yOld > 0 || livingEntity.getZ() - livingEntity.zOld > 0;
+        return livingEntity.getX() - livingEntity.xOld != 0 || livingEntity.getY() - livingEntity.yOld != 0 || livingEntity.getZ() - livingEntity.zOld != 0;
     }
 
 }

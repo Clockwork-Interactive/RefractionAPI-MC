@@ -1,9 +1,10 @@
  {
   "required": true,
   "package": "net.refractionapi.refraction.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "client": [
     "CameraMixin",
+    "KeyboardInputMixin"
   ],
   "server": [
   ],

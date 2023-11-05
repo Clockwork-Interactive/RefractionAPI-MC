@@ -29,7 +29,7 @@ displayName="Refraction API" #mandatory
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="examplemod.png" #optional
 # A text field displayed in the mod UI
-credits="" #optional
+credits="Sir.Pancakes - Logo" #optional
 # A text field displayed in the mod UI
 authors="ConnorTron110 and Zeus" #optional
 # The description text for the mod (multi line!) (#mandatory)
@@ -53,6 +53,6 @@ description='''
     modId="minecraft"
     mandatory=true
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-    versionRange="[1.20.1,1.21)"
+    versionRange="[1.19.4,1.21)"
     ordering="NONE"
     side="BOTH"

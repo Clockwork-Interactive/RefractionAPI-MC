@@ -2,8 +2,10 @@ package net.refractionapi.refraction.voxels;
 
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.refractionapi.refraction.registry.block.BaseHorizontalBlock;
 
 public class VoxelUtil {
 
@@ -69,6 +71,10 @@ public class VoxelUtil {
         }
 
         return buffer[0];
+    }
+
+    public static int getDirection(BlockState state) {
+        return state.getValue(BaseHorizontalBlock.FACING).get2DDataValue();
     }
 
 }

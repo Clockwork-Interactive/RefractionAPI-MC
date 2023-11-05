@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Camera.class)
 public abstract class CameraMixin implements ICameraMixin {
 
-    @Shadow private Entity entity;
     /* //Currently Unused as current equations doesn't require them, but can be introduced later for more creative control
         private static final int FREQUENCY = 60;
         private static final int AMPLITUDE = 10; //How much it can move in pixels (from center)

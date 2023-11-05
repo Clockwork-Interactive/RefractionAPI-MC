@@ -2,10 +2,8 @@ package net.refractionapi.refraction.vfx;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,13 +62,13 @@ public class VFXHelper {
     /**
      * Creates a line of particles between two points.
      */
-    public static void particleLine(BlockPos pos1, BlockPos pos2, ServerLevel serverLevel) {
+    public static void particleLine(ParticleOptions particle, BlockPos pos1, BlockPos pos2, ServerLevel serverLevel) {
         int range = (int) Math.sqrt(pos1.distToCenterSqr(pos2.getCenter()));
         float[] degrees = getDegreesBetweenTwoPoints(pos1, pos2);
         for (int x = 0; x < range; x++) {
             Vec3 vec3 = calculateViewVector(degrees[0], degrees[1]).scale(-x);
             Vec3 vec31 = pos1.getCenter().add(vec3);
-            sendLongDistanceParticles(serverLevel, ParticleTypes.COMPOSTER, vec31.x, vec31.y, vec31.z, 1, 0, 0, 0, 0);
+            sendLongDistanceParticles(serverLevel, particle, vec31.x, vec31.y, vec31.z, 1, 0, 0, 0, 0);
         }
     }
 
@@ -79,7 +77,7 @@ public class VFXHelper {
         ClientboundLevelParticlesPacket clientboundlevelparticlespacket = new ClientboundLevelParticlesPacket(pType, true, pPosX, pPosY, pPosZ, (float) pXOffset, (float) pYOffset, (float) pZOffset, (float) pSpeed, pParticleCount);
         for (int j = 0; j < serverLevel.players().size(); ++j) {
             ServerPlayer serverplayer = serverLevel.players().get(j);
-        BlockPos blockpos = serverplayer.blockPosition();
+            BlockPos blockpos = serverplayer.blockPosition();
             if (blockpos.closerToCenterThan(new Vec3(pPosX, pPosY, pPosZ), 512.0D)) {
                 serverplayer.connection.send(clientboundlevelparticlespacket);
             }

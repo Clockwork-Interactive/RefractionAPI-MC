@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.cutscenes.client;
 
 import net.minecraft.client.Minecraft;
+import net.refractionapi.refraction.client.ClientData;
 
 public class ClientCutsceneData {
 
@@ -8,6 +9,7 @@ public class ClientCutsceneData {
 
     public static void startCutscene(int id, boolean start) {
         cameraID = id;
+        ClientData.canRotateCamera = start;
         if (start) {
             assert Minecraft.getInstance().level != null;
             if (Minecraft.getInstance().level.getEntity(cameraID) != null) {

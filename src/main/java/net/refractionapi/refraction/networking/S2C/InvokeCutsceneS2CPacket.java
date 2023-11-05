@@ -28,5 +28,6 @@ public class InvokeCutsceneS2CPacket extends Packet {
     @Override
     public void handle(NetworkEvent.Context context) {
         context.enqueueWork(() -> ClientCutsceneData.startCutscene(this.cameraID, this.start));
+        context.setPacketHandled(true);
     }
 }
