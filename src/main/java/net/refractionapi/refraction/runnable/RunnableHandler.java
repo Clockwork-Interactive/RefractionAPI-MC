@@ -3,6 +3,8 @@ package net.refractionapi.refraction.runnable;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.util.thread.SidedThreadGroups;
 import net.refractionapi.refraction.Refraction;
 
 import java.util.HashMap;
@@ -42,7 +44,13 @@ public class RunnableHandler {
      * @param duration Duration of how long the runnable should be executed for in ticks.
      */
     public static void addRunnable(Runnable runnable, int duration) {
-        runnables.put(runnable, duration);
+        if (FMLEnvironment.dist.isDedicatedServer() || Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER) {
+            if (duration <= 0) {
+                runnable.run();
+                return;
+            }
+            runnables.put(runnable, duration);
+        }
     }
 
 }

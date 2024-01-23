@@ -62,12 +62,12 @@ public class VFXHelper {
     /**
      * Creates a line of particles between two points.
      */
-    public static void particleLine(ParticleOptions particle, BlockPos pos1, BlockPos pos2, ServerLevel serverLevel) {
-        int range = (int) Math.sqrt(pos1.distToCenterSqr(pos2.getCenter()));
+    public static void particleLine(ParticleOptions particle, Vec3 pos1, Vec3 pos2, ServerLevel serverLevel) {
+        int range = (int) pos1.distanceTo(pos2);
         float[] degrees = getDegreesBetweenTwoPoints(pos1, pos2);
         for (int x = 0; x < range; x++) {
             Vec3 vec3 = calculateViewVector(degrees[0], degrees[1]).scale(-x);
-            Vec3 vec31 = pos1.getCenter().add(vec3);
+            Vec3 vec31 = pos1.add(vec3);
             sendLongDistanceParticles(serverLevel, particle, vec31.x, vec31.y, vec31.z, 1, 0, 0, 0, 0);
         }
     }

@@ -52,6 +52,10 @@ public class RunnableCooldownHandler {
      */
     public static void addDelayedRunnable(Runnable runnable, int delayInTicks) {
         if (FMLEnvironment.dist.isDedicatedServer() || Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER) {
+            if (delayInTicks <= 0) {
+                runnable.run();
+                return;
+            }
             RUNNABLE_TICK_MAP.put(runnable, delayInTicks);
         }
     }

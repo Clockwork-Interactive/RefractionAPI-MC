@@ -1,30 +1,33 @@
 package net.refractionapi.refraction.networking.S2C;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.networking.Packet;
 
-public class EnablePlayerMovementS2CPacket extends Packet {
+public class SetFOVS2CPacket extends Packet {
 
-    private final boolean canMove;
+    private final int fov;
 
-    public EnablePlayerMovementS2CPacket(boolean canMove) {
-        this.canMove = canMove;
+    public SetFOVS2CPacket(int fov) {
+        this.fov = fov;
     }
 
-    public EnablePlayerMovementS2CPacket(FriendlyByteBuf buf) {
-        this.canMove = buf.readBoolean();
+    public SetFOVS2CPacket(FriendlyByteBuf buf) {
+        this.fov = buf.readInt();
     }
 
     @Override
     public void toBytes(FriendlyByteBuf buf) {
-        buf.writeBoolean(this.canMove);
+        buf.writeInt(this.fov);
     }
 
     @Override
     public void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> ClientData.canMove = this.canMove);
+        context.enqueueWork(() -> {
+            ClientData.FOV = this.fov;
+        });
         context.setPacketHandled(true);
     }
 }

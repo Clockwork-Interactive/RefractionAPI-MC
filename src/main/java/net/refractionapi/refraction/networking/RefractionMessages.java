@@ -8,13 +8,10 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.refractionapi.refraction.Refraction;
-import net.refractionapi.refraction.networking.S2C.EnablePlayerMovementS2CPacket;
-import net.refractionapi.refraction.networking.S2C.InvokeCameraShakeS2CPacket;
-import net.refractionapi.refraction.networking.S2C.InvokeCutsceneS2CPacket;
-import net.refractionapi.refraction.networking.S2C.PlayLocalSoundS2CPacket;
+import net.refractionapi.refraction.networking.S2C.*;
 
-public class ModMessages {
-    private static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder
+public class RefractionMessages {
+    public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder
             .named(new ResourceLocation(Refraction.MOD_ID, "messages"))
             .networkProtocolVersion(() -> "1.0")
             .clientAcceptedVersions(s -> true)
@@ -32,6 +29,7 @@ public class ModMessages {
         registerPacket(InvokeCameraShakeS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
         registerPacket(EnablePlayerMovementS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
         registerPacket(PlayLocalSoundS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
+        registerPacket(SetFOVS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public static <MSG> void sendToServer(MSG message) {

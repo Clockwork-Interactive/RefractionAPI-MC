@@ -38,6 +38,16 @@ public class Vec3Helper {
         return new Vec3((f3 * f4), (-f5), (f2 * f4));
     }
 
+    public static Vec3 getVec(Player player, int distance, int offset) {
+        Vec3 vec3 = player.getEyePosition();
+        Vec3 vec31F = Vec3Helper.calculateViewVector(player.getXRot(), player.getYRot()).scale(distance);
+        Vec3 vec31S = Vec3Helper.calculateViewVector(player.getXRot(), player.getYRot() + 90.0F).scale(offset);
+        Vec3 FBVector = vec3.add(vec31F);
+        Vec3 RLVector = vec3.add(vec31S);
+        Vec3 vectorDifference = FBVector.subtract(RLVector);
+        return vec3.add(vectorDifference);
+    }
+
     public static void knockback(LivingEntity toKnockback, LivingEntity from, float strength) {
         toKnockback.knockback(strength, Mth.sin(from.getViewYRot(1) * ((float) Math.PI / 180F)), (-Mth.cos(from.getViewXRot(1) * ((float) Math.PI / 180F))));
     }
@@ -45,10 +55,10 @@ public class Vec3Helper {
     /**
      * @return float[0] = xRot; float[1] = yRot;
      */
-    public static float[] getDegreesBetweenTwoPoints(BlockPos pos1, BlockPos pos2) {
-        double differenceInX = pos1.getX() - pos2.getX();
-        double differenceInY = pos1.getY() - pos2.getY();
-        double differenceInZ = pos1.getZ() - pos2.getZ();
+    public static float[] getDegreesBetweenTwoPoints(Vec3 pos1, Vec3 pos2) {
+        double differenceInX = pos1.x - pos2.x;
+        double differenceInY = pos1.y - pos2.y;
+        double differenceInZ = pos1.z - pos2.z;
         double length = Math.sqrt(differenceInX * differenceInX + differenceInZ * differenceInZ);
         return new float[]{Mth.wrapDegrees((float) (-(Mth.atan2(differenceInY, length) * (double) (180F / (float) Math.PI)))), Mth.wrapDegrees((float) (Mth.atan2(differenceInZ, differenceInX) * (double) (180F / (float) Math.PI)) - 90.0F)};
     }

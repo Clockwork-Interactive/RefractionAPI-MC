@@ -3,12 +3,17 @@ package net.refractionapi.refraction.misc;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.player.Player;
-import net.refractionapi.refraction.networking.ModMessages;
+import net.minecraft.world.level.Level;
+import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.EnablePlayerMovementS2CPacket;
 import net.refractionapi.refraction.networking.S2C.PlayLocalSoundS2CPacket;
 import net.refractionapi.refraction.runnable.RunnableCooldownHandler;
@@ -20,7 +25,7 @@ public class RefractionMisc {
     public static final RandomSource random = RandomSource.create();
 
     public static void enableMovement(ServerPlayer player, boolean canMove) {
-        ModMessages.sendToPlayer(new EnablePlayerMovementS2CPacket(canMove), player);
+        RefractionMessages.sendToPlayer(new EnablePlayerMovementS2CPacket(canMove), player);
     }
 
     public static void enableMovement(ServerPlayer player, int ticks) {
@@ -30,14 +35,16 @@ public class RefractionMisc {
 
     public static void playLocalSound(Player player, SoundEvent event) {
         if (player instanceof ServerPlayer serverPlayer) {
-            ModMessages.sendToPlayer(new PlayLocalSoundS2CPacket(event), serverPlayer);
-        } else if (player instanceof LocalPlayer localPlayer){
-            Minecraft.getInstance().getSoundManager().play(new EntityBoundSoundInstance(event, SoundSource.AMBIENT, 1.0F, 1.0F, localPlayer, RandomSource.create().nextLong()));
+            RefractionMessages.sendToPlayer(new PlayLocalSoundS2CPacket(event), serverPlayer);
         }
     }
 
     public static <T> T getRandom(List<T> list) {
-        return list.get(random.nextInt(list.size()));
+        return list.get(random.nextIntBetweenInclusive(0, list.size() - 1));
+    }
+
+    public static DamageSource damageSource(ResourceKey<DamageType> damageType, Level level) {
+        return new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(damageType));
     }
 
 }

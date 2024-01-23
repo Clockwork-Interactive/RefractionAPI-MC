@@ -17,6 +17,7 @@ public class KeyboardInputMixin extends Input {
             this.forwardImpulse = 0.0F;
             this.leftImpulse = 0.0F;
             this.jumping = false;
+            this.shiftKeyDown = false;
             ci.cancel();
         }
     }

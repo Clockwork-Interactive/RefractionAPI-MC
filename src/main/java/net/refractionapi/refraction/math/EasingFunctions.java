@@ -6,7 +6,7 @@ public enum EasingFunctions implements EasingFunction {
     LINEAR {
         @Override
         public float getEasing(float x) {
-            return x / 10;
+            return x;
         }
     },
     EASE_IN_SINE {
@@ -18,13 +18,13 @@ public enum EasingFunctions implements EasingFunction {
     EASE_OUT_SINE {
         @Override
         public float getEasing(float x) {
-            return (float) Math.sin((x * Math.PI) / 2) / 10;
+            return (float) Math.sin((x * Math.PI) / 2);
         }
     },
     EASE_IN_OUT_SINE {
         @Override
         public float getEasing(float x) {
-            return (float) (-(Math.cos(Math.PI * x) - 1) / 2) / 2;
+            return (float) -(Math.cos(Math.PI * x) - 1) / 2;
         }
     },
     EASE_IN_CUBIC {
@@ -36,7 +36,7 @@ public enum EasingFunctions implements EasingFunction {
     EASE_OUT_CUBIC {
         @Override
         public float getEasing(float x) {
-            return (float) (1 - Math.pow(1 - x, 3)) / 10;
+            return (float) (1 - Math.pow(1 - x, 3));
         }
     },
     EASE_IN_OUT_CUBIC {

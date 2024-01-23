@@ -2,6 +2,7 @@ package net.refractionapi.refraction.cutscenes;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.refractionapi.refraction.Refraction;
@@ -26,23 +27,38 @@ public class CutsceneHandler {
             }
             Cutscene cutscene = cutscenes.get(0);
             if (cutscenes.size() > 1) {
-                if (cutscene.ptr >= cutscene.time.length - 1 && cutscene.time[cutscene.time.length - 1] - 1 <= cutscene.progressTracker) {
+                if (cutscene.ptr >= cutscene.time.length - 1 && cutscene.time[cutscene.time.length - 1] - 2 <= cutscene.progressTracker) {
                     cutscene.stop();
                     cutscenes.remove(0);
                     cutscene = cutscenes.get(0);
+                    cutscene.start();
+                    continue;
                 }
             }
             if (cutscene == null) continue;
+            if (cutscene.player.isDeadOrDying()) {
+                Cutscene.stopAll(cutscene.player);
+                continue;
+            }
             if (!cutscene.started) {
                 cutscene.start();
             }
             cutscene.tick();
             if (cutscene.stopped) {
-                cutscene.stop();
                 cutscenes.remove(0);
+                cutscene.stop();
             }
         }
 
+    }
+
+    @SubscribeEvent
+    public static void serverStoppingEvent(ServerStoppingEvent event) {
+        QUEUE.forEach((player, cutscenes) -> {
+            for (Cutscene cutscene : cutscenes) {
+                cutscene.stop();
+            }
+        });
     }
 
 }

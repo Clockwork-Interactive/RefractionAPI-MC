@@ -5,13 +5,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
-import net.refractionapi.refraction.networking.ModMessages;
+import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.InvokeCameraShakeS2CPacket;
 
 public class CameraShakeHandler {
 
     public static void invokeCameraShakeToPlayer(int duration, int intensity, ServerPlayer serverPlayer) {
-        ModMessages.sendToPlayer(new InvokeCameraShakeS2CPacket(duration, intensity), serverPlayer);
+        RefractionMessages.sendToPlayer(new InvokeCameraShakeS2CPacket(duration, intensity), serverPlayer);
     }
 
     public static void invokeCameraShakeToPlayersWithinRange(int duration, int intensity, int range, BlockPos pos, ServerLevel level) {
