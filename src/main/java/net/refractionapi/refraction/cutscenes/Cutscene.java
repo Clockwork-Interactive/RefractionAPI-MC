@@ -6,6 +6,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.refractionapi.refraction.math.EasingFunction;
@@ -54,6 +55,7 @@ public class Cutscene {
     public Vec3 initalPosition;
     public Vec3 initalPlayerPos;
     public float delta = 0.0F;
+    public boolean invulnerable = true;
 
     /**
      * Example cutscenes:
@@ -85,6 +87,7 @@ public class Cutscene {
         this.player.hurtMarked = true;
         this.player.setDeltaMovement(0, 0, 0);
         this.initalPlayerPos = this.player.getEyePosition();
+        this.hideName(true);
         this.addToHandler(forced);
     }
 
@@ -150,16 +153,29 @@ public class Cutscene {
             this.afterStop.accept(this);
         }
         if (this.player instanceof ServerPlayer serverPlayer) {
+            boolean lastInQueue = QUEUE.get(this.player).size() <= 1;
             if (this.camera != null) {
-                if (QUEUE.get(this.player).size() <= 1) {
-                    RefractionMessages.sendToPlayer(new InvokeCutsceneS2CPacket(this.camera.getId(), false), serverPlayer);
-                }
                 this.camera.kill();
             }
+            if (lastInQueue) {
+                RefractionMessages.sendToPlayer(new InvokeCutsceneS2CPacket(-1, false), serverPlayer);
+                this.hideName(false);
+            }
             RefractionMessages.sendToPlayer(new SetFOVS2CPacket(-1), serverPlayer);
-
         }
         this.stopped = true;
+    }
+
+    public Cutscene hideName(boolean hide) {
+        if (this.player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.getAttribute(ForgeMod.NAMETAG_DISTANCE.get()).setBaseValue(hide ? 0.0D : 64.0D);
+        }
+        return this;
+    }
+
+    public Cutscene setInvulnerable(boolean invulnerable) {
+        this.invulnerable = invulnerable;
+        return this;
     }
 
     public static void stopAll(Player player) {

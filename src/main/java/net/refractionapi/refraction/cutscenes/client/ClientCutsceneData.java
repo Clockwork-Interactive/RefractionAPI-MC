@@ -5,7 +5,7 @@ import net.refractionapi.refraction.client.ClientData;
 
 public class ClientCutsceneData {
 
-    public static int cameraID;
+    public static int cameraID = -1;
 
     public static void startCutscene(int id, boolean start) {
         cameraID = id;

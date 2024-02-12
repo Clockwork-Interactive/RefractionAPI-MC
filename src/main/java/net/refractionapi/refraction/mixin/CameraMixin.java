@@ -1,9 +1,12 @@
 package net.refractionapi.refraction.mixin;
 
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
+import net.refractionapi.refraction.client.ClientData;
+import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
 import net.refractionapi.refraction.mixininterfaces.ICameraMixin;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,16 +18,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Camera.class)
 public abstract class CameraMixin implements ICameraMixin {
 
-    /* //Currently Unused as current equations doesn't require them, but can be introduced later for more creative control
-        private static final int FREQUENCY = 60;
-        private static final int AMPLITUDE = 10; //How much it can move in pixels (from center)
-        */
+    @Shadow
+    private Entity entity;
+
+    /**
+     * Currently Unused as current equations don't require them, but can be introduced later for more creative control
+     * private static final int FREQUENCY = 60;
+     * private static final int AMPLITUDE = 10; //How much it can move in pixels (from center)
+     */
     @Unique
     private int shakeStartTick = 0;
     @Unique
     private int shakeDurationTick = 0;
     @Unique
     private int intensity = 10; //Value clamped from 0-10 to change intensity of shake
+
+    @Inject(at = @At("HEAD"), method = "setup", cancellable = true)
+    void setupHead(BlockGetter pLevel, Entity pEntity, boolean pDetached, boolean pThirdPersonReverse, float pPartialTick, CallbackInfo ci) {
+        if (ClientCutsceneData.cameraID != -1 && pDetached) { // Stops third-person camera in cutscenes.
+            Minecraft.getInstance().gameRenderer.getMainCamera().setup(pLevel, entity, false, pThirdPersonReverse, pPartialTick);
+            ci.cancel();
+        }
+    }
 
     //REMEMBER, this isn't a "tick", this runs Every Frame
     @Inject(at = @At("TAIL"), method = "setup")

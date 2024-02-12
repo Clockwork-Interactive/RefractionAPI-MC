@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.client;
 
 import net.minecraft.client.Minecraft;
+import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
 
 public class ClientData {
 
@@ -12,6 +13,7 @@ public class ClientData {
         canMove = true;
         canRotateCamera = true;
         FOV = -1;
+        ClientCutsceneData.cameraID = -1;
         Minecraft.getInstance().gameRenderer.setRenderHand(true);
     }
 

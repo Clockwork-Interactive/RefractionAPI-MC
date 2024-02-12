@@ -13,6 +13,10 @@ import java.util.*;
 public class CutsceneHandler {
     public static final HashMap<Player, List<Cutscene>> QUEUE = new HashMap<>();
 
+    public static boolean inCutscene(Player player) {
+        return QUEUE.containsKey(player) && !QUEUE.get(player).isEmpty();
+    }
+
     @SubscribeEvent
     public static void serverTick(TickEvent.ServerTickEvent event) {
         if (event.phase.equals(TickEvent.Phase.END)) return;
