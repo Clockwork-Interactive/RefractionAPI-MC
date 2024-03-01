@@ -44,14 +44,14 @@ public class VFXHelper {
         }
     }
 
-    public static void shootBeamOfParticles(LivingEntity livingEntity, ParticleOptions particleOptions, double range, double yOffset) {
+    public static void shootBeamOfParticles(LivingEntity livingEntity, ParticleOptions particleOptions, double range, Vec3 offset) {
         if (livingEntity.level() instanceof ServerLevel serverLevel) {
             Vec3 vec3 = livingEntity.getEyePosition();
             for (int x = 0; x < range; x++) {
                 Vec3 vec31 = calculateViewVector(livingEntity.getXRot(), livingEntity.getYRot()).scale(x);
                 Vec3 vec32 = vec3.add(vec31);
                 if (serverLevel.getBlockState(BlockPos.containing(vec32.x, vec32.y, vec32.z)).isAir()) {
-                    sendLongDistanceParticles(serverLevel, particleOptions, vec32.x, vec32.y, vec32.z + yOffset, 1, 0, 0, 0, 0);
+                    sendLongDistanceParticles(serverLevel, particleOptions, vec32.x + offset.x, vec32.y + offset.y, vec32.z + offset.z, 1, 0, 0, 0, 0);
                 } else {
                     break;
                 }

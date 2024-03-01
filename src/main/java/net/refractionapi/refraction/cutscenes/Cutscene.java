@@ -153,15 +153,16 @@ public class Cutscene {
             this.afterStop.accept(this);
         }
         if (this.player instanceof ServerPlayer serverPlayer) {
-            boolean lastInQueue = QUEUE.get(this.player).size() <= 1;
             if (this.camera != null) {
                 this.camera.kill();
             }
-            if (lastInQueue) {
+
+            if (QUEUE.get(serverPlayer).isEmpty()) {
                 RefractionMessages.sendToPlayer(new InvokeCutsceneS2CPacket(-1, false), serverPlayer);
+                RefractionMessages.sendToPlayer(new SetFOVS2CPacket(-1), serverPlayer);
                 this.hideName(false);
             }
-            RefractionMessages.sendToPlayer(new SetFOVS2CPacket(-1), serverPlayer);
+
         }
         this.stopped = true;
     }

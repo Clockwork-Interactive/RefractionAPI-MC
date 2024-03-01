@@ -42,6 +42,15 @@ public class WeightedRandom<T> {
         return percentages;
     }
 
+    @SafeVarargs
+    public static <T> WeightedRandom<T> of(T... items) {
+        WeightedRandom<T> weightedRandom = new WeightedRandom<>();
+        for (T t1 : items) {
+            weightedRandom.add(t1, 1.0F);
+        }
+        return weightedRandom;
+    }
+
     public HashMap<T, Float> getWeightedRandomList() {
         return this.weightedRandomList;
     }

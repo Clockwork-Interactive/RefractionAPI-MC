@@ -1,11 +1,15 @@
 package net.refractionapi.refraction.cutscenes;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.refractionapi.refraction.Refraction;
+import net.refractionapi.refraction.networking.RefractionMessages;
+import net.refractionapi.refraction.networking.S2C.InvokeCutsceneS2CPacket;
 
 import java.util.*;
 
@@ -24,7 +28,8 @@ public class CutsceneHandler {
         Iterator<Map.Entry<Player, List<Cutscene>>> mapIterator = QUEUE.entrySet().iterator();
 
         while (mapIterator.hasNext()) {
-            List<Cutscene> cutscenes = mapIterator.next().getValue();
+            Map.Entry<Player, List<Cutscene>> entry = mapIterator.next();
+            List<Cutscene> cutscenes = entry.getValue();
             if (cutscenes.isEmpty()) {
                 mapIterator.remove();
                 continue;

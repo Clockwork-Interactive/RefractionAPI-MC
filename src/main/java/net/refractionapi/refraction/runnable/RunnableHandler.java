@@ -6,50 +6,78 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.util.thread.SidedThreadGroups;
 import net.refractionapi.refraction.Refraction;
+import oshi.util.tuples.Triplet;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 
-@Mod.EventBusSubscriber(modid = Refraction.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class RunnableHandler {
-    public static HashMap<Runnable, Integer> runnables = new HashMap<>();
+public class RunnableHandler<T> {
 
-    @SubscribeEvent
-    public static void serverTick(TickEvent.ServerTickEvent event) {
-        if (event.phase.equals(TickEvent.Phase.END)) return;
-        Iterator<Map.Entry<Runnable, Integer>> iterator = runnables.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<Runnable, Integer> entry = iterator.next();
-            Runnable runnable = entry.getKey();
+    private final Runnable runnable;
+    private final Predicate<T> predicate;
+    private final T test;
+    private int ticksLeft;
 
-            if (entry.getValue() == null || entry.getValue() < 0) {
-                iterator.remove();
-            } else {
-                try {
-                    entry.getKey().run();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                runnables.put(runnable, entry.getValue() - 1);
-            }
-        }
+    protected RunnableHandler(Runnable runnable, int ticks, Predicate<T> predicate, T test) {
+        this.runnable = runnable;
+        this.ticksLeft = ticks;
+        this.predicate = predicate;
+        this.test = test;
+        Handler.RUNNABLES.add(this);
     }
 
-    /**
-     * Executes a runnable continuously for the given duration. <br>
-     * Should only be called from the server side!
-     *
-     * @param runnable Runnable that should be executed.
-     * @param duration Duration of how long the runnable should be executed for in ticks.
-     */
-    public static void addRunnable(Runnable runnable, int duration) {
+    public void tick() {
+        if (this.predicate != null && this.test != null && !this.predicate.test(this.test)) {
+            this.ticksLeft = -1;
+            return;
+        }
+        if (this.runnable == null || this.ticksLeft <= 0) {
+            this.ticksLeft = -1;
+            return;
+        }
+        try {
+            this.runnable.run();
+        } catch (Exception e) {
+            Refraction.LOGGER.error("Error while executing runnable: {}", runnable);
+        }
+        this.ticksLeft--;
+    }
+
+    public static void addRunnable(Runnable runnable, int ticks) {
+        addRunnable(runnable, ticks, t -> true, null);
+    }
+
+    public static <T> void addRunnable(Runnable runnable, int ticks, Predicate<T> predicate, T test) {
         if (FMLEnvironment.dist.isDedicatedServer() || Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER) {
-            if (duration <= 0) {
+            if (ticks <= 0) {
                 runnable.run();
                 return;
             }
-            runnables.put(runnable, duration);
+
+            new RunnableHandler<>(runnable, ticks, predicate, test);
+        }
+    }
+
+
+    public static HashMap<Triplet<Runnable, Predicate<?>, ?>, Integer> runnables = new HashMap<>();
+
+
+    @Mod.EventBusSubscriber(modid = Refraction.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+    private static class Handler {
+
+        private static final List<RunnableHandler<?>> RUNNABLES = new ArrayList<>();
+
+        @SubscribeEvent
+        public static void serverTick(TickEvent.ServerTickEvent event) {
+            if (event.phase.equals(TickEvent.Phase.END)) return;
+            ListIterator<RunnableHandler<?>> iterator = RUNNABLES.listIterator();
+            while (iterator.hasNext()) {
+                RunnableHandler<?> runnableHandler = iterator.next();
+                runnableHandler.tick();
+                if (runnableHandler.ticksLeft <= 0) {
+                    iterator.remove();
+                }
+            }
         }
     }
 
