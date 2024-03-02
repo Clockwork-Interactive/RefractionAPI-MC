@@ -1,6 +1,5 @@
 package net.refractionapi.refraction.event;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.ServerChatEvent;
@@ -9,10 +8,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.cutscenes.Cutscene;
+import net.refractionapi.refraction.cutscenes.point.PointHandler;
 import net.refractionapi.refraction.math.EasingFunctions;
 import net.refractionapi.refraction.misc.RefractionMisc;
-import net.refractionapi.refraction.randomizer.WeightedRandom;
-import net.refractionapi.refraction.vec3.Vec3Helper;
 
 @Mod.EventBusSubscriber(modid = Refraction.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CommonForgeEvents {
@@ -23,11 +21,14 @@ public class CommonForgeEvents {
             RefractionMisc.enableMovement(player, true);
     }
 
-    //@SubscribeEvent
-    //public static void chat(ServerChatEvent event) {
-    //    if (event.getMessage().getString().contains("HI")) {
-    //        Cutscene.createFacingRelativeCutscene(event.getPlayer(), event.getPlayer().getEyePosition(), new int[]{50}, true, EasingFunctions.LINEAR, new Vec3(10, 0, 0));
-    //    }
-    //}
+    @SubscribeEvent
+    public static void chat(ServerChatEvent event) {
+        if (event.getMessage().getString().contains("HI")) {
+            Cutscene cutscene = Cutscene.create(event.getPlayer(), true);
+            PointHandler pointHandler = cutscene.createPoint(40, 0);
+            pointHandler.addFacingRelativeVecPoint(new Vec3(5, 0, 3), new Vec3(0.2F, 0, 0), EasingFunctions.LINEAR);
+            pointHandler.build();
+        }
+    }
 
 }
