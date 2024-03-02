@@ -1,19 +1,21 @@
 package net.refractionapi.refraction.event;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ViewportEvent;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
+import net.refractionapi.refraction.mixininterfaces.ICameraMixin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +31,38 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
+    public static void clientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase.equals(TickEvent.Phase.END)) return;
+        if (ClientData.startFOV != -1) {
+            if (ClientData.progressTrackerFOV < ClientData.transitionTicksFOV) {
+                ClientData.progressTrackerFOV++;
+                float delta = (float) ClientData.progressTrackerFOV / (float) ClientData.transitionTicksFOV;
+                float eased = ClientData.easingFunctionFOV.getEasing(delta);
+                ClientData.currentFOV = Mth.lerp(eased, (float) ClientData.startFOV, (float) ClientData.endFOV);
+            }
+        }
+
+        if (ClientData.startZRot != -1) {
+            if (ClientData.progressTrackerZRot < ClientData.transitionTicksZRot) {
+                ClientData.progressTrackerZRot++;
+                float delta = (float) ClientData.progressTrackerZRot / (float) ClientData.transitionTicksZRot;
+                float eased = ClientData.easingFunctionZRot.getEasing(delta);
+                ClientData.currentZRot = Mth.lerp(eased, ClientData.startZRot, ClientData.endZRot);
+            }
+        }
+
+    }
+
+    @SubscribeEvent
     public static void fovEvent(ViewportEvent.ComputeFov event) {
-        if (ClientData.FOV != -1)
-            event.setFOV(ClientData.FOV);
+        if (ClientData.currentFOV != -1)
+            event.setFOV(ClientData.currentFOV);
+    }
+
+    @SubscribeEvent
+    public static void cameraSetup(ViewportEvent.ComputeCameraAngles event) {
+        if (ClientData.currentZRot != -1)
+            event.setRoll(ClientData.currentZRot);
     }
 
     @SubscribeEvent

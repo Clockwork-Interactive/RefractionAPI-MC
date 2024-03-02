@@ -30,6 +30,7 @@ public class RefractionMessages {
         registerPacket(EnablePlayerMovementS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
         registerPacket(PlayLocalSoundS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
         registerPacket(SetFOVS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
+        registerPacket(SetZRotS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public static <MSG> void sendToServer(MSG message) {

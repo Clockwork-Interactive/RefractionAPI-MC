@@ -25,7 +25,10 @@ public class VecPoint extends CutscenePoint {
         this.delta = delta;
         Vec3 lerpedVec = this.from.lerp(this.to, delta);
         this.cutscene.camera.setPos(lerpedVec.x, lerpedVec.y, lerpedVec.z);
-        this.cutscene.target = this.cutscene.player.getEyePosition();
-        super.tickPoint();
+    }
+
+    @Override
+    public void onSwitch() {
+        this.cutscene.spawnPoint = this.from;
     }
 }

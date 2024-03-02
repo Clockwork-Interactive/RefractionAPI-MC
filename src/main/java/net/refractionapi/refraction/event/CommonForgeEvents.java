@@ -8,7 +8,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.cutscenes.Cutscene;
-import net.refractionapi.refraction.cutscenes.point.PointHandler;
 import net.refractionapi.refraction.math.EasingFunctions;
 import net.refractionapi.refraction.misc.RefractionMisc;
 
@@ -24,10 +23,16 @@ public class CommonForgeEvents {
     @SubscribeEvent
     public static void chat(ServerChatEvent event) {
         if (event.getMessage().getString().contains("HI")) {
-            Cutscene cutscene = Cutscene.create(event.getPlayer(), true);
-            PointHandler pointHandler = cutscene.createPoint(40, 0);
-            pointHandler.addFacingRelativeVecPoint(new Vec3(5, 0, 3), new Vec3(0.2F, 0, 0), EasingFunctions.LINEAR);
-            pointHandler.build();
+            Cutscene.create(event.getPlayer(), true)
+                    .createPoint(40, 0)
+                    .setTarget(event.getPlayer())
+                    .addFacingRelativeVecPoint(new Vec3(5.0F, 0, 0), new Vec3(0.3F, 0, 0), EasingFunctions.LINEAR)
+                    .newPoint(50, 0)
+                    .setTarget(event.getPlayer())
+                    .addFacingRelativeVecPoint(new Vec3(0, 0, 5.0F), new Vec3(0, 0, 0.3F), EasingFunctions.LINEAR)
+                    .setFOV(20, 90, 10, EasingFunctions.LINEAR)
+                    .setZRot(0, 160, 40, EasingFunctions.LINEAR)
+                    .build();
         }
     }
 

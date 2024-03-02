@@ -8,9 +8,10 @@ public abstract class CutscenePoint {
 
     public final Cutscene cutscene;
     public final PointHandler pointHandler;
-    public int transitionTime;
-    public int lockedTime;
-    public EasingFunction easingFunction;
+    protected int transitionTime;
+    protected int lockedTime;
+    protected int startTime = 0;
+    protected EasingFunctions easingFunction;
 
     protected CutscenePoint(Cutscene cutscene, PointHandler pointHandler, int transitionTime, int lockedTime, EasingFunctions easingFunction) {
         this.cutscene = cutscene;
@@ -20,7 +21,19 @@ public abstract class CutscenePoint {
         this.easingFunction = easingFunction;
     }
 
-    public void tickPoint() {
+    protected CutscenePoint(Cutscene cutscene, PointHandler pointHandler, int transitionTime, int lockedTime, int startTime,EasingFunctions easingFunction) {
+        this.cutscene = cutscene;
+        this.pointHandler = pointHandler;
+        this.transitionTime = transitionTime;
+        this.lockedTime = lockedTime;
+        this.startTime = startTime;
+        this.easingFunction = easingFunction;
+    }
+
+    public abstract void tickPoint();
+
+    public void onSwitch() {
+
     }
 
 }

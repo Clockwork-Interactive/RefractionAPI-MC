@@ -8,6 +8,9 @@ import net.minecraft.world.level.BlockGetter;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
 import net.refractionapi.refraction.mixininterfaces.ICameraMixin;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,6 +21,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Camera.class)
 public abstract class CameraMixin implements ICameraMixin {
 
+    @Shadow
+    private float xRot;
+    @Shadow
+    private float yRot;
+    @Unique
+    private float zRot;
+    @Shadow
+    @Final
+    private Vector3f left;
+    @Shadow
+    @Final
+    private Vector3f up;
+    @Shadow
+    @Final
+    private Vector3f forwards;
+    @Shadow
+    @Final
+    private Quaternionf rotation;
     @Shadow
     private Entity entity;
 
