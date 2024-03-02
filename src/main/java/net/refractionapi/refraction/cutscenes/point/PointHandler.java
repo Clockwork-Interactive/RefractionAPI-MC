@@ -92,6 +92,10 @@ public class PointHandler {
         this.points.add(point);
     }
 
+    public PointHandler addVecPoint(Vec3 vecPoint) {
+        return addVecPoint(vecPoint, vecPoint, EasingFunctions.LINEAR);
+    }
+
     public PointHandler addVecPoint(Vec3 vecPoint, EasingFunctions easingFunction) {
         return addVecPoint(vecPoint, vecPoint, easingFunction);
     }
