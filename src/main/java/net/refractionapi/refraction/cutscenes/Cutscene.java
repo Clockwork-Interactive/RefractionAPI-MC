@@ -2,13 +2,11 @@ package net.refractionapi.refraction.cutscenes;
 
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 import net.refractionapi.refraction.cutscenes.point.PointHandler;
-import net.refractionapi.refraction.math.EasingFunction;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.InvokeCutsceneS2CPacket;
 import net.refractionapi.refraction.networking.S2C.SetFOVS2CPacket;
@@ -24,12 +22,13 @@ import static net.refractionapi.refraction.cutscenes.CutsceneHandler.QUEUE;
 public class Cutscene {
 
     public final ServerPlayer player;
-    protected Vec3 playerOriginalPos;
+    protected Vec3 playerTPPos;
     protected final List<PointHandler> points = new ArrayList<>();
     public ArmorStand camera;
     public boolean forced;
     public boolean started = false;
     public boolean stopped = false;
+    protected Consumer<Cutscene> beforeStop;
     protected Consumer<Cutscene> afterStop;
     protected Consumer<Cutscene> cameraTick;
     protected Consumer<Cutscene> afterSwitch;
@@ -44,8 +43,8 @@ public class Cutscene {
     protected Cutscene(ServerPlayer player, Vec3 lookAt, boolean forced) {
         this.player = player;
         this.forced = forced;
-        this.playerOriginalPos = player.position();
         this.lookAt = lookAt;
+        this.hideName(true);
     }
 
     public void tick() {
@@ -60,7 +59,7 @@ public class Cutscene {
             this.player.lookAt(EntityAnchorArgument.Anchor.EYES, this.lookAt);
         }
         if (this.lockedPosition) {
-            this.player.setPos(this.playerOriginalPos.x, this.playerOriginalPos.y, this.playerOriginalPos.z);
+            this.player.teleportTo(this.playerTPPos.x, this.playerTPPos.y, this.playerTPPos.z);
         }
         PointHandler current = this.points.get(0);
         if (!current.isSwitched()) {
@@ -73,6 +72,7 @@ public class Cutscene {
     }
 
     protected void start() {
+        this.playerTPPos = this.player.position();
         this.createCamera();
         this.started = true;
         RefractionMessages.sendToPlayer(new InvokeCutsceneS2CPacket(this.camera.getId(), true), this.player);
@@ -96,8 +96,21 @@ public class Cutscene {
         this.stopped = true;
     }
 
+    public static void stopAll(Player player) {
+        if (QUEUE.containsKey(player)) {
+            for (Cutscene cutscene : QUEUE.get(player)) {
+                cutscene.stop();
+            }
+        }
+    }
+
     public Cutscene afterStop(Consumer<Cutscene> afterStop) {
         this.afterStop = afterStop;
+        return this;
+    }
+
+    public Cutscene beforeStop(Consumer<Cutscene> beforeStop) {
+        this.beforeStop = beforeStop;
         return this;
     }
 
@@ -162,6 +175,26 @@ public class Cutscene {
             return new Cutscene(serverPlayer, lookAt, forced);
         }
         return null;
+    }
+
+    public static Vec3 rightEye(Player player) {
+        Vec3 vec3 = player.getEyePosition();
+        Vec3 vec31F = Vec3Helper.calculateViewVector(0.0F, player.getYRot()).scale(0.1F);
+        Vec3 vec31S = Vec3Helper.calculateViewVector(0.0F, player.getYRot() + 90.0F).scale(0.15F);
+        Vec3 FBVector = vec3.add(vec31F);
+        Vec3 RLVector = vec3.add(vec31S);
+        Vec3 vectorDifference = FBVector.subtract(RLVector);
+        return vec3.add(vectorDifference);
+    }
+
+    public static Vec3 leftEye(Player player) {
+        Vec3 vec3 = player.getEyePosition();
+        Vec3 vec31F = Vec3Helper.calculateViewVector(0.0F, player.getYRot()).scale(0.1F);
+        Vec3 vec31S = Vec3Helper.calculateViewVector(0.0F, player.getYRot() + 90.0F).scale(-0.15F);
+        Vec3 FBVector = vec3.add(vec31F);
+        Vec3 RLVector = vec3.add(vec31S);
+        Vec3 vectorDifference = FBVector.subtract(RLVector);
+        return vec3.add(vectorDifference);
     }
 
 }

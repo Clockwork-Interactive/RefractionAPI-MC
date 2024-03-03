@@ -11,6 +11,7 @@ import net.refractionapi.refraction.networking.S2C.SetZRotS2CPacket;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static net.refractionapi.refraction.cutscenes.CutsceneHandler.QUEUE;
 import static net.refractionapi.refraction.vec3.Vec3Helper.calculateViewVector;
@@ -22,6 +23,7 @@ public class PointHandler {
     protected int transitionTime;
     protected int lockedTime;
     protected boolean switched = false;
+    protected Consumer<Cutscene> onSwitch;
 
     public PointHandler(Cutscene cutscene, int transitionTime, int lockedTime) {
         this.cutscene = cutscene;
@@ -57,6 +59,13 @@ public class PointHandler {
         this.cutscene.camera.discard();
         this.cutscene.createCamera();
         RefractionMessages.sendToPlayer(new InvokeCutsceneS2CPacket(this.cutscene.camera.getId(), true), this.cutscene.player);
+        if (this.onSwitch != null)
+            this.onSwitch.accept(this.cutscene);
+    }
+
+    public PointHandler onSwitch(Consumer<Cutscene> onSwitch) {
+        this.onSwitch = onSwitch;
+        return this;
     }
 
     public boolean isSwitched() {
@@ -111,6 +120,10 @@ public class PointHandler {
         return this;
     }
 
+    public PointHandler addFacingRelativeVecPoint(Vec3 vec) {
+        return addFacingRelativeVecPoint(this.cutscene.player, 0, vec, vec, EasingFunctions.LINEAR);
+    }
+
     public PointHandler addFacingRelativeVecPoint(Vec3 vec, EasingFunctions easingFunction) {
         return addFacingRelativeVecPoint(this.cutscene.player, 0, vec, vec, easingFunction);
     }
@@ -151,13 +164,21 @@ public class PointHandler {
     }
 
     public PointHandler setTarget(LivingEntity target) {
-        TargetPoint point = new TargetPoint(this.cutscene, this, target, this.transitionTime, this.lockedTime, EasingFunctions.LINEAR);
+        return setTarget(target, Vec3.ZERO);
+    }
+
+    public PointHandler setTarget(LivingEntity target, Vec3 offset) {
+        TargetPoint point = new TargetPoint(this.cutscene, this, target, offset, this.transitionTime, this.lockedTime, EasingFunctions.LINEAR);
         addPoint(point);
         return this;
     }
 
     public PointHandler setTarget(Vec3 start, Vec3 end, EasingFunctions easingFunction) {
-        TargetPoint point = new TargetPoint(this.cutscene, this, start, end, this.transitionTime, this.lockedTime, easingFunction);
+        return setTarget(start, end, this.transitionTime, easingFunction);
+    }
+
+    public PointHandler setTarget(Vec3 start, Vec3 end, int transitionTime, EasingFunctions easingFunction) {
+        TargetPoint point = new TargetPoint(this.cutscene, this, start, end, transitionTime, this.lockedTime, easingFunction);
         addPoint(point);
         return this;
     }

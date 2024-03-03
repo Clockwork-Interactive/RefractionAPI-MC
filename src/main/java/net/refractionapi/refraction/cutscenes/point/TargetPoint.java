@@ -12,6 +12,7 @@ public class TargetPoint extends CutscenePoint {
     protected Vec3 start;
     protected Vec3 end;
     protected LivingEntity dynamicTarget;
+    protected Vec3 offset;
     protected int progressTracker;
 
     protected TargetPoint(Cutscene cutscene, PointHandler pointHandler, Vec3 target, int transitionTime, int lockedTime, EasingFunctions easingFunction) {
@@ -20,9 +21,10 @@ public class TargetPoint extends CutscenePoint {
         this.cutscene.target = target;
     }
 
-    protected TargetPoint(Cutscene cutscene, PointHandler pointHandler, LivingEntity dynamicTarget, int transitionTime, int lockedTime, EasingFunctions easingFunction) {
+    protected TargetPoint(Cutscene cutscene, PointHandler pointHandler, LivingEntity dynamicTarget, Vec3 offset, int transitionTime, int lockedTime, EasingFunctions easingFunction) {
         super(cutscene, pointHandler, transitionTime, lockedTime, easingFunction);
         this.dynamicTarget = dynamicTarget;
+        this.offset = offset;
         this.cutscene.target = dynamicTarget.getEyePosition();
     }
 
@@ -39,7 +41,7 @@ public class TargetPoint extends CutscenePoint {
     public void tickPoint() {
         this.progressTracker++;
         if (this.dynamicTarget != null) {
-            this.target = this.dynamicTarget.getEyePosition();
+            this.target = this.dynamicTarget.getEyePosition().add(this.offset);
         }
         if (this.start != null) {
             this.target = this.start.lerp(this.end, this.easingFunction.getEasing((float) this.progressTracker / (float) this.transitionTime));

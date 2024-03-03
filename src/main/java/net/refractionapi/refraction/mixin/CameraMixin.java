@@ -22,24 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class CameraMixin implements ICameraMixin {
 
     @Shadow
-    private float xRot;
-    @Shadow
-    private float yRot;
-    @Unique
-    private float zRot;
-    @Shadow
-    @Final
-    private Vector3f left;
-    @Shadow
-    @Final
-    private Vector3f up;
-    @Shadow
-    @Final
-    private Vector3f forwards;
-    @Shadow
-    @Final
-    private Quaternionf rotation;
-    @Shadow
     private Entity entity;
 
     /**
@@ -53,6 +35,9 @@ public abstract class CameraMixin implements ICameraMixin {
     private int shakeDurationTick = 0;
     @Unique
     private int intensity = 10; //Value clamped from 0-10 to change intensity of shake
+
+    protected CameraMixin() {
+    }
 
     @Inject(at = @At("HEAD"), method = "setup", cancellable = true)
     void setupHead(BlockGetter pLevel, Entity pEntity, boolean pDetached, boolean pThirdPersonReverse, float pPartialTick, CallbackInfo ci) {

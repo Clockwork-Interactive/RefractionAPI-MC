@@ -10,6 +10,7 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.refractionapi.refraction.event.CommonForgeEvents;
 import net.refractionapi.refraction.mixininterfaces.ILivingEntity;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.EnablePlayerMovementS2CPacket;
@@ -23,6 +24,15 @@ public class RefractionMisc {
     public static final RandomSource random = RandomSource.create();
 
     public static void enableMovement(LivingEntity livingEntity, boolean canMove) {
+
+        CommonForgeEvents.frozenEntities.compute(livingEntity, (k, v) -> {
+            if (!canMove) {
+                livingEntity.hurtMarked = true;
+                livingEntity.teleportTo(livingEntity.position().x, livingEntity.position().y, livingEntity.position().z);
+            }
+            return canMove ? null : livingEntity.position();
+        });
+
         if (livingEntity instanceof ServerPlayer serverPlayer) {
             RefractionMessages.sendToPlayer(new EnablePlayerMovementS2CPacket(canMove), serverPlayer);
         } else if (!(livingEntity instanceof Player) && livingEntity instanceof ILivingEntity) {

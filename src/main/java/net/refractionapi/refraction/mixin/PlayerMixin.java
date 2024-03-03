@@ -7,8 +7,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.refractionapi.refraction.cutscenes.Cutscene;
 import net.refractionapi.refraction.cutscenes.CutsceneHandler;
-import net.refractionapi.refraction.cutscenes.OLDCutscene;
-import net.refractionapi.refraction.cutscenes.OLDCutsceneHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,7 +24,7 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(at = @At("HEAD"), method = "hurt", cancellable = true)
     // Using a mixin instead of LivingHurtEvent for no knockback and no hurt anim.
     public void hurtInject(DamageSource pSource, float pAmount, CallbackInfoReturnable<Boolean> cir) {
-        if (!OLDCutsceneHandler.QUEUE.containsKey((Player) this.self())) return;
+        if (!CutsceneHandler.QUEUE.containsKey((Player) this.self())) return;
         Cutscene current = CutsceneHandler.QUEUE.getOrDefault((Player) this.self(), new ArrayList<>()).get(0);
         if (current != null) {
             if (current.invulnerable) cir.setReturnValue(false);

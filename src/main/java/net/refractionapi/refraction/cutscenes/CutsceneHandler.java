@@ -46,7 +46,7 @@ public class CutsceneHandler {
             }
             if (cutscene == null) continue;
             if (cutscene.player.isDeadOrDying()) {
-                OLDCutscene.stopAll(cutscene.player);
+                Cutscene.stopAll(cutscene.player);
                 continue;
             }
             if (!cutscene.started) {
@@ -54,6 +54,8 @@ public class CutsceneHandler {
             }
             cutscene.tick();
             if (cutscene.stopped) {
+                if (cutscene.beforeStop != null)
+                    cutscene.beforeStop.accept(cutscene);
                 cutscenes.remove(0);
                 cutscene.stop();
             }
