@@ -22,7 +22,7 @@ import static net.refractionapi.refraction.cutscenes.CutsceneHandler.QUEUE;
 public class Cutscene {
 
     public final ServerPlayer player;
-    protected Vec3 playerTPPos;
+    public Vec3 playerTPPos;
     protected final List<PointHandler> points = new ArrayList<>();
     public ArmorStand camera;
     public boolean forced;

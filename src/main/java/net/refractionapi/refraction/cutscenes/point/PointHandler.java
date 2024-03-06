@@ -24,6 +24,14 @@ public class PointHandler {
     protected int lockedTime;
     protected boolean switched = false;
     protected Consumer<Cutscene> onSwitch;
+    private boolean lockedPosition = true;
+    private boolean lockedCamera = true;
+    private boolean hideName = true;
+    private boolean invulnerable = true;
+    private boolean lockedLook = true;
+    private Consumer<Cutscene> cameraTick;
+    private Vec3 target;
+
 
     public PointHandler(Cutscene cutscene, int transitionTime, int lockedTime) {
         this.cutscene = cutscene;
@@ -57,7 +65,15 @@ public class PointHandler {
         this.points.forEach(CutscenePoint::onSwitch);
         this.switched = true;
         this.cutscene.camera.discard();
+        if (this.target != null)
+            this.cutscene.target = this.target;
         this.cutscene.createCamera();
+        this.cutscene.lockPosition(this.lockedPosition);
+        this.cutscene.lockCamera(this.lockedCamera);
+        this.cutscene.setInvulnerable(this.invulnerable);
+        this.cutscene.hideName(this.hideName);
+        this.cutscene.lockLook(this.lockedLook);
+        this.cutscene.tickCamera(this.cameraTick);
         RefractionMessages.sendToPlayer(new InvokeCutsceneS2CPacket(this.cutscene.camera.getId(), true), this.cutscene.player);
         if (this.onSwitch != null)
             this.onSwitch.accept(this.cutscene);
@@ -97,6 +113,36 @@ public class PointHandler {
         }
     }
 
+    public PointHandler lockPosition(boolean lock) {
+        this.lockedPosition = lock;
+        return this;
+    }
+
+    public PointHandler lockCamera(boolean lock) {
+        this.lockedCamera = lock;
+        return this;
+    }
+
+    public PointHandler hideName(boolean hide) {
+        this.hideName = hide;
+        return this;
+    }
+
+    public PointHandler setInvulnerable(boolean invulnerable) {
+        this.invulnerable = invulnerable;
+        return this;
+    }
+
+    public PointHandler lockLook(boolean lock) {
+        this.lockedLook = lock;
+        return this;
+    }
+
+    public PointHandler tickCamera(Consumer<Cutscene> cameraTick) {
+        this.cameraTick = cameraTick;
+        return this;
+    }
+
     protected void addPoint(CutscenePoint point) {
         this.points.add(point);
     }
@@ -114,7 +160,11 @@ public class PointHandler {
     }
 
     public PointHandler addVecPoint(Vec3 from, Vec3 to, int startTime, EasingFunctions easingFunction) {
-        VecPoint point = new VecPoint(this.cutscene, this, from, to, this.transitionTime - startTime, this.lockedTime, easingFunction);
+        return addVecPoint(from, to, startTime, this.transitionTime, easingFunction);
+    }
+
+    public PointHandler addVecPoint(Vec3 from, Vec3 to, int startTime, int transitionTime, EasingFunctions easingFunction) {
+        VecPoint point = new VecPoint(this.cutscene, this, from, to, transitionTime - startTime, this.lockedTime, easingFunction);
         point.startTime = startTime;
         addPoint(point);
         return this;
@@ -124,12 +174,16 @@ public class PointHandler {
         return addFacingRelativeVecPoint(this.cutscene.player, 0, vec, vec, EasingFunctions.LINEAR);
     }
 
-    public PointHandler addFacingRelativeVecPoint(Vec3 vec, EasingFunctions easingFunction) {
-        return addFacingRelativeVecPoint(this.cutscene.player, 0, vec, vec, easingFunction);
+    public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, Vec3 vec) {
+        return addFacingRelativeVecPoint(relativeTo, 0, vec, vec, EasingFunctions.LINEAR);
     }
 
-    public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, Vec3 vec, EasingFunctions easingFunction) {
-        return addFacingRelativeVecPoint(relativeTo, 0, vec, vec, easingFunction);
+    public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, Vec3 start, Vec3 end, EasingFunctions easingFunction) {
+        return addFacingRelativeVecPoint(relativeTo, 0, start, end, easingFunction);
+    }
+
+    public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, Vec3 start, Vec3 end, int startTime, EasingFunctions easingFunction) {
+        return addFacingRelativeVecPoint(relativeTo, startTime, start, end, easingFunction);
     }
 
     public PointHandler addFacingRelativeVecPoint(Vec3 from, Vec3 to, EasingFunctions easingFunction) {
@@ -141,6 +195,10 @@ public class PointHandler {
     }
 
     public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, int startTime, Vec3 from, Vec3 to, EasingFunctions easingFunction) {
+        return addFacingRelativeVecPoint(relativeTo, startTime, this.transitionTime, from, to, easingFunction);
+    }
+
+    public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, int startTime, int transitionTime, Vec3 from, Vec3 to, EasingFunctions easingFunction) {
         Vec3[] positions = new Vec3[]{from, to};
         Vec3[] relativePositions = new Vec3[positions.length];
         for (int i = 0; i < positions.length; i++) {
@@ -154,11 +212,12 @@ public class PointHandler {
             Vec3 vec = vec3.add(vectorDifference);
             relativePositions[i] = vec.subtract(0.0F, 1.75F, 0.0F).add(0.0F, pos.y, 0.0F);
         }
-        return addVecPoint(relativePositions[0], relativePositions[1], startTime, easingFunction);
+        return addVecPoint(relativePositions[0], relativePositions[1], startTime, transitionTime, easingFunction);
     }
 
     public PointHandler setTarget(Vec3 target) {
         TargetPoint point = new TargetPoint(this.cutscene, this, target, this.transitionTime, this.lockedTime, EasingFunctions.LINEAR);
+        this.target = target;
         addPoint(point);
         return this;
     }
@@ -169,6 +228,7 @@ public class PointHandler {
 
     public PointHandler setTarget(LivingEntity target, Vec3 offset) {
         TargetPoint point = new TargetPoint(this.cutscene, this, target, offset, this.transitionTime, this.lockedTime, EasingFunctions.LINEAR);
+        this.target = target.getEyePosition();
         addPoint(point);
         return this;
     }
@@ -178,7 +238,13 @@ public class PointHandler {
     }
 
     public PointHandler setTarget(Vec3 start, Vec3 end, int transitionTime, EasingFunctions easingFunction) {
+        return setTarget(start, end, transitionTime, 0, easingFunction);
+    }
+
+    public PointHandler setTarget(Vec3 start, Vec3 end, int transitionTime, int startTime, EasingFunctions easingFunction) {
         TargetPoint point = new TargetPoint(this.cutscene, this, start, end, transitionTime, this.lockedTime, easingFunction);
+        this.target = start;
+        point.startTime = startTime;
         addPoint(point);
         return this;
     }

@@ -21,6 +21,7 @@ public class VecPoint extends CutscenePoint {
     public void tickPoint() {
         this.progressTracker++;
         float delta = (float) this.progressTracker / (float) this.transitionTime;
+        if (delta > 1.0F) return;
         delta = this.easingFunction.getEasing(delta);
         this.delta = delta;
         Vec3 lerpedVec = this.from.lerp(this.to, delta);

@@ -9,6 +9,7 @@ import net.refractionapi.refraction.Refraction;
 import oshi.util.tuples.Triplet;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class RunnableHandler<T> {
@@ -17,6 +18,7 @@ public class RunnableHandler<T> {
     private final Predicate<T> predicate;
     private final T test;
     private int ticksLeft;
+    private Consumer<T> onEnd;
 
     protected RunnableHandler(Runnable runnable, int ticks, Predicate<T> predicate, T test) {
         this.runnable = runnable;
@@ -43,18 +45,28 @@ public class RunnableHandler<T> {
         this.ticksLeft--;
     }
 
-    public static void addRunnable(Runnable runnable, int ticks) {
-        addRunnable(runnable, ticks, t -> true, null);
+    public static RunnableHandler<?> addRunnable(Runnable runnable, int ticks) {
+        return addRunnable(runnable, ticks, t -> true, null);
     }
 
-    public static <T> void addRunnable(Runnable runnable, int ticks, Predicate<T> predicate, T test) {
+    public static <T> RunnableHandler<T> addRunnable(Runnable runnable, int ticks, Predicate<T> predicate, T test) {
         if (FMLEnvironment.dist.isDedicatedServer() || Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER) {
             if (ticks <= 0) {
                 runnable.run();
-                return;
+                return null;
             }
+            return new RunnableHandler<>(runnable, ticks, predicate, test);
+        }
+        return null;
+    }
 
-            new RunnableHandler<>(runnable, ticks, predicate, test);
+    public void onEnd(Consumer<T> consumer) {
+        this.onEnd = consumer;
+    }
+
+    private void end() {
+        if (this.onEnd != null) {
+            this.onEnd.accept(this.test);
         }
     }
 
@@ -75,6 +87,7 @@ public class RunnableHandler<T> {
                 RunnableHandler<?> runnableHandler = iterator.next();
                 runnableHandler.tick();
                 if (runnableHandler.ticksLeft <= 0) {
+                    runnableHandler.end();
                     iterator.remove();
                 }
             }

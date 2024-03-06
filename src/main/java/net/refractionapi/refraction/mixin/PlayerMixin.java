@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Mixin(Player.class)
 public abstract class PlayerMixin extends LivingEntity {
@@ -24,8 +25,9 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(at = @At("HEAD"), method = "hurt", cancellable = true)
     // Using a mixin instead of LivingHurtEvent for no knockback and no hurt anim.
     public void hurtInject(DamageSource pSource, float pAmount, CallbackInfoReturnable<Boolean> cir) {
-        if (!CutsceneHandler.QUEUE.containsKey((Player) this.self())) return;
-        Cutscene current = CutsceneHandler.QUEUE.getOrDefault((Player) this.self(), new ArrayList<>()).get(0);
+        List<Cutscene> cutscenes = CutsceneHandler.QUEUE.getOrDefault((Player) this.self(), new ArrayList<>());
+        if (cutscenes.isEmpty()) return;
+        Cutscene current = cutscenes.get(0);
         if (current != null) {
             if (current.invulnerable) cir.setReturnValue(false);
         }

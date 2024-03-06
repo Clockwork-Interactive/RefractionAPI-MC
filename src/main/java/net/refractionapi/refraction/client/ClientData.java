@@ -29,11 +29,13 @@ public class ClientData {
         canMove = true;
         canRotateCamera = true;
         startFOV = -1;
+        currentFOV = -1;
         endFOV = -1;
         transitionTicksFOV = -1;
         progressTrackerFOV = 0;
         easingFunctionFOV = EasingFunctions.LINEAR;
         startZRot = -1;
+        currentZRot = -1;
         endZRot = -1;
         transitionTicksZRot = -1;
         progressTrackerZRot = 0;
