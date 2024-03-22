@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.cutscenes;
 
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
@@ -15,20 +16,20 @@ import java.util.Map;
 @Mod.EventBusSubscriber(modid = Refraction.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CutsceneHandler {
 
-    public static final HashMap<Player, List<Cutscene>> QUEUE = new HashMap<>();
+    public static final HashMap<LivingEntity, List<Cutscene>> QUEUE = new HashMap<>();
 
-    public static boolean inCutscene(Player player) {
-        return QUEUE.containsKey(player) && !QUEUE.get(player).isEmpty();
+    public static boolean inCutscene(LivingEntity livingEntity) {
+        return QUEUE.containsKey(livingEntity) && !QUEUE.get(livingEntity).isEmpty();
     }
 
     @SubscribeEvent
     public static void serverTick(TickEvent.ServerTickEvent event) {
         if (event.phase.equals(TickEvent.Phase.END)) return;
 
-        Iterator<Map.Entry<Player, List<Cutscene>>> mapIterator = QUEUE.entrySet().iterator();
+        Iterator<Map.Entry<LivingEntity, List<Cutscene>>> mapIterator = QUEUE.entrySet().iterator();
 
         while (mapIterator.hasNext()) {
-            Map.Entry<Player, List<Cutscene>> entry = mapIterator.next();
+            Map.Entry<LivingEntity, List<Cutscene>> entry = mapIterator.next();
             List<Cutscene> cutscenes = entry.getValue();
             if (cutscenes.isEmpty()) {
                 mapIterator.remove();
@@ -45,8 +46,8 @@ public class CutsceneHandler {
                 }
             }
             if (cutscene == null) continue;
-            if (cutscene.player.isDeadOrDying()) {
-                Cutscene.stopAll(cutscene.player);
+            if (cutscene.livingEntity.isDeadOrDying()) {
+                Cutscene.stopAll(cutscene.livingEntity);
                 continue;
             }
             if (!cutscene.started) {

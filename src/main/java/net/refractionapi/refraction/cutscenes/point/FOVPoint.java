@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.cutscenes.point;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.refractionapi.refraction.cutscenes.Cutscene;
 import net.refractionapi.refraction.math.EasingFunctions;
 import net.refractionapi.refraction.networking.RefractionMessages;
@@ -23,7 +24,8 @@ public class FOVPoint extends CutscenePoint {
 
     @Override
     public void onSwitch() {
-        RefractionMessages.sendToPlayer(new SetFOVS2CPacket(this.startFOV, this.endFOV, this.transitionTime, this.easingFunction), this.cutscene.player);
+        if (this.cutscene.livingEntity instanceof ServerPlayer serverPlayer)
+            RefractionMessages.sendToPlayer(new SetFOVS2CPacket(this.startFOV, this.endFOV, this.transitionTime, this.easingFunction), serverPlayer);
     }
 
 }

@@ -2,6 +2,7 @@ package net.refractionapi.refraction.vec3;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -13,6 +14,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Vec3Helper {
+
+    private static final RandomSource random = RandomSource.create();
 
     public static Vec3 getLookAtVec3(LivingEntity livingEntity, double range) {
         Vec3 vec3 = livingEntity.getEyePosition();
@@ -154,6 +157,30 @@ public class Vec3Helper {
         Vec3 RLVector = vec3.add(vec31S);
         Vec3 vectorDifference = FBVector.subtract(RLVector);
         return vec3.add(vectorDifference).add(0, yOffset, 0);
+    }
+
+    public static Vec3[] getInbetween(Vec3 vec1, Vec3 vec2) {
+        return getInbetween(vec1, vec2, (int) vec1.distanceTo(vec2));
+    }
+
+    public static Vec3[] getInbetween(Vec3 vec1, Vec3 vec2, int steps) {
+        Vec3[] inbetween = new Vec3[steps];
+        for (int i = 0; i < steps; i++) {
+            inbetween[i] = vec1.add(vec2.subtract(vec1).scale((float) i / steps));
+        }
+        return inbetween;
+    }
+
+    public static Vec3 getRandomSpherePos(Vec3 origin, float radius) {
+        double theta = random.nextDouble() * 2 * Math.PI;
+        double phi = Math.acos(2 * random.nextDouble() - 1);
+        double r = radius * Math.cbrt(random.nextDouble());
+
+        double x = r * Mth.sin((float) phi) * Mth.cos((float) theta);
+        double y = r * Mth.sin((float) phi) * Mth.sin((float) theta);
+        double z = r * Mth.cos((float) phi);
+
+        return new Vec3(origin.x + x, origin.y + y, origin.z + z);
     }
 
     public static List<BlockPos> createSphere(BlockPos center, int radius) {

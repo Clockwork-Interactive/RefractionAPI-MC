@@ -24,7 +24,6 @@ public class ClientData {
     public static int progressTrackerZRot = 0;
     public static EasingFunctions easingFunctionZRot = EasingFunctions.LINEAR;
 
-
     public static void reset() {
         canMove = true;
         canRotateCamera = true;
@@ -40,8 +39,7 @@ public class ClientData {
         transitionTicksZRot = -1;
         progressTrackerZRot = 0;
         easingFunctionZRot = EasingFunctions.LINEAR;
-        ClientCutsceneData.cameraID = -1;
-        Minecraft.getInstance().gameRenderer.setRenderHand(true);
+        ClientCutsceneData.reset();
     }
 
 }

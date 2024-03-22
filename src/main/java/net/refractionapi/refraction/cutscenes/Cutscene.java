@@ -2,13 +2,15 @@ package net.refractionapi.refraction.cutscenes;
 
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 import net.refractionapi.refraction.cutscenes.point.PointHandler;
+import net.refractionapi.refraction.math.EasingFunctions;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.InvokeCutsceneS2CPacket;
+import net.refractionapi.refraction.networking.S2C.SetBarPropsS2CPacket;
 import net.refractionapi.refraction.networking.S2C.SetFOVS2CPacket;
 import net.refractionapi.refraction.networking.S2C.SetZRotS2CPacket;
 import net.refractionapi.refraction.vec3.Vec3Helper;
@@ -21,7 +23,7 @@ import static net.refractionapi.refraction.cutscenes.CutsceneHandler.QUEUE;
 
 public class Cutscene {
 
-    public final ServerPlayer player;
+    public final LivingEntity livingEntity;
     public Vec3 playerTPPos;
     protected final List<PointHandler> points = new ArrayList<>();
     public ArmorStand camera;
@@ -40,8 +42,8 @@ public class Cutscene {
     protected boolean lockedLook = true;
     public Vec3 lookAt;
 
-    protected Cutscene(ServerPlayer player, Vec3 lookAt, boolean forced) {
-        this.player = player;
+    protected Cutscene(LivingEntity livingEntity, Vec3 lookAt, boolean forced) {
+        this.livingEntity = livingEntity;
         this.forced = forced;
         this.lookAt = lookAt;
         this.hideName(true);
@@ -56,10 +58,10 @@ public class Cutscene {
             return;
         }
         if (this.lockedLook) {
-            this.player.lookAt(EntityAnchorArgument.Anchor.EYES, this.lookAt);
+            this.livingEntity.lookAt(EntityAnchorArgument.Anchor.EYES, this.lookAt);
         }
         if (this.lockedPosition) {
-            this.player.teleportTo(this.playerTPPos.x, this.playerTPPos.y, this.playerTPPos.z);
+            this.livingEntity.teleportTo(this.playerTPPos.x, this.playerTPPos.y, this.playerTPPos.z);
         }
         PointHandler current = this.points.get(0);
         if (!current.isSwitched()) {
@@ -72,10 +74,13 @@ public class Cutscene {
     }
 
     protected void start() {
-        this.playerTPPos = this.player.position();
+        this.playerTPPos = this.livingEntity.position();
         this.createCamera();
         this.started = true;
-        RefractionMessages.sendToPlayer(new InvokeCutsceneS2CPacket(this.camera.getId(), true), this.player);
+        if (this.livingEntity instanceof ServerPlayer serverPlayer) {
+            RefractionMessages.sendToPlayer(new InvokeCutsceneS2CPacket(this.camera.getId(), true), serverPlayer);
+            RefractionMessages.sendToPlayer(new SetBarPropsS2CPacket(true, 0, 50, 0, 0, 15, EasingFunctions.LINEAR), serverPlayer);
+        }
     }
 
     public void stop() {
@@ -83,22 +88,24 @@ public class Cutscene {
             this.afterStop.accept(this);
         }
         if (this.camera != null) {
-            this.camera.kill();
+            this.camera.discard();
         }
 
-        if (QUEUE.get(this.player).isEmpty()) {
-            RefractionMessages.sendToPlayer(new InvokeCutsceneS2CPacket(-1, false), this.player);
-            RefractionMessages.sendToPlayer(new SetFOVS2CPacket(-1), this.player);
-            RefractionMessages.sendToPlayer(new SetZRotS2CPacket(-1), this.player);
-            this.hideName(false);
-        }
+        if (this.livingEntity instanceof ServerPlayer serverPlayer)
+            if (QUEUE.get(serverPlayer).isEmpty()) {
+                RefractionMessages.sendToPlayer(new InvokeCutsceneS2CPacket(-1, false), serverPlayer);
+                RefractionMessages.sendToPlayer(new SetFOVS2CPacket(-1), serverPlayer);
+                RefractionMessages.sendToPlayer(new SetZRotS2CPacket(-1), serverPlayer);
+                RefractionMessages.sendToPlayer(new SetBarPropsS2CPacket(false, 0, 0, 0, 0, 0, EasingFunctions.LINEAR), serverPlayer);
+                this.hideName(false);
+            }
 
         this.stopped = true;
     }
 
-    public static void stopAll(Player player) {
-        if (QUEUE.containsKey(player)) {
-            for (Cutscene cutscene : QUEUE.get(player)) {
+    public static void stopAll(LivingEntity livingEntity) {
+        if (QUEUE.containsKey(livingEntity)) {
+            for (Cutscene cutscene : QUEUE.get(livingEntity)) {
                 cutscene.stop();
             }
         }
@@ -135,7 +142,7 @@ public class Cutscene {
     }
 
     public Cutscene hideName(boolean hide) {
-        this.player.getAttribute(ForgeMod.NAMETAG_DISTANCE.get()).setBaseValue(hide ? 0.0D : 64.0D);
+        this.livingEntity.getAttribute(ForgeMod.NAMETAG_DISTANCE.get()).setBaseValue(hide ? 0.0D : 64.0D);
         return this;
     }
 
@@ -150,14 +157,14 @@ public class Cutscene {
     }
 
     public void createCamera() {
-        this.camera = new ArmorStand(this.player.level(), this.spawnPoint.x, this.spawnPoint.y, this.spawnPoint.z);
+        this.camera = new ArmorStand(this.livingEntity.level(), this.spawnPoint.x, this.spawnPoint.y, this.spawnPoint.z);
         this.camera.setPos(this.spawnPoint);
         this.camera.lookAt(EntityAnchorArgument.Anchor.EYES, this.target);
         this.camera.setInvisible(true);
         this.camera.setInvulnerable(true);
         this.camera.setNoGravity(true);
         this.camera.setCustomNameVisible(false);
-        this.player.level().addFreshEntity(this.camera);
+        this.livingEntity.level().addFreshEntity(this.camera);
     }
 
     public PointHandler createPoint(int transitionTime, int lockedTime) {
@@ -166,31 +173,28 @@ public class Cutscene {
         return pointHandler;
     }
 
-    public static Cutscene create(Player player, boolean forced) {
-        return Cutscene.create(player, Vec3Helper.getVec(player, 1.0F, 0.0F), forced);
+    public static Cutscene create(LivingEntity livingEntity, boolean forced) {
+        return Cutscene.create(livingEntity, Vec3Helper.getVec(livingEntity, 1.0F, 0.0F), forced);
     }
 
-    public static Cutscene create(Player player, Vec3 lookAt, boolean forced) {
-        if (player instanceof ServerPlayer serverPlayer) {
-            return new Cutscene(serverPlayer, lookAt, forced);
-        }
-        return null;
+    public static Cutscene create(LivingEntity livingEntity, Vec3 lookAt, boolean forced) {
+        return new Cutscene(livingEntity, lookAt, forced);
     }
 
-    public static Vec3 rightEye(Player player) {
-        Vec3 vec3 = player.getEyePosition();
-        Vec3 vec31F = Vec3Helper.calculateViewVector(0.0F, player.getYRot()).scale(0.1F);
-        Vec3 vec31S = Vec3Helper.calculateViewVector(0.0F, player.getYRot() + 90.0F).scale(0.15F);
+    public static Vec3 rightEye(LivingEntity livingEntity) {
+        Vec3 vec3 = livingEntity.getEyePosition();
+        Vec3 vec31F = Vec3Helper.calculateViewVector(0.0F, livingEntity.getYRot()).scale(0.1F);
+        Vec3 vec31S = Vec3Helper.calculateViewVector(0.0F, livingEntity.getYRot() + 90.0F).scale(0.15F);
         Vec3 FBVector = vec3.add(vec31F);
         Vec3 RLVector = vec3.add(vec31S);
         Vec3 vectorDifference = FBVector.subtract(RLVector);
         return vec3.add(vectorDifference);
     }
 
-    public static Vec3 leftEye(Player player) {
-        Vec3 vec3 = player.getEyePosition();
-        Vec3 vec31F = Vec3Helper.calculateViewVector(0.0F, player.getYRot()).scale(0.1F);
-        Vec3 vec31S = Vec3Helper.calculateViewVector(0.0F, player.getYRot() + 90.0F).scale(-0.15F);
+    public static Vec3 leftEye(LivingEntity livingEntity) {
+        Vec3 vec3 = livingEntity.getEyePosition();
+        Vec3 vec31F = Vec3Helper.calculateViewVector(0.0F, livingEntity.getYRot()).scale(0.1F);
+        Vec3 vec31S = Vec3Helper.calculateViewVector(0.0F, livingEntity.getYRot() + 90.0F).scale(-0.15F);
         Vec3 FBVector = vec3.add(vec31F);
         Vec3 RLVector = vec3.add(vec31S);
         Vec3 vectorDifference = FBVector.subtract(RLVector);

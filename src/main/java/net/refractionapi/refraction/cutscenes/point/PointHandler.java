@@ -1,11 +1,13 @@
 package net.refractionapi.refraction.cutscenes.point;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.refractionapi.refraction.cutscenes.Cutscene;
 import net.refractionapi.refraction.math.EasingFunctions;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.InvokeCutsceneS2CPacket;
+import net.refractionapi.refraction.networking.S2C.SetBarPropsS2CPacket;
 import net.refractionapi.refraction.networking.S2C.SetFOVS2CPacket;
 import net.refractionapi.refraction.networking.S2C.SetZRotS2CPacket;
 
@@ -47,21 +49,23 @@ public class PointHandler {
     }
 
     public Cutscene build() {
-        QUEUE.putIfAbsent(this.cutscene.player, new ArrayList<>());
+        QUEUE.putIfAbsent(this.cutscene.livingEntity, new ArrayList<>());
         List<Cutscene> updatedCutscene = new ArrayList<>();
         if (!this.cutscene.forced) {
-            updatedCutscene.addAll(QUEUE.get(this.cutscene.player));
+            updatedCutscene.addAll(QUEUE.get(this.cutscene.livingEntity));
         } else {
-            QUEUE.get(this.cutscene.player).forEach(Cutscene::stop);
+            QUEUE.get(this.cutscene.livingEntity).forEach(Cutscene::stop);
         }
         updatedCutscene.add(this.cutscene);
-        QUEUE.put(this.cutscene.player, updatedCutscene);
+        QUEUE.put(this.cutscene.livingEntity, updatedCutscene);
         return this.cutscene;
     }
 
     public void onSwitch() {
-        RefractionMessages.sendToPlayer(new SetFOVS2CPacket(-1), this.cutscene.player);
-        RefractionMessages.sendToPlayer(new SetZRotS2CPacket(-1), this.cutscene.player);
+        if (this.cutscene.livingEntity instanceof ServerPlayer serverPlayer) {
+            RefractionMessages.sendToPlayer(new SetFOVS2CPacket(-1), serverPlayer);
+            RefractionMessages.sendToPlayer(new SetZRotS2CPacket(-1), serverPlayer);
+        }
         this.points.forEach(CutscenePoint::onSwitch);
         this.switched = true;
         this.cutscene.camera.discard();
@@ -74,7 +78,8 @@ public class PointHandler {
         this.cutscene.hideName(this.hideName);
         this.cutscene.lockLook(this.lockedLook);
         this.cutscene.tickCamera(this.cameraTick);
-        RefractionMessages.sendToPlayer(new InvokeCutsceneS2CPacket(this.cutscene.camera.getId(), true), this.cutscene.player);
+        if (this.cutscene.livingEntity instanceof ServerPlayer serverPlayer)
+            RefractionMessages.sendToPlayer(new InvokeCutsceneS2CPacket(this.cutscene.camera.getId(), true), serverPlayer);
         if (this.onSwitch != null)
             this.onSwitch.accept(this.cutscene);
     }
@@ -163,7 +168,8 @@ public class PointHandler {
         return addVecPoint(from, to, startTime, this.transitionTime, easingFunction);
     }
 
-    public PointHandler addVecPoint(Vec3 from, Vec3 to, int startTime, int transitionTime, EasingFunctions easingFunction) {
+    public PointHandler addVecPoint(Vec3 from, Vec3 to, int startTime, int transitionTime, EasingFunctions
+            easingFunction) {
         VecPoint point = new VecPoint(this.cutscene, this, from, to, transitionTime - startTime, this.lockedTime, easingFunction);
         point.startTime = startTime;
         addPoint(point);
@@ -171,34 +177,38 @@ public class PointHandler {
     }
 
     public PointHandler addFacingRelativeVecPoint(Vec3 vec) {
-        return addFacingRelativeVecPoint(this.cutscene.player, 0, vec, vec, EasingFunctions.LINEAR);
+        return addFacingRelativeVecPoint(this.cutscene.livingEntity, 0, vec, vec, EasingFunctions.LINEAR);
     }
 
     public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, Vec3 vec) {
         return addFacingRelativeVecPoint(relativeTo, 0, vec, vec, EasingFunctions.LINEAR);
     }
 
-    public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, Vec3 start, Vec3 end, EasingFunctions easingFunction) {
+    public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, Vec3 start, Vec3 end, EasingFunctions
+            easingFunction) {
         return addFacingRelativeVecPoint(relativeTo, 0, start, end, easingFunction);
     }
 
-    public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, Vec3 start, Vec3 end, int startTime, EasingFunctions easingFunction) {
+    public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, Vec3 start, Vec3 end,
+                                                  int startTime, EasingFunctions easingFunction) {
         return addFacingRelativeVecPoint(relativeTo, startTime, start, end, easingFunction);
     }
 
     public PointHandler addFacingRelativeVecPoint(Vec3 from, Vec3 to, EasingFunctions easingFunction) {
-        return addFacingRelativeVecPoint(this.cutscene.player, 0, from, to, easingFunction);
+        return addFacingRelativeVecPoint(this.cutscene.livingEntity, 0, from, to, easingFunction);
     }
 
     public PointHandler addFacingRelativeVecPoint(Vec3 from, Vec3 to, int startTime, EasingFunctions easingFunction) {
-        return addFacingRelativeVecPoint(this.cutscene.player, startTime, from, to, easingFunction);
+        return addFacingRelativeVecPoint(this.cutscene.livingEntity, startTime, from, to, easingFunction);
     }
 
-    public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, int startTime, Vec3 from, Vec3 to, EasingFunctions easingFunction) {
+    public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, int startTime, Vec3 from, Vec3
+            to, EasingFunctions easingFunction) {
         return addFacingRelativeVecPoint(relativeTo, startTime, this.transitionTime, from, to, easingFunction);
     }
 
-    public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, int startTime, int transitionTime, Vec3 from, Vec3 to, EasingFunctions easingFunction) {
+    public PointHandler addFacingRelativeVecPoint(LivingEntity relativeTo, int startTime, int transitionTime, Vec3
+            from, Vec3 to, EasingFunctions easingFunction) {
         Vec3[] positions = new Vec3[]{from, to};
         Vec3[] relativePositions = new Vec3[positions.length];
         for (int i = 0; i < positions.length; i++) {
@@ -241,7 +251,8 @@ public class PointHandler {
         return setTarget(start, end, transitionTime, 0, easingFunction);
     }
 
-    public PointHandler setTarget(Vec3 start, Vec3 end, int transitionTime, int startTime, EasingFunctions easingFunction) {
+    public PointHandler setTarget(Vec3 start, Vec3 end, int transitionTime, int startTime, EasingFunctions
+            easingFunction) {
         TargetPoint point = new TargetPoint(this.cutscene, this, start, end, transitionTime, this.lockedTime, easingFunction);
         this.target = start;
         point.startTime = startTime;
@@ -265,7 +276,8 @@ public class PointHandler {
         return setFOV(startFOV, endFOV, transitionTime, 0, easingFunction);
     }
 
-    public PointHandler setFOV(int startFOV, int endFOV, int transitionTime, int startTime, EasingFunctions easingFunction) {
+    public PointHandler setFOV(int startFOV, int endFOV, int transitionTime, int startTime, EasingFunctions
+            easingFunction) {
         FOVPoint point = new FOVPoint(this.cutscene, this, startFOV, endFOV, transitionTime, this.lockedTime, startTime, easingFunction);
         addPoint(point);
         return this;
@@ -287,8 +299,33 @@ public class PointHandler {
         return setZRot(startZRot, endZRot, transitionTime, 0, easingFunction);
     }
 
-    public PointHandler setZRot(float startZRot, float endZRot, int transitionTime, int startTime, EasingFunctions easingFunction) {
+    public PointHandler setZRot(float startZRot, float endZRot, int transitionTime, int startTime, EasingFunctions
+            easingFunction) {
         ZRotPoint point = new ZRotPoint(this.cutscene, this, startZRot, endZRot, transitionTime, this.lockedTime, startTime, easingFunction);
+        addPoint(point);
+        return this;
+    }
+
+    public PointHandler setBarProps(boolean hasBars, int barHeight, int endBarHeight) {
+        return setBarProps(hasBars, barHeight, endBarHeight, 0, 0, 0, this.transitionTime, EasingFunctions.LINEAR);
+    }
+
+    public PointHandler setBarProps(int barHeight, int endBarHeight) {
+        return setBarProps(true, barHeight, endBarHeight, 0, 0, 0, this.transitionTime, EasingFunctions.LINEAR);
+    }
+
+    public PointHandler setBarProps(int barHeight, int endBarHeight, float startRot, float endRot) {
+        return setBarProps(true, barHeight, endBarHeight, startRot, endRot, 0, this.transitionTime, EasingFunctions.LINEAR);
+    }
+
+    public PointHandler setBarProps(boolean hasBars, int barHeight, int endBarHeight, float startRot, float endRot, int startTime, EasingFunctions easingFunction) {
+        BarPoint point = new BarPoint(this.cutscene, this, hasBars, barHeight, endBarHeight, startRot, endRot, transitionTime, this.lockedTime, startTime, easingFunction);
+        addPoint(point);
+        return this;
+    }
+
+    public PointHandler setBarProps(boolean hasBars, int barHeight, int endBarHeight, float startRot, float endRot, int startTime, int transitionTime, EasingFunctions easingFunction) {
+        BarPoint point = new BarPoint(this.cutscene, this, hasBars, barHeight, endBarHeight, startRot, endRot, transitionTime, this.lockedTime, startTime, easingFunction);
         addPoint(point);
         return this;
     }

@@ -4,10 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -15,15 +12,14 @@ import net.minecraftforge.fml.common.Mod;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
-import net.refractionapi.refraction.mixininterfaces.ICameraMixin;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = Refraction.MOD_ID, value = Dist.CLIENT)
-public class ClientEvents {
+public class RefractionClientEvents {
 
-    private static final List<ResourceLocation> overlays = new ArrayList<>();
+    public static final List<ResourceLocation> overlays = new ArrayList<>();
 
     @SubscribeEvent
     public static void loggedOut(ClientPlayerNetworkEvent.LoggingOut event) {
@@ -33,6 +29,9 @@ public class ClientEvents {
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event) {
         if (event.phase.equals(TickEvent.Phase.END)) return;
+
+        if (Minecraft.getInstance().isSingleplayer() && Minecraft.getInstance().isPaused()) return;
+
         if (ClientData.startFOV != -1) {
             if (ClientData.progressTrackerFOV < ClientData.transitionTicksFOV) {
                 ClientData.progressTrackerFOV++;
@@ -49,6 +48,28 @@ public class ClientEvents {
                 float eased = ClientData.easingFunctionZRot.getEasing(delta);
                 ClientData.currentZRot = Mth.lerp(eased, ClientData.startZRot, ClientData.endZRot);
             }
+        }
+
+        if (ClientCutsceneData.hasBars) {
+
+            if (ClientCutsceneData.startBarHeight != -1) {
+                if (ClientCutsceneData.progressTrackerBarHeight < ClientCutsceneData.transitionTicksBarHeight) {
+                    ClientCutsceneData.progressTrackerBarHeight++;
+                    float delta = (float) ClientCutsceneData.progressTrackerBarHeight / (float) ClientCutsceneData.transitionTicksBarHeight;
+                    float eased = ClientCutsceneData.easingFunctionBarHeight.getEasing(delta);
+                    ClientCutsceneData.currentBarHeight = (int) Mth.lerp(eased, ClientCutsceneData.startBarHeight, ClientCutsceneData.endBarHeight);
+                }
+            }
+
+            if (ClientCutsceneData.startRot != -1) {
+                if (ClientCutsceneData.progressTrackerRot < ClientCutsceneData.transitionTicksRot) {
+                    ClientCutsceneData.progressTrackerRot++;
+                    float delta = (float) ClientCutsceneData.progressTrackerRot / (float) ClientCutsceneData.transitionTicksRot;
+                    float eased = ClientCutsceneData.easingFunctionRot.getEasing(delta);
+                    ClientCutsceneData.currentRot = Mth.lerp(eased, ClientCutsceneData.startRot, ClientCutsceneData.endRot);
+                }
+            }
+
         }
 
     }
@@ -82,10 +103,6 @@ public class ClientEvents {
             }
             event.setCanceled(true);
         }
-    }
-
-    public static void addOverlayExclusion(ResourceLocation overlay) {
-        overlays.add(overlay);
     }
 
 }
