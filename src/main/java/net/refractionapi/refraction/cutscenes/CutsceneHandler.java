@@ -35,12 +35,12 @@ public class CutsceneHandler {
                 mapIterator.remove();
                 continue;
             }
-            Cutscene cutscene = cutscenes.get(0);
+            Cutscene cutscene = cutscenes.getFirst();
             if (cutscenes.size() > 1) {
                 if (cutscene.points.isEmpty()) {
                     cutscene.stop();
-                    cutscenes.remove(0);
-                    cutscene = cutscenes.get(0);
+                    cutscenes.removeFirst();
+                    cutscene = cutscenes.getFirst();
                     cutscene.start();
                     continue;
                 }
@@ -57,7 +57,7 @@ public class CutsceneHandler {
             if (cutscene.stopped) {
                 if (cutscene.beforeStop != null)
                     cutscene.beforeStop.accept(cutscene);
-                cutscenes.remove(0);
+                cutscenes.removeFirst();
                 cutscene.stop();
             }
         }

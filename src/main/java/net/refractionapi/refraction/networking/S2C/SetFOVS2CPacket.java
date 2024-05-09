@@ -1,7 +1,7 @@
 package net.refractionapi.refraction.networking.S2C;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.math.EasingFunctions;
 import net.refractionapi.refraction.networking.Packet;
@@ -43,7 +43,7 @@ public class SetFOVS2CPacket extends Packet {
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
+    public void handle(CustomPayloadEvent.Context context) {
         context.enqueueWork(() -> {
             ClientData.startFOV = this.startingFOV;
             ClientData.currentFOV = this.startingFOV;

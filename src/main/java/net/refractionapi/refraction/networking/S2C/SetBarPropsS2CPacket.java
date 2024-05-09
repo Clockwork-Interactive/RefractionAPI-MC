@@ -1,7 +1,7 @@
 package net.refractionapi.refraction.networking.S2C;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
 import net.refractionapi.refraction.math.EasingFunctions;
 import net.refractionapi.refraction.networking.Packet;
@@ -48,7 +48,7 @@ public class SetBarPropsS2CPacket extends Packet {
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
+    public void handle(CustomPayloadEvent.Context context) {
         context.enqueueWork(() -> {
             ClientCutsceneData.setBarProps(this.hasBars, this.barHeight, this.endBarHeight, this.startRot, this.endRot, this.transitionTime, this.easingFunction);
         });

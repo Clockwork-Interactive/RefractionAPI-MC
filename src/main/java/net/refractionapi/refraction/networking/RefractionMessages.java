@@ -3,20 +3,12 @@ package net.refractionapi.refraction.networking;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.*;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.networking.S2C.*;
 
 public class RefractionMessages {
-    public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder
-            .named(new ResourceLocation(Refraction.MOD_ID, "messages"))
-            .networkProtocolVersion(() -> "1.0")
-            .clientAcceptedVersions(s -> true)
-            .serverAcceptedVersions(s -> true)
-            .simpleChannel();
+    public static final SimpleChannel INSTANCE = ChannelBuilder.named(new ResourceLocation(Refraction.MOD_ID, "main")).simpleChannel();
 
     private static int packetId = 0;
 
@@ -35,14 +27,14 @@ public class RefractionMessages {
     }
 
     public static <MSG> void sendToServer(MSG message) {
-        INSTANCE.sendToServer(message);
+        INSTANCE.send(message, PacketDistributor.SERVER.noArg());
     }
 
     public static <MSG> void sendToPlayer(MSG message, ServerPlayer player) {
-        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
+        INSTANCE.send(message, PacketDistributor.PLAYER.with(player));
     }
 
-    private static <P extends Packet> void registerPacket(Class<P> msgClass, NetworkDirection direction) {
+    private static <P extends Packet, B extends FriendlyByteBuf> void registerPacket(Class<P> msgClass, NetworkDirection<B> direction) {
         INSTANCE.messageBuilder(msgClass, id(), direction)
                 .decoder(byteBuf -> {
                     try {
@@ -52,7 +44,7 @@ public class RefractionMessages {
                     }
                 })
                 .encoder(Packet::toBytes)
-                .consumerMainThread((msg, supplier) -> msg.handle(supplier.get()))
+                .consumerMainThread(Packet::handle)
                 .add();
     }
 

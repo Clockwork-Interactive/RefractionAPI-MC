@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.refractionapi.refraction.networking.Packet;
 
@@ -30,7 +30,7 @@ public class PlayLocalSoundS2CPacket extends Packet {
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
+    public void handle(CustomPayloadEvent.Context context) {
         context.enqueueWork(() -> {
             SoundEvent event = ForgeRegistries.SOUND_EVENTS.getValue(this.sound);
             if (event == null) return;

@@ -21,18 +21,6 @@ public class VFXHelper {
     static Random random = new Random();
 
     /**
-     * Adds glint without an enchantment.
-     *
-     * @param stack Stack to add glint to.
-     */
-    public static void addGlint(ItemStack stack) {
-        CompoundTag tag = stack.getOrCreateTag();
-        tag.put("Enchantments", new ListTag());
-        ListTag listtag = tag.getList("Enchantments", 10);
-        listtag.add(new CompoundTag());
-    }
-
-    /**
      * Summon particles around given entity.
      */
     public static void summonParticlesAroundEntity(LivingEntity entity, ParticleOptions particleOptions, ServerLevel level, int particleAmount) {

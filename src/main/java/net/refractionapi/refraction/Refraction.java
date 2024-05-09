@@ -6,7 +6,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.refractionapi.refraction.event.RefractionRegistry;
+import net.refractionapi.refraction.event.RefractionClientRegistry;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +23,7 @@ public class Refraction {
 
         modEventBus.addListener(this::commonSetup);
 
-        RefractionRegistry.addOverlayExclusion(new ResourceLocation(MOD_ID, "cinematic"));
+        RefractionClientRegistry.addOverlayExclusion(new ResourceLocation(MOD_ID, "cinematic"));
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
