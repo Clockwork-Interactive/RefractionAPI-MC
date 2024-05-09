@@ -33,6 +33,7 @@ public class Cutscene {
     protected Consumer<Cutscene> beforeStop;
     protected Consumer<Cutscene> afterStop;
     protected Consumer<Cutscene> cameraTick;
+    protected Consumer<Cutscene> generalCameraTick;
     protected Consumer<Cutscene> afterSwitch;
     public Vec3 spawnPoint = Vec3.ZERO;
     public Vec3 target = Vec3.ZERO;
@@ -40,16 +41,21 @@ public class Cutscene {
     protected boolean lockedPosition = true;
     public boolean lockedCamera = true;
     protected boolean lockedLook = true;
+    protected final boolean defaultBars;
     public Vec3 lookAt;
 
-    protected Cutscene(LivingEntity livingEntity, Vec3 lookAt, boolean forced) {
+    protected Cutscene(LivingEntity livingEntity, Vec3 lookAt, boolean forced, boolean defaultBars) {
         this.livingEntity = livingEntity;
         this.forced = forced;
+        this.defaultBars = defaultBars;
         this.lookAt = lookAt;
         this.hideName(true);
     }
 
     public void tick() {
+        if (this.generalCameraTick != null) {
+            this.generalCameraTick.accept(this);
+        }
         if (this.cameraTick != null) {
             this.cameraTick.accept(this);
         }
@@ -79,7 +85,8 @@ public class Cutscene {
         this.started = true;
         if (this.livingEntity instanceof ServerPlayer serverPlayer) {
             RefractionMessages.sendToPlayer(new InvokeCutsceneS2CPacket(this.camera.getId(), true), serverPlayer);
-            RefractionMessages.sendToPlayer(new SetBarPropsS2CPacket(true, 0, 50, 0, 0, 15, EasingFunctions.LINEAR), serverPlayer);
+            if (this.defaultBars)
+                RefractionMessages.sendToPlayer(new SetBarPropsS2CPacket(true, 0, 50, 0, 0, 15, EasingFunctions.LINEAR), serverPlayer);
         }
     }
 
@@ -123,6 +130,11 @@ public class Cutscene {
 
     public Cutscene tickCamera(Consumer<Cutscene> cameraTick) {
         this.cameraTick = cameraTick;
+        return this;
+    }
+
+    public Cutscene generalCameraTick(Consumer<Cutscene> generalCameraTick) {
+        this.generalCameraTick = generalCameraTick;
         return this;
     }
 
@@ -173,12 +185,24 @@ public class Cutscene {
         return pointHandler;
     }
 
-    public static Cutscene create(LivingEntity livingEntity, boolean forced) {
-        return Cutscene.create(livingEntity, Vec3Helper.getVec(livingEntity, 1.0F, 0.0F), forced);
+    public static Cutscene create(LivingEntity livingEntity, Vec3 lookAt, boolean forced, boolean defaultBars) {
+        return new Cutscene(livingEntity, lookAt, forced, defaultBars);
     }
 
     public static Cutscene create(LivingEntity livingEntity, Vec3 lookAt, boolean forced) {
-        return new Cutscene(livingEntity, lookAt, forced);
+        return create(livingEntity, lookAt, forced, true);
+    }
+
+    public static Cutscene create(LivingEntity livingEntity, boolean forced, boolean defaultBars) {
+        return create(livingEntity, Vec3Helper.getVec(livingEntity, 1.0F, 0.0F), forced, defaultBars);
+    }
+
+    public static Cutscene create(LivingEntity livingEntity, boolean forced) {
+        return create(livingEntity, forced, true);
+    }
+
+    public static Cutscene create(LivingEntity livingEntity) {
+        return create(livingEntity, false);
     }
 
     public static Vec3 rightEye(LivingEntity livingEntity) {

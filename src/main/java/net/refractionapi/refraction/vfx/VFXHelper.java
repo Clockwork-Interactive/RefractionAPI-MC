@@ -35,13 +35,19 @@ public class VFXHelper {
     /**
      * Summon particles around given entity.
      */
-    public static void summonParticlesAroundEntity(LivingEntity entity, ParticleOptions particleOptions, ServerLevel level, int ParticleAmount) {
-        for (int i = 0; i < ParticleAmount; ++i) {
+    public static void summonParticlesAroundEntity(LivingEntity entity, ParticleOptions particleOptions, ServerLevel level, int particleAmount) {
+        for (int i = 0; i < particleAmount; ++i) {
             double d0 = random.nextGaussian() * 0.02D;
             double d1 = random.nextGaussian() * 0.02D;
             double d2 = random.nextGaussian() * 0.02D;
-            level.sendParticles(particleOptions, entity.getRandomX(1), entity.getRandomY() + 0.5D, entity.getRandomZ(1), ParticleAmount, d0, d1, d2, 0.0D);
+            level.sendParticles(particleOptions, entity.getRandomX(1), entity.getRandomY() + 0.5D, entity.getRandomZ(1), particleAmount, d0, d1, d2, 0.0D);
         }
+    }
+
+
+    public static void summonParticlesAroundEntity(LivingEntity entity, ParticleOptions particleOptions, int particleAmount) {
+        if (entity.level() instanceof ServerLevel level)
+            summonParticlesAroundEntity(entity, particleOptions, level, particleAmount);
     }
 
     public static void shootBeamOfParticles(LivingEntity livingEntity, ParticleOptions particleOptions, double range, Vec3 offset) {

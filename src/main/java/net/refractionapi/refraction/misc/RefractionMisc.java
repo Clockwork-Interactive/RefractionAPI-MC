@@ -4,12 +4,10 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.ParticleUtils;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.refractionapi.refraction.event.CommonForgeEvents;
@@ -18,6 +16,7 @@ import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.EnablePlayerMovementS2CPacket;
 import net.refractionapi.refraction.networking.S2C.PlayLocalSoundS2CPacket;
 import net.refractionapi.refraction.runnable.RunnableCooldownHandler;
+import oshi.util.tuples.Pair;
 
 import java.util.List;
 
@@ -25,14 +24,14 @@ public class RefractionMisc {
 
     public static final RandomSource random = RandomSource.create();
 
-    public static void enableMovement(LivingEntity livingEntity, boolean canMove) {
+    public static void enableMovement(LivingEntity livingEntity, boolean canMove, boolean teleport) {
 
         CommonForgeEvents.frozenEntities.compute(livingEntity, (k, v) -> {
             if (!canMove) {
                 livingEntity.hurtMarked = true;
                 livingEntity.teleportTo(livingEntity.position().x, livingEntity.position().y, livingEntity.position().z);
             }
-            return canMove ? null : livingEntity.position();
+            return canMove ? null : new Pair<>(livingEntity.position(), teleport);
         });
 
         if (livingEntity instanceof ServerPlayer serverPlayer) {
@@ -40,12 +39,20 @@ public class RefractionMisc {
         } else if (!(livingEntity instanceof Player) && livingEntity instanceof ILivingEntity) {
             ((ILivingEntity) livingEntity).refractionAPI_MC$enableMovement(canMove);
         }
-        if (livingEntity instanceof Mob mob) mob.setNoAi(!canMove);
+    }
+
+    public static void enableMovement(LivingEntity livingEntity, boolean canMove) {
+        enableMovement(livingEntity, canMove, false);
+    }
+
+
+    public static void enableMovement(LivingEntity livingEntity, int ticks, boolean teleport) {
+        enableMovement(livingEntity, false, teleport);
+        RunnableCooldownHandler.addDelayedRunnable(() -> enableMovement(livingEntity, true, teleport), ticks);
     }
 
     public static void enableMovement(LivingEntity livingEntity, int ticks) {
-        enableMovement(livingEntity, false);
-        RunnableCooldownHandler.addDelayedRunnable(() -> enableMovement(livingEntity, true), ticks);
+        enableMovement(livingEntity, ticks, true);
     }
 
     public static boolean isLocked(LivingEntity livingEntity) {
