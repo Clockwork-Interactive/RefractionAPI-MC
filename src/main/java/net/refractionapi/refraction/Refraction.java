@@ -22,8 +22,6 @@ public class Refraction {
         MinecraftForge.EVENT_BUS.register(this);
 
         modEventBus.addListener(this::commonSetup);
-
-        RefractionClientRegistry.addOverlayExclusion(new ResourceLocation(MOD_ID, "cinematic"));
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

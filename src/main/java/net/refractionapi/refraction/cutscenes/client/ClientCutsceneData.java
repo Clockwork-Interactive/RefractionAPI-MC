@@ -1,12 +1,14 @@
 package net.refractionapi.refraction.cutscenes.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.math.EasingFunctions;
 
 public class ClientCutsceneData {
 
-    public static int cameraID = -1;
+    private static int cameraID = -1;
+    private static ArmorStand cameraCache = null;
     public static boolean hasBars = false;
 
     public static int startBarHeight = -1;
@@ -28,8 +30,9 @@ public class ClientCutsceneData {
         ClientData.canRotateCamera = start;
         if (start) {
             assert Minecraft.getInstance().level != null;
-            if (Minecraft.getInstance().level.getEntity(cameraID) != null) {
-                Minecraft.getInstance().cameraEntity = Minecraft.getInstance().level.getEntity(cameraID);
+            ArmorStand camera = ClientCutsceneData.getCamera();
+            if (camera != null) {
+                Minecraft.getInstance().cameraEntity = camera;
                 Minecraft.getInstance().gameRenderer.setRenderHand(false);
             }
         } else {
@@ -51,6 +54,10 @@ public class ClientCutsceneData {
         ClientCutsceneData.transitionTicksRot = transitionTime;
         ClientCutsceneData.progressTrackerRot = 0;
         ClientCutsceneData.easingFunctionRot = easingFunction;
+    }
+
+    public static ArmorStand getCamera() {
+        return cameraCache = cameraCache != null && cameraCache.getId() == cameraID ? cameraCache : (ArmorStand) Minecraft.getInstance().level.getEntity(cameraID);
     }
 
     public static void reset() {

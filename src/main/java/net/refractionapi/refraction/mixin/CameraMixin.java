@@ -41,7 +41,7 @@ public abstract class CameraMixin implements ICameraMixin {
 
     @Inject(at = @At("HEAD"), method = "setup", cancellable = true)
     void setupHead(BlockGetter pLevel, Entity pEntity, boolean pDetached, boolean pThirdPersonReverse, float pPartialTick, CallbackInfo ci) {
-        if (ClientCutsceneData.cameraID != -1 && pDetached) { // Stops third-person camera in cutscenes.
+        if (ClientCutsceneData.getCamera() != null && pDetached) { // Stops third-person camera in cutscenes.
             Minecraft.getInstance().gameRenderer.getMainCamera().setup(pLevel, entity, false, pThirdPersonReverse, pPartialTick);
             ci.cancel();
         }

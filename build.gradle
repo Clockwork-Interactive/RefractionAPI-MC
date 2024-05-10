@@ -13,7 +13,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
@@ -31,6 +31,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
     mappings channel: mapping_channel, version: mapping_version
+    reobf = false
     copyIdeResources = true
     runs {
 
@@ -78,6 +79,7 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
 }
 
 
@@ -117,7 +119,6 @@ tasks.named('jar', Jar).configure {
                 "MixinConfigs"            : mod_id + ".mixin.json"
         ])
     }
-    finalizedBy 'reobfJar'
 }
 
 mixin {
@@ -139,4 +140,10 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+sourceSets.each {
+    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
+    it.output.resourcesDir = dir
+    it.java.destinationDirectory = dir
 }

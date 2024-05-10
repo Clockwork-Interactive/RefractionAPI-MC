@@ -75,7 +75,7 @@ public class Cutscene {
         }
         current.tickPoints();
         if (current.getTransitionTime() <= 0 && current.getLockedTime() <= 0) {
-            this.points.remove(0);
+            this.points.removeFirst();
         }
     }
 

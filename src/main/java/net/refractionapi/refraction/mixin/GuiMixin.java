@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.ModLoader;
 import net.refractionapi.refraction.event.events.RegisterGuiEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,9 +21,9 @@ public class GuiMixin {
     private LayeredDraw layers;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    public void init(Minecraft pMinecraft, CallbackInfo ci) {
+    public void init(Minecraft pMinecraft, CallbackInfo ci) { // There has to be a default way of doing this -- Zeus
         RegisterGuiEvent event = new RegisterGuiEvent();
-        MinecraftForge.EVENT_BUS.post(event);
+        ModLoader.get().postEvent(event);
         this.layers.add(event.getDraw(), () -> true);
     }
 

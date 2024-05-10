@@ -11,16 +11,12 @@ import net.refractionapi.refraction.event.events.RegisterGuiEvent;
 
 import static net.refractionapi.refraction.event.RefractionClientEvents.overlays;
 
-@Mod.EventBusSubscriber(modid = Refraction.MOD_ID, value = Dist.CLIENT,bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = Refraction.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RefractionClientRegistry {
 
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiEvent event) {
         event.registerNew(new LayeredDraw().add(CinematicBars::renderBars));
-    }
-
-    public static void addOverlayExclusion(ResourceLocation overlay) {
-        overlays.add(overlay);
     }
 
 }

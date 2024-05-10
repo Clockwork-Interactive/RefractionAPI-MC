@@ -25,7 +25,6 @@ public class RefractionMisc {
     public static final RandomSource random = RandomSource.create();
 
     public static void enableMovement(LivingEntity livingEntity, boolean canMove, boolean teleport) {
-
         CommonForgeEvents.frozenEntities.compute(livingEntity, (k, v) -> {
             if (!canMove) {
                 livingEntity.hurtMarked = true;

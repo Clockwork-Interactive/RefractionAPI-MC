@@ -62,7 +62,7 @@ public class Vec3Helper {
     /**
      * @return float[0] = xRot; float[1] = yRot;
      */
-    public static float[] getDegreesBetweenTwoPoints(Vec3 pos1, Vec3 pos2) {
+    public static float[] getDegreesBetweenTwoPoints(Vec3 pos1, Vec3 pos2) { // Could convert this to Pair<Float, Float> -- Zeus
         double differenceInX = pos1.x - pos2.x;
         double differenceInY = pos1.y - pos2.y;
         double differenceInZ = pos1.z - pos2.z;
@@ -120,7 +120,7 @@ public class Vec3Helper {
     }
 
     /**
-     * Smoothly lerp an entity from start to end over a given amount of ticks.
+     * Smoothly lerp an entity from start to end over a given number of ticks.
      */
     public static void smoothLerp(Entity entity, Vec3 start, Vec3 end, int ticks, EasingFunctions easingFunction) {
         AtomicInteger tick = new AtomicInteger(0);

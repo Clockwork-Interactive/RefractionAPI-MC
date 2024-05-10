@@ -1,8 +1,10 @@
 package net.refractionapi.refraction.event;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
@@ -88,14 +90,14 @@ public class RefractionClientEvents {
     @SubscribeEvent
     public static void onMouse(InputEvent.InteractionKeyMappingTriggered event) {
         if (event.isAttack()) { // Crash fix when in cutscenes
-            if (ClientCutsceneData.cameraID != -1) {
+            if (ClientCutsceneData.getCamera() != null) {
                 event.setCanceled(true);
             }
         }
     }
 
     //@SubscribeEvent
-    //public static void renderOverlays(RenderGuiOverlayEvent.Pre event) {
+    //public static void renderOverlays(Gui.E.Pre event) {
     //    if (ClientCutsceneData.cameraID != -1) {
     //        if (event.getOverlay() == VanillaGuiOverlay.CHAT_PANEL.type() || event.getOverlay() == VanillaGuiOverlay.VIGNETTE.type() || event.getOverlay() == VanillaGuiOverlay.RECORD_OVERLAY.type() || overlays.contains(event.getOverlay().id())) {
     //            return;
