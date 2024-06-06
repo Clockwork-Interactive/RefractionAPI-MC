@@ -3,6 +3,7 @@ package net.refractionapi.refraction.networking;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -32,6 +33,8 @@ public class RefractionMessages {
         registerPacket(SetFOVS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
         registerPacket(SetZRotS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
         registerPacket(SetBarPropsS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
+        registerPacket(SyncQuestInfoS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
+        registerPacket(TrackingSoundS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public static <MSG> void sendToServer(MSG message) {
@@ -40,6 +43,10 @@ public class RefractionMessages {
 
     public static <MSG> void sendToPlayer(MSG message, ServerPlayer player) {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
+    }
+
+    public static <MSG> void sendToAllTracking(MSG message, LivingEntity player) {
+        INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), message);
     }
 
     private static <P extends Packet> void registerPacket(Class<P> msgClass, NetworkDirection direction) {

@@ -5,6 +5,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.refractionapi.refraction.math.EasingFunctions;
 import net.refractionapi.refraction.runnable.RunnableHandler;
@@ -185,6 +186,26 @@ public class Vec3Helper {
         double z = r * Mth.cos((float) phi);
 
         return new Vec3(origin.x + x, origin.y + y, origin.z + z);
+    }
+
+    public static BlockPos findSolid(Level level, BlockPos start, int y) {
+        BlockPos.MutableBlockPos pos = start.atY(y).mutable();
+        while (level.getBlockState(pos).isAir() && pos.getY() > level.getMinBuildHeight()) {
+            pos.move(0, -1, 0);
+        }
+        return pos;
+    }
+
+    public static BlockPos findSolid(Level level, BlockPos start) {
+        return findSolid(level, start, level.getMaxBuildHeight());
+    }
+
+    public static BlockPos findSolid(Level level, Vec3 vec3, float y) {
+        return findSolid(level, BlockPos.containing(vec3), (int) y);
+    }
+
+    public static BlockPos findSolid(Level level, Vec3 vec3) {
+        return findSolid(level, vec3, (float) vec3.y);
     }
 
     public static List<BlockPos> createSphere(BlockPos center, int radius) {

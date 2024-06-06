@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
 import net.refractionapi.refraction.math.EasingFunctions;
 import net.refractionapi.refraction.mixininterfaces.ICameraMixin;
+import net.refractionapi.refraction.quest.client.ClientQuestInfo;
 
 public class ClientData {
 
@@ -40,6 +41,7 @@ public class ClientData {
         progressTrackerZRot = 0;
         easingFunctionZRot = EasingFunctions.LINEAR;
         ClientCutsceneData.reset();
+        ClientQuestInfo.reset();
     }
 
 }

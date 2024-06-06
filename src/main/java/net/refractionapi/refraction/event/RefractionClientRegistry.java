@@ -8,14 +8,16 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.cutscenes.client.CinematicBars;
+import net.refractionapi.refraction.quest.client.QuestRenderer;
 
 import static net.refractionapi.refraction.event.RefractionClientEvents.overlays;
 
-@Mod.EventBusSubscriber(modid = Refraction.MOD_ID, value = Dist.CLIENT,bus = Mod.EventBusSubscriber.Bus.MOD)
-public class RefractionRegistry {
+@Mod.EventBusSubscriber(modid = Refraction.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class RefractionClientRegistry {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void registerOverlays(RegisterGuiOverlaysEvent event) {
+        event.registerAboveAll("quest", QuestRenderer.QUEST);
         event.registerAboveAll("cinematic", CinematicBars.BARS);
     }
 

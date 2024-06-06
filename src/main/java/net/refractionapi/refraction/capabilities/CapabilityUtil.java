@@ -2,7 +2,9 @@ package net.refractionapi.refraction.capabilities;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -17,7 +19,7 @@ public class CapabilityUtil {
         event.getOriginal().invalidateCaps();
     }
 
-    public static void attachCapability(AttachCapabilitiesEvent<Entity> event, ICapabilityProvider provider, Capability<?> capability) {
+    public static void attachCapability(AttachCapabilitiesEvent<? extends CapabilityProvider<?>> event, ICapabilityProvider provider, Capability<?> capability) {
         if (!event.getObject().getCapability(capability).isPresent()) {
             event.addCapability(new ResourceLocation(Refraction.MOD_ID, provider.getClass().getSimpleName().toLowerCase()), provider);
         }

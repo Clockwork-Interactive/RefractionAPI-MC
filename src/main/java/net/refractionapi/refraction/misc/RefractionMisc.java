@@ -59,12 +59,6 @@ public class RefractionMisc {
         return CommonForgeEvents.frozenEntities.containsKey(livingEntity);
     }
 
-    public static void playLocalSound(Player player, SoundEvent event) {
-        if (player instanceof ServerPlayer serverPlayer) {
-            RefractionMessages.sendToPlayer(new PlayLocalSoundS2CPacket(event), serverPlayer);
-        }
-    }
-
     public static <T> T getRandom(List<T> list) {
         return list.get(random.nextIntBetweenInclusive(0, list.size() - 1));
     }
