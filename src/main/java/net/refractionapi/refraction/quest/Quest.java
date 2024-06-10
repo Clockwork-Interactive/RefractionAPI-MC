@@ -2,8 +2,10 @@ package net.refractionapi.refraction.quest;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.SyncQuestInfoS2CPacket;
@@ -12,31 +14,39 @@ import net.refractionapi.refraction.quest.points.QuestPoint;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public abstract class Quest {
 
     private final List<QuestPart> questParts = new ArrayList<>();
-    private final ServerPlayer player;
+    private final UUID player;
+    private ServerPlayer playerCache;
+    private ServerLevel level;
     protected boolean removable = false;
     protected Consumer<Quest> onCompletion;
 
     public Quest(ServerPlayer player, CompoundTag tag) {
-        if (QuestHandler.QUEUE.containsKey(player)) {
-            QuestHandler.QUEUE.get(player).end(false);
-        }
-        this.player = player;
+        this.player = player.getUUID();
+        this.level = player.serverLevel();
+        this.addToHandler();
         if (tag != null)
             this.deserializePreGen(tag);
         this.generate();
         if (tag != null)
             this.deserializeNBT(tag);
-        QuestHandler.QUEUE.put(this.player, this);
     }
 
     public abstract void generate();
 
     public abstract Component questName();
+
+    public void addToHandler() {
+        if (QuestHandler.QUESTS.containsKey(this.player)) {
+            QuestHandler.QUESTS.get(this.player).end(false);
+        }
+        QuestHandler.QUESTS.put(this.player, this);
+    }
 
     public void tick() {
         if (this.questParts.isEmpty()) {
@@ -81,7 +91,12 @@ public abstract class Quest {
     }
 
     public ServerPlayer getPlayer() {
-        return this.player;
+        ServerPlayer serverPlayer = (ServerPlayer) this.level.getPlayerByUUID(this.player);
+        return this.playerCache = serverPlayer == null ? this.playerCache : serverPlayer;
+    }
+
+    public ServerLevel getLevel() {
+        return this.level = this.getPlayer() == null ? this.level : this.getPlayer().serverLevel();
     }
 
     public boolean isCompleted() {
