@@ -1,10 +1,17 @@
 package net.refractionapi.refraction.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
 import net.refractionapi.refraction.math.EasingFunctions;
-import net.refractionapi.refraction.mixininterfaces.ICameraMixin;
 import net.refractionapi.refraction.quest.client.ClientQuestInfo;
+import net.refractionapi.refraction.sound.TrackingSound;
 
 public class ClientData {
 
@@ -24,6 +31,20 @@ public class ClientData {
     public static int transitionTicksZRot = -1;
     public static int progressTrackerZRot = 0;
     public static EasingFunctions easingFunctionZRot = EasingFunctions.LINEAR;
+
+    public static void trackingSound(int entityId, SoundEvent soundEvent, boolean looping, int ticks) {
+        LivingEntity livingEntity = (LivingEntity) Minecraft.getInstance().level.getEntity(entityId);
+        if (livingEntity != null) {
+            TrackingSound sound = new TrackingSound(soundEvent, livingEntity, looping, ticks);
+            Minecraft.getInstance().getSoundManager().play(sound);
+        }
+    }
+
+    public static void playLocalSound(ResourceLocation resourceLocation) {
+        SoundEvent event = ForgeRegistries.SOUND_EVENTS.getValue(resourceLocation);
+        if (event == null) return;
+        Minecraft.getInstance().getSoundManager().play(new EntityBoundSoundInstance(event, SoundSource.AMBIENT, 1.0F, 1.0F, Minecraft.getInstance().player, RandomSource.create().nextLong()));
+    }
 
     public static void reset() {
         canMove = true;

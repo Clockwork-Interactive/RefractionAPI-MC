@@ -1,18 +1,17 @@
 package net.refractionapi.refraction.sound;
 
-import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 
-public class TrackingSound extends AbstractTickableSoundInstance {
+public class TrackingSound extends PlayableTickableSound {
 
     private final LivingEntity entity;
     private final int loopingTicks;
     private int ticks;
 
     public TrackingSound(SoundEvent soundEvent, LivingEntity livingEntity, boolean looping, int loopingTicks) {
-        super(soundEvent, SoundSource.MASTER, livingEntity.getRandom());
+        super(soundEvent, SoundSource.MASTER, livingEntity.getRandom(), (v) -> {}, (v) -> {});
         this.entity = livingEntity;
         this.looping = looping;
         this.loopingTicks = loopingTicks;
@@ -23,7 +22,7 @@ public class TrackingSound extends AbstractTickableSoundInstance {
     @Override
     public void tick() {
         this.ticks++;
-        if (this.loopingTicks != -1 && this.ticks >= this.loopingTicks) {
+        if (this.loopingTicks != -1 && this.ticks >= this.loopingTicks || !this.isPlaying) {
             this.stop();
             return;
         }

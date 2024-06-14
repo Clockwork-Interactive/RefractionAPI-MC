@@ -1,13 +1,12 @@
 package net.refractionapi.refraction.networking.S2C;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.networking.Packet;
-import net.refractionapi.refraction.sound.TrackingSound;
 
 public class TrackingSoundS2CPacket extends Packet {
 
@@ -40,12 +39,7 @@ public class TrackingSoundS2CPacket extends Packet {
 
     @Override
     public void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> {
-            LivingEntity livingEntity = (LivingEntity) Minecraft.getInstance().level.getEntity(this.entityId);
-            if (livingEntity != null) {
-                TrackingSound sound = new TrackingSound(this.soundEvent, livingEntity, this.looping, this.ticks);
-                Minecraft.getInstance().getSoundManager().play(sound);
-            }
-        });
+        context.enqueueWork(() -> ClientData.trackingSound(this.entityId, this.soundEvent, this.looping, this.ticks));
+        context.setPacketHandled(true);
     }
 }
