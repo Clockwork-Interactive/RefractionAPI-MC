@@ -31,11 +31,11 @@ public class ExampleInteraction extends NPCInteraction {
 
     @Override
     public void serialize(CompoundTag tag) {
-        tag.putString("test", "Hiii!");
+
     }
 
     public static void handle(CompoundTag tag, NetworkEvent.Context context) {
-        context.enqueueWork(() -> Refraction.LOGGER.info("{} {}", tag.getString("test"), context.getSender().getName().getString()));
+        context.enqueueWork(() -> Refraction.LOGGER.info("{}", context.getSender().getName().getString()));
         context.setPacketHandled(true);
     }
 
