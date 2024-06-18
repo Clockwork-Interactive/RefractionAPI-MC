@@ -17,8 +17,8 @@ public class EntityMixin {
     @Inject(at = @At("RETURN"), method = "interact")
     public void interact(Player pPlayer, InteractionHand pHand, CallbackInfoReturnable<InteractionResult> cir) {
         if (cir.getReturnValue() != InteractionResult.FAIL) {
-            if (QuestHandler.QUESTS.containsKey(pPlayer)) {
-                QuestHandler.QUESTS.get(pPlayer).getQuestPoints().forEach(questPoint -> {
+            if (QuestHandler.QUESTS.containsKey(pPlayer.getUUID())) {
+                QuestHandler.QUESTS.get(pPlayer.getUUID()).getQuestPoints().forEach(questPoint -> {
                     if (questPoint instanceof InteractionPoint point) {
                         point.onInteract((Entity) (Object) this);
                     }

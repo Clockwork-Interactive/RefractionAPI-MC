@@ -9,6 +9,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.refractionapi.refraction.Refraction;
+import net.refractionapi.refraction.networking.C2S.SyncInteractionC2SPacket;
 import net.refractionapi.refraction.networking.S2C.*;
 
 public class RefractionMessages {
@@ -36,6 +37,7 @@ public class RefractionMessages {
         registerPacket(SyncQuestInfoS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
         registerPacket(TrackingSoundS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
         registerPacket(AttachTickableSoundS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
+        registerPacket(SyncInteractionC2SPacket.class, NetworkDirection.PLAY_TO_SERVER);
     }
 
     public static <MSG> void sendToServer(MSG message) {

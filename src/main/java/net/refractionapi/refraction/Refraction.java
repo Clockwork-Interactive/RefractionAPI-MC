@@ -8,6 +8,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.refractionapi.refraction.event.RefractionClientRegistry;
+import net.refractionapi.refraction.examples.interaction.ExampleInteractionRegistry;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.quest.client.ClientQuestInfo;
 import org.apache.logging.log4j.LogManager;
@@ -28,6 +29,7 @@ public class Refraction {
         if (!FMLLoader.isProduction()) ClientQuestInfo.setDefaultRenderer(true);
 
         RefractionClientRegistry.addOverlayExclusion(new ResourceLocation(MOD_ID, "cinematic"));
+        ExampleInteractionRegistry.init();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
