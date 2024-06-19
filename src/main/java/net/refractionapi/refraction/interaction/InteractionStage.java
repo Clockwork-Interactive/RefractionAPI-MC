@@ -61,6 +61,10 @@ public class InteractionStage {
         return List.copyOf(this.options.values().stream().map(buttonOptions::goTo).toList());
     }
 
+    public List<Component> possibleOptions() {
+        return List.copyOf(this.options.keySet());
+    }
+
     public InteractionStage end() {
         this.ends = true;
         return this;

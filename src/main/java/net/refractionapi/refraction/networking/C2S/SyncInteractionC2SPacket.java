@@ -29,11 +29,7 @@ public class SyncInteractionC2SPacket extends Packet {
 
     @Override
     public void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> {
-            InteractionBuilder.getBuilder(this.id).ifPresent((builder) -> {
-                builder.handleServer(context.getSender(), this.tag);
-            });
-        });
+        context.enqueueWork(() -> InteractionBuilder.getBuilder(this.id).ifPresent((builder) -> builder.handleServer(context.getSender(), this.tag)));
         context.setPacketHandled(true);
     }
 

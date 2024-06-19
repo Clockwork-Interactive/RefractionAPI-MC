@@ -45,6 +45,7 @@ public class ExampleInteractionScreen extends Screen {
                     this.switchStage(buttonOptions.goTo());
                     CompoundTag tag = new CompoundTag();
                     tag.putString("stage", buttonOptions.goTo());
+                    tag.putString("button", Component.Serializer.toJson(component));
                     RefractionMessages.sendToServer(new SyncInteractionC2SPacket(this.npcInteraction.getBuilder().getId(), tag));
                     buttonOptions.onClick().ifPresent(consumer -> consumer.accept(this.npcInteraction));
                     this.ticks = 0;

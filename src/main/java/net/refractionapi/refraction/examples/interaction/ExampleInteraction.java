@@ -18,7 +18,7 @@ public class ExampleInteraction extends NPCInteraction {
     public void init() {
         this.newStage("start")
                 .addDialouge(Component.literal("hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"), 25)
-                .addOption(Component.literal("hello"), "hello")
+                .addOption(Component.literal("hello"), "hello", (i) -> Refraction.LOGGER.info(i.getPlayer().level()))
                 .addOption(Component.literal("bye"), "bye")
                 .newStage("hello")
                 .addDialouge(Component.literal("hello"), 10)

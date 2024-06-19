@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.interaction;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
@@ -15,6 +16,7 @@ import java.util.HashMap;
  * Default commands that need to be implemented: <br>
  * close <br>
  * stage <br>
+ * button <br>
  */
 public abstract class NPCInteraction {
 
@@ -53,18 +55,26 @@ public abstract class NPCInteraction {
     public abstract void handle(CompoundTag tag);
 
     public boolean handleSwitch(CompoundTag tag) {
-        if (tag.contains("stage") && !this.getStage(this.currentStage).possibleGoTos().contains(tag.getString("stage")) && this.player instanceof ServerPlayer serverPlayer) {
+        String stage = tag.getString("stage");
+        Component buttonUsed = tag.contains("button") ? Component.Serializer.fromJson(tag.getString("button")) : Component.empty();
+        InteractionStage current = this.getStage(this.currentStage);
+        if (!stage.isEmpty() && buttonUsed != null && !buttonUsed.getString().isEmpty() && (!current.possibleGoTos().contains(stage) || !current.possibleOptions().contains(buttonUsed)) && this.player instanceof ServerPlayer serverPlayer) {
             CompoundTag tagTo = new CompoundTag();
             tagTo.putString("stage", this.currentStage);
             RefractionMessages.sendToPlayer(new HandleInteractionS2CPacket(this.builder.getId(), tagTo), serverPlayer);
             return false;
         }
+        this.getStage(this.currentStage).getOptions().get(buttonUsed).onClick().ifPresent(consumer -> consumer.accept(this));
         this.currentStage = tag.contains("stage") ? tag.getString("stage") : this.currentStage;
         return true;
     }
 
     public boolean stillValid() {
         return this.player.isAlive();
+    }
+
+    public Player getPlayer() {
+        return this.player;
     }
 
     public void sendToServer(CompoundTag tag) {
