@@ -2,16 +2,22 @@ package net.refractionapi.refraction.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
+import net.refractionapi.refraction.examples.interaction.ExampleInteractionScreen;
+import net.refractionapi.refraction.interaction.NPCInteraction;
 import net.refractionapi.refraction.math.EasingFunctions;
 import net.refractionapi.refraction.quest.client.ClientQuestInfo;
 import net.refractionapi.refraction.sound.TrackingSound;
+
+import java.util.function.Supplier;
 
 public class ClientData {
 
@@ -44,6 +50,21 @@ public class ClientData {
         SoundEvent event = ForgeRegistries.SOUND_EVENTS.getValue(resourceLocation);
         if (event == null) return;
         Minecraft.getInstance().getSoundManager().play(new EntityBoundSoundInstance(event, SoundSource.AMBIENT, 1.0F, 1.0F, Minecraft.getInstance().player, RandomSource.create().nextLong()));
+    }
+
+    public static Player getPlayer() {
+        return Minecraft.getInstance().player;
+    }
+
+    public static void handleInteraction(Supplier<NPCInteraction> interaction, CompoundTag tag) {
+        String stage = tag.getString("stage");
+        boolean close = tag.getBoolean("close");
+        if (Minecraft.getInstance().screen instanceof ExampleInteractionScreen screen) {
+            if (!stage.isEmpty()) screen.switchStage(stage);
+            if (close) screen.onClose();
+            return;
+        }
+        Minecraft.getInstance().setScreen(new ExampleInteractionScreen(interaction.get()));
     }
 
     public static void reset() {

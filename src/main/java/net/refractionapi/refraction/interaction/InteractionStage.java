@@ -1,10 +1,9 @@
 package net.refractionapi.refraction.interaction;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -56,6 +55,10 @@ public class InteractionStage {
         if (this.onSwitch != null) {
             this.onSwitch.accept(this.npcInteraction);
         }
+    }
+
+    public List<String> possibleGoTos() {
+        return List.copyOf(this.options.values().stream().map(buttonOptions::goTo).toList());
     }
 
     public InteractionStage end() {

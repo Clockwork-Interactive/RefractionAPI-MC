@@ -3,11 +3,14 @@ package net.refractionapi.refraction.examples.interaction;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
 import net.refractionapi.refraction.interaction.InteractionStage;
 import net.refractionapi.refraction.interaction.NPCInteraction;
+import net.refractionapi.refraction.networking.C2S.SyncInteractionC2SPacket;
+import net.refractionapi.refraction.networking.RefractionMessages;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -40,6 +43,9 @@ public class ExampleInteractionScreen extends Screen {
                 Button button = Button.builder(component, (onPress) -> {
                     stage.onSwitch();
                     this.switchStage(buttonOptions.goTo());
+                    CompoundTag tag = new CompoundTag();
+                    tag.putString("stage", buttonOptions.goTo());
+                    RefractionMessages.sendToServer(new SyncInteractionC2SPacket(this.npcInteraction.getBuilder().getId(), tag));
                     buttonOptions.onClick().ifPresent(consumer -> consumer.accept(this.npcInteraction));
                     this.ticks = 0;
                 }).pos(this.width / 2 + BORDER + 10, this.height / 2 + stageButtons.size() * 20).build();
@@ -82,7 +88,7 @@ public class ExampleInteractionScreen extends Screen {
         return false;
     }
 
-    protected void switchStage(String id) {
+    public void switchStage(String id) {
         this.buttons.get(this.currentStage).forEach(this::removeWidget);
         this.currentStage = id;
         this.buttons.get(this.currentStage).forEach(this::addRenderableWidget);

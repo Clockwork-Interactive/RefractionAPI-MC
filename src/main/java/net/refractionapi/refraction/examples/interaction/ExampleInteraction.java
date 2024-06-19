@@ -34,9 +34,9 @@ public class ExampleInteraction extends NPCInteraction {
 
     }
 
-    public static void handle(CompoundTag tag, NetworkEvent.Context context) {
-        context.enqueueWork(() -> Refraction.LOGGER.info("{}", context.getSender().getName().getString()));
-        context.setPacketHandled(true);
+    @Override
+    public void handle(CompoundTag tag) {
+
     }
 
 }

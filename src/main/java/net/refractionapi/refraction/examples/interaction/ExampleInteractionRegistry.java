@@ -1,11 +1,18 @@
 package net.refractionapi.refraction.examples.interaction;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.interaction.InteractionBuilder;
 
 public class ExampleInteractionRegistry {
 
     public static final InteractionBuilder<ExampleInteraction> EXAMPLE_INTERACTION = new InteractionBuilder<>("example", ExampleInteraction.class)
-            .consumer(ExampleInteraction::handle);
+            .serverHandler(ExampleInteraction::handle)
+            .clientHandler((args) -> ClientData.handleInteraction(() -> new ExampleInteraction(ClientData.getPlayer()), (CompoundTag) args[1]))
+            .clientSerializer((args) -> new CompoundTag())
+            .clientDeserializer((tag) -> new Object[]{ClientData.getPlayer(), tag})
+            .constructor((args) -> new ExampleInteraction((Player) args[0]));
 
 
     public static void init() {

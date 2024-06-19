@@ -37,6 +37,7 @@ public class RefractionMessages {
         registerPacket(SyncQuestInfoS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
         registerPacket(TrackingSoundS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
         registerPacket(AttachTickableSoundS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
+        registerPacket(HandleInteractionS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
         registerPacket(SyncInteractionC2SPacket.class, NetworkDirection.PLAY_TO_SERVER);
     }
 
