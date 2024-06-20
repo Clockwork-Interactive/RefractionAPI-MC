@@ -4,7 +4,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.HandleInteractionS2CPacket;
 
@@ -25,6 +24,7 @@ public abstract class NPCInteraction {
     protected InteractionStage firstStage;
     protected final HashMap<String, InteractionStage> stages = new HashMap<>();
     protected String currentStage;
+    private boolean ended = false;
 
     public NPCInteraction(InteractionBuilder<?> builder, Player player) {
         this.builder = builder;
@@ -50,7 +50,9 @@ public abstract class NPCInteraction {
         return this.builder;
     }
 
-    public abstract void serialize(CompoundTag tag);
+    public void serialize(CompoundTag tag) {
+
+    }
 
     public abstract void handle(CompoundTag tag);
 
@@ -64,9 +66,22 @@ public abstract class NPCInteraction {
             RefractionMessages.sendToPlayer(new HandleInteractionS2CPacket(this.builder.getId(), tagTo), serverPlayer);
             return false;
         }
-        this.getStage(this.currentStage).getOptions().get(buttonUsed).onClick().ifPresent(consumer -> consumer.accept(this));
+        current.getOptions().computeIfPresent(buttonUsed, (key, value) -> {
+            value.onClick().ifPresent(consumer -> consumer.accept(this));
+            return value;
+        });
+        current.onSwitch.accept(this);
         this.currentStage = tag.contains("stage") ? tag.getString("stage") : this.currentStage;
+        this.ended = this.getStage(this.currentStage).ends();
         return true;
+    }
+
+    public boolean hasEnded() {
+        return this.ended;
+    }
+
+    public void setEnded(boolean ended) {
+        this.ended = ended;
     }
 
     public boolean stillValid() {

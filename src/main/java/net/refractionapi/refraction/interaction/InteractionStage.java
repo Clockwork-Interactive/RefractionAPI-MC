@@ -1,6 +1,9 @@
 package net.refractionapi.refraction.interaction;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.refractionapi.refraction.networking.C2S.SyncInteractionC2SPacket;
+import net.refractionapi.refraction.networking.RefractionMessages;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +15,11 @@ public class InteractionStage {
     protected final NPCInteraction npcInteraction;
     protected final String id;
     protected boolean ends;
-    protected Component dialouge;
-    protected int dialougeTicks;
+    protected Component dialogue;
+    protected int dialogueTicks;
+    protected String goTo;
     protected final HashMap<Component, buttonOptions> options = new HashMap<>();
-    protected Consumer<NPCInteraction> onSwitch;
+    protected Consumer<NPCInteraction> onSwitch = (i) -> {};
 
     public InteractionStage(NPCInteraction npcInteraction, String id) {
         this.npcInteraction = npcInteraction;
@@ -26,10 +30,15 @@ public class InteractionStage {
         return this.id;
     }
 
-    public InteractionStage addDialouge(Component component, int ticks) {
-        this.dialouge = component;
-        this.dialougeTicks = ticks;
+    public InteractionStage addDialogue(Component component, int ticks, String goTo) {
+        this.dialogue = component;
+        this.dialogueTicks = ticks;
+        this.goTo = goTo;
         return this;
+    }
+
+    public InteractionStage addDialogue(Component component, int ticks) {
+        return this.addDialogue(component, ticks, "");
     }
 
     public InteractionStage addOption(Component component, String goTo) {
@@ -51,10 +60,16 @@ public class InteractionStage {
         return this;
     }
 
-    public void onSwitch() {
-        if (this.onSwitch != null) {
-            this.onSwitch.accept(this.npcInteraction);
-        }
+    public void onSwitch(String goTo, Component button) {
+        this.onSwitch.accept(this.npcInteraction);
+        CompoundTag tag = new CompoundTag();
+        tag.putString("stage", goTo);
+        tag.putString("button", Component.Serializer.toJson(button));
+        RefractionMessages.sendToServer(new SyncInteractionC2SPacket(this.npcInteraction.getBuilder().getId(), tag));
+    }
+
+    public String getGoTo() {
+        return this.goTo;
     }
 
     public List<String> possibleGoTos() {
@@ -75,15 +90,15 @@ public class InteractionStage {
     }
 
     public boolean shouldInstantlyClose() {
-        return this.dialougeTicks == -1;
+        return this.dialogueTicks == -1;
     }
 
-    public Component getDialouge() {
-        return this.dialouge;
+    public Component getDialogue() {
+        return this.dialogue;
     }
 
-    public int getDialougeTicks() {
-        return this.dialougeTicks;
+    public int getDialogueTicks() {
+        return this.dialogueTicks;
     }
 
     public String getOption(Component component) {

@@ -19,8 +19,7 @@ public class InteractionBuilder<T extends NPCInteraction> {
     private final HashMap<Player, T> interactions = new HashMap<>();
     private final String id;
     private final Class<T> clazz;
-    private BiConsumer<T, CompoundTag> handler = (interaction, tag) -> {
-    };
+    private BiConsumer<T, CompoundTag> handler = NPCInteraction::handle;
     private Consumer<Object[]> clientHandler = (args) -> {
     };
     private Function<Object[], T> constructor = (args) -> null;
@@ -63,6 +62,7 @@ public class InteractionBuilder<T extends NPCInteraction> {
             if (value.stillValid() && value.handleSwitch(tag)) {
                 this.handler.accept(value, tag);
             } else if (!value.stillValid()) {
+                value.setEnded(true);
                 CompoundTag tagTo = new CompoundTag();
                 tagTo.putBoolean("close", true);
                 RefractionMessages.sendToPlayer(new HandleInteractionS2CPacket(this.getId(), tagTo), (ServerPlayer) player);

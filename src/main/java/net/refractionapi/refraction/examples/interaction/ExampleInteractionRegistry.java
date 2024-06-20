@@ -8,7 +8,6 @@ import net.refractionapi.refraction.interaction.InteractionBuilder;
 public class ExampleInteractionRegistry {
 
     public static final InteractionBuilder<ExampleInteraction> EXAMPLE_INTERACTION = new InteractionBuilder<>("example", ExampleInteraction.class)
-            .serverHandler(ExampleInteraction::handle)
             .clientHandler((args) -> ClientData.handleInteraction(() -> new ExampleInteraction(ClientData.getPlayer()), (CompoundTag) args[1]))
             .clientSerializer((args) -> new CompoundTag())
             .clientDeserializer((tag) -> new Object[]{ClientData.getPlayer(), tag})
