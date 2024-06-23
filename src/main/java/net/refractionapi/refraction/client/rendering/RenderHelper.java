@@ -6,14 +6,14 @@ import net.minecraft.client.renderer.GameRenderer;
 import org.joml.Matrix4f;
 
 import java.awt.*;
+import java.util.Objects;
 
 public class RenderHelper {
 
     public static void renderLine(double startX, double startY, double endX, double endY, double width, Color color) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferbuilder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         double changeInX = startX - endX;
         double changeInY = startY - endY;
@@ -24,18 +24,18 @@ public class RenderHelper {
         final double yWidth = width * Math.sin(angle + pi2);
 
         if (changeInX >= 0) {
-            bufferbuilder.vertex(startX + xWidth, startY + yWidth, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-            bufferbuilder.vertex(startX - xWidth, startY - yWidth, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-            bufferbuilder.vertex(endX - xWidth, endY - yWidth, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-            bufferbuilder.vertex(endX + xWidth, endY + yWidth, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+            bufferbuilder.addVertex((float) (startX + xWidth), (float) (startY + yWidth), 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+            bufferbuilder.addVertex((float) (startX - xWidth), (float) (startY - yWidth), 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+            bufferbuilder.addVertex((float) (endX - xWidth), (float) (endY - yWidth), 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+            bufferbuilder.addVertex((float) (endX + xWidth), (float) (endY + yWidth), 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
         } else {
-            bufferbuilder.vertex(startX - xWidth, startY - yWidth, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-            bufferbuilder.vertex(startX + xWidth, startY + yWidth, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-            bufferbuilder.vertex(endX + xWidth, endY + yWidth, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-            bufferbuilder.vertex(endX - xWidth, endY - yWidth, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+            bufferbuilder.addVertex((float) (startX - xWidth), (float) (startY - yWidth), 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+            bufferbuilder.addVertex((float) (startX + xWidth), (float) (startY + yWidth), 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+            bufferbuilder.addVertex((float) (endX + xWidth), (float) (endY + yWidth), 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+            bufferbuilder.addVertex((float) (endX - xWidth), (float) (endY - yWidth), 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
         }
 
-        tessellator.end();
+        bufferbuilder.build();
     }
 
     /**
@@ -55,15 +55,14 @@ public class RenderHelper {
             maxY = j;
         }
 
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.enableBlend();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferbuilder.vertex(matrix4f, (float)minX, (float)minY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)minX, (float)maxY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)maxX, (float)maxY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)maxX, (float)minY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        bufferbuilder.addVertex(matrix4f, (float)minX, (float)minY, 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        bufferbuilder.addVertex(matrix4f, (float)minX, (float)maxY, 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        bufferbuilder.addVertex(matrix4f, (float)maxX, (float)maxY, 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        bufferbuilder.addVertex(matrix4f, (float)maxX, (float)minY, 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        BufferUploader.drawWithShader(Objects.requireNonNull(bufferbuilder.build()));
         RenderSystem.disableBlend();
     }
 

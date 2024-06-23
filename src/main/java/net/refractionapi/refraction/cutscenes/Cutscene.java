@@ -154,7 +154,7 @@ public class Cutscene {
     }
 
     public Cutscene hideName(boolean hide) {
-        this.livingEntity.getAttribute(ForgeMod.NAMETAG_DISTANCE.get()).setBaseValue(hide ? 0.0D : 64.0D);
+        this.livingEntity.getAttribute(ForgeMod.NAMETAG_DISTANCE.getHolder().get()).setBaseValue(hide ? 0.0D : 64.0D);
         return this;
     }
 

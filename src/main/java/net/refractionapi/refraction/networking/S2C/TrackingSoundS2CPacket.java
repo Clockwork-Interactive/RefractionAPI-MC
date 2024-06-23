@@ -3,7 +3,7 @@ package net.refractionapi.refraction.networking.S2C;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.networking.Packet;
@@ -23,7 +23,7 @@ public class TrackingSoundS2CPacket extends Packet {
     }
 
     public TrackingSoundS2CPacket(FriendlyByteBuf friendlyByteBuf) {
-        this.soundEvent = friendlyByteBuf.readRegistryId();
+        this.soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(friendlyByteBuf.readResourceLocation());
         this.entityId = friendlyByteBuf.readInt();
         this.looping = friendlyByteBuf.readBoolean();
         this.ticks = friendlyByteBuf.readInt();
@@ -31,14 +31,14 @@ public class TrackingSoundS2CPacket extends Packet {
 
     @Override
     public void toBytes(FriendlyByteBuf friendlyByteBuf) {
-        friendlyByteBuf.writeRegistryId(ForgeRegistries.SOUND_EVENTS, this.soundEvent);
+        friendlyByteBuf.writeResourceKey(ForgeRegistries.SOUND_EVENTS.getResourceKey(this.soundEvent).orElseThrow());
         friendlyByteBuf.writeInt(this.entityId);
         friendlyByteBuf.writeBoolean(this.looping);
         friendlyByteBuf.writeInt(this.ticks);
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
+    public void handle(CustomPayloadEvent.Context context) {
         context.enqueueWork(() -> ClientData.trackingSound(this.entityId, this.soundEvent, this.looping, this.ticks));
         context.setPacketHandled(true);
     }

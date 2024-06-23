@@ -28,7 +28,7 @@ public class Refraction {
 
         if (!FMLLoader.isProduction()) ClientQuestInfo.setDefaultRenderer(true);
 
-        RefractionClientRegistry.addOverlayExclusion(new ResourceLocation(MOD_ID, "cinematic"));
+        RefractionClientRegistry.addOverlayExclusion(ResourceLocation.tryBuild(MOD_ID, "cinematic"));
         ExampleInteractionRegistry.init();
     }
 

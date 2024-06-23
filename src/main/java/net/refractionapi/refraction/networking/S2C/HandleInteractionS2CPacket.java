@@ -2,7 +2,7 @@ package net.refractionapi.refraction.networking.S2C;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.refractionapi.refraction.interaction.InteractionBuilder;
 import net.refractionapi.refraction.networking.Packet;
 
@@ -28,7 +28,7 @@ public class HandleInteractionS2CPacket extends Packet {
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
+    public void handle(CustomPayloadEvent.Context context) {
         context.enqueueWork(() -> InteractionBuilder.getBuilder(this.id).ifPresent((builder) -> builder.handleClient(this.tag)));
         context.setPacketHandled(true);
     }

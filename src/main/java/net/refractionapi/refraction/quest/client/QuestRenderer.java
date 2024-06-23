@@ -1,18 +1,18 @@
 package net.refractionapi.refraction.quest.client;
 
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraft.client.gui.GuiGraphics;
 
 import java.awt.*;
 
 public class QuestRenderer {
 
-    public static IGuiOverlay QUEST = (((gui, guiGraphics, partialTick, o, p) -> {
+    public static void renderQuest(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (!ClientQuestInfo.defaultRenderer || !ClientQuestInfo.inQuest) return;
 
         int screenWidth = guiGraphics.guiWidth();
-        int screenHeight = guiGraphics.guiHeight();
         Font font = Minecraft.getInstance().font;
 
         int offset = ClientQuestInfo.description.getString().length() + 100;
@@ -26,6 +26,6 @@ public class QuestRenderer {
         }
         guiGraphics.fill(screenWidth - offset - 100, 70, screenWidth - offset / 2 + 45, yMax + 20, new Color(0, 0, 0, 70).getRGB());
 
-    }));
+    }
 
 }

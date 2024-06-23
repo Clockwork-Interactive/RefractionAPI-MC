@@ -5,7 +5,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -95,14 +94,14 @@ public class RefractionClientEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void renderOverlays(RenderGuiOverlayEvent.Pre event) {
-        if (ClientCutsceneData.cameraID != -1) {
-            if (event.getOverlay() == VanillaGuiOverlay.CHAT_PANEL.type() || event.getOverlay() == VanillaGuiOverlay.VIGNETTE.type() || event.getOverlay() == VanillaGuiOverlay.RECORD_OVERLAY.type() || overlays.contains(event.getOverlay().id())) {
-                return;
-            }
-            event.setCanceled(true);
-        }
-    }
+    //@SubscribeEvent // TODO readd :P
+    //public static void renderOverlays(RenderGuiOverlayEvent.Pre event) {
+    //    if (ClientCutsceneData.cameraID != -1) {
+    //        if (event.getOverlay() == VanillaGuiOverlay.CHAT_PANEL.type() || event.getOverlay() == VanillaGuiOverlay.VIGNETTE.type() || event.getOverlay() == VanillaGuiOverlay.RECORD_OVERLAY.type() || overlays.contains(event.getOverlay().id())) {
+    //            return;
+    //        }
+    //        event.setCanceled(true);
+    //    }
+    //}
 
 }

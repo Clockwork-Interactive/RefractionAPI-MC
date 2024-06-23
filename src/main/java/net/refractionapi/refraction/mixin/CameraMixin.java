@@ -84,6 +84,7 @@ public abstract class CameraMixin implements ICameraMixin {
         this.intensity = Mth.clamp(intensity, 0, 10);
     }
 
-    @Shadow
+    @Unique
     protected abstract void move(double pDistanceOffset, double pVerticalOffset, double pHorizontalOffset);
+
 }

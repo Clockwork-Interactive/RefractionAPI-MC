@@ -1,13 +1,14 @@
 package net.refractionapi.refraction.event;
 
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.cutscenes.client.CinematicBars;
+import net.refractionapi.refraction.event.events.RegisterGuiEvent;
 import net.refractionapi.refraction.quest.client.QuestRenderer;
 
 import static net.refractionapi.refraction.event.RefractionClientEvents.overlays;
@@ -16,9 +17,9 @@ import static net.refractionapi.refraction.event.RefractionClientEvents.overlays
 public class RefractionClientRegistry {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void registerOverlays(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll("quest", QuestRenderer.QUEST);
-        event.registerAboveAll("cinematic", CinematicBars.BARS);
+    public static void registerOverlays(RegisterGuiEvent event) {
+        event.registerNew(new LayeredDraw().add(CinematicBars::renderBars));
+        event.registerNew(new LayeredDraw().add(QuestRenderer::renderQuest));
     }
 
 

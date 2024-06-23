@@ -21,7 +21,7 @@ public class CapabilityUtil {
 
     public static void attachCapability(AttachCapabilitiesEvent<? extends CapabilityProvider<?>> event, ICapabilityProvider provider, Capability<?> capability) {
         if (!event.getObject().getCapability(capability).isPresent()) {
-            event.addCapability(new ResourceLocation(Refraction.MOD_ID, provider.getClass().getSimpleName().toLowerCase()), provider);
+            event.addCapability(ResourceLocation.tryBuild(Refraction.MOD_ID, provider.getClass().getSimpleName().toLowerCase()), provider);
         }
     }
 

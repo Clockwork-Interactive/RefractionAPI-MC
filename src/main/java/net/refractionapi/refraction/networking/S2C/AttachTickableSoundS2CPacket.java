@@ -2,7 +2,7 @@ package net.refractionapi.refraction.networking.S2C;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.refractionapi.refraction.networking.Packet;
 import net.refractionapi.refraction.sound.TickableSoundRegistry;
 
@@ -28,7 +28,7 @@ public class AttachTickableSoundS2CPacket extends Packet {
     }
 
     @Override
-    public void handle(NetworkEvent.Context context) {
+    public void handle(CustomPayloadEvent.Context context) {
         context.enqueueWork(() ->
                 TickableSoundRegistry.attach(this.sound, this.serialized)
         );

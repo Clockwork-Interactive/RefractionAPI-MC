@@ -1,7 +1,7 @@
 package net.refractionapi.refraction.networking;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public abstract class Packet {
 
@@ -13,6 +13,6 @@ public abstract class Packet {
 
     public abstract void toBytes(FriendlyByteBuf buf);
 
-    public abstract void handle(NetworkEvent.Context context);
+    public abstract void handle(CustomPayloadEvent.Context context);
 
 }
