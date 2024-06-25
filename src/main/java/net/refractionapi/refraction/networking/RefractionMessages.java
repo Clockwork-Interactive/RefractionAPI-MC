@@ -32,6 +32,7 @@ public class RefractionMessages {
         registerPacket(AttachTickableSoundS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
         registerPacket(HandleInteractionS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
         registerPacket(SyncInteractionC2SPacket.class, NetworkDirection.PLAY_TO_SERVER);
+        registerPacket(StopTickingSoundS2CPacket.class, NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public static <MSG> void sendToServer(MSG message) {
@@ -42,8 +43,8 @@ public class RefractionMessages {
         INSTANCE.send(message, PacketDistributor.PLAYER.with(player));
     }
 
-    public static <MSG> void sendToAllTracking(MSG message, LivingEntity player) {
-        INSTANCE.send(message, PacketDistributor.TRACKING_ENTITY_AND_SELF.with(player));
+    public static <MSG> void sendToAllTracking(MSG message, LivingEntity livingEntity) {
+        INSTANCE.send(message, PacketDistributor.TRACKING_ENTITY_AND_SELF.with(livingEntity));
     }
 
     private static <P extends Packet, B extends FriendlyByteBuf> void registerPacket(Class<P> msgClass, NetworkDirection<B> direction) {
