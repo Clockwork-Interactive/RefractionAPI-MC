@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
+import net.refractionapi.refraction.screen.RefractionScreen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,13 @@ import java.util.List;
 public class RefractionClientEvents {
 
     public static final List<ResourceLocation> overlays = new ArrayList<>();
+
+    @SubscribeEvent
+    public static void setScreen(ScreenEvent.Closing event) {
+        if (event.getScreen() instanceof RefractionScreen) {
+            ClientData.screenHandler.onClose(false);
+        }
+    }
 
     @SubscribeEvent
     public static void loggedOut(ClientPlayerNetworkEvent.LoggingOut event) {

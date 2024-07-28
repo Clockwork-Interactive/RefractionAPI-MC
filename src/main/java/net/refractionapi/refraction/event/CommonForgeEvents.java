@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.cutscenes.Cutscene;
+import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.examples.quest.ExampleQuest;
 import net.refractionapi.refraction.math.EasingFunctions;
 import net.refractionapi.refraction.misc.RefractionMisc;
@@ -27,6 +28,7 @@ import java.util.Map;
 public class CommonForgeEvents {
 
     public static final HashMap<LivingEntity, Pair<Vec3, Boolean>> frozenEntities = new HashMap<>();
+    public static final HashMap<Player, RefractionData> runtimeData = new HashMap<>();
     public static Quest quest;
     public static CompoundTag tag = new CompoundTag();
 

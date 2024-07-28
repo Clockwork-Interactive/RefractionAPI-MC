@@ -12,9 +12,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
 import net.refractionapi.refraction.examples.interaction.ExampleInteractionScreen;
+import net.refractionapi.refraction.examples.screen.ExampleScreen;
 import net.refractionapi.refraction.interaction.NPCInteraction;
 import net.refractionapi.refraction.math.EasingFunctions;
 import net.refractionapi.refraction.quest.client.ClientQuestInfo;
+import net.refractionapi.refraction.screen.ClientScreenHandler;
 import net.refractionapi.refraction.sound.TrackingSound;
 
 import java.util.function.Supplier;
@@ -38,6 +40,8 @@ public class ClientData {
     public static int progressTrackerZRot = 0;
     public static EasingFunctions easingFunctionZRot = EasingFunctions.LINEAR;
 
+    public static ClientScreenHandler screenHandler = new ClientScreenHandler();
+
     public static void trackingSound(int entityId, SoundEvent soundEvent, boolean looping, int ticks) {
         LivingEntity livingEntity = (LivingEntity) Minecraft.getInstance().level.getEntity(entityId);
         if (livingEntity != null) {
@@ -50,6 +54,10 @@ public class ClientData {
         SoundEvent event = ForgeRegistries.SOUND_EVENTS.getValue(resourceLocation);
         if (event == null) return;
         Minecraft.getInstance().getSoundManager().play(new EntityBoundSoundInstance(event, SoundSource.AMBIENT, 1.0F, 1.0F, Minecraft.getInstance().player, RandomSource.create().nextLong()));
+    }
+
+    public static ExampleScreen createScreen(String id) {
+        return new ExampleScreen(id);
     }
 
     public static Player getPlayer() {
