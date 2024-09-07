@@ -5,6 +5,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.refractionapi.refraction.networking.RefractionMessages;
+import net.refractionapi.refraction.platform.RefractionServices;
 
 @Mod(Refraction.MOD_ID)
 public class RefractionForge {
@@ -12,6 +13,9 @@ public class RefractionForge {
     public RefractionForge() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
         Refraction.init();
+        if (RefractionServices.PLATFORM.isClient()) {
+            RefractionServices.EVENTS.registerOverlays();
+        }
         MinecraftForge.EVENT_BUS.register(this);
     }
 

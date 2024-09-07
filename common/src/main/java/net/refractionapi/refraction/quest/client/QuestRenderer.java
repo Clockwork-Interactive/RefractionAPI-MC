@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.quest.client;
 
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -8,7 +9,7 @@ import java.awt.*;
 
 public class QuestRenderer {
 
-    public static void quest(GuiGraphics guiGraphics, float partial) {
+    public static void quest(GuiGraphics guiGraphics, DeltaTracker partial) {
         if (!ClientQuestInfo.defaultRenderer || !ClientQuestInfo.inQuest) return;
 
         int screenWidth = guiGraphics.guiWidth();

@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.capabilities;
 
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -28,14 +29,14 @@ public abstract class Provider<E extends Data<E>> implements ICapabilityProvider
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider lookup) {
         CompoundTag tag = new CompoundTag();
         createData().saveNBTData(tag);
         return tag;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(HolderLookup.Provider lookup, CompoundTag nbt) {
         createData().loadNBTData(nbt);
     }
 }

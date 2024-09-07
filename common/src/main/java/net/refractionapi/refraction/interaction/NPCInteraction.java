@@ -58,7 +58,7 @@ public abstract class NPCInteraction {
 
     public boolean handleSwitch(CompoundTag tag) {
         String stage = tag.getString("stage");
-        Component buttonUsed = tag.contains("button") ? Component.Serializer.fromJson(tag.getString("button")) : Component.empty();
+        Component buttonUsed = tag.contains("button") ? Component.Serializer.fromJson(tag.getString("button"), this.player.registryAccess()) : Component.empty();
         InteractionStage  current = this.getStage(this.currentStage);
         if (current == null) return false;
         if (!stage.isEmpty() && buttonUsed != null && !buttonUsed.getString().isEmpty() && (!current.possibleGoTos().contains(stage) || !current.possibleOptions().contains(buttonUsed)) && this.player instanceof ServerPlayer serverPlayer) {

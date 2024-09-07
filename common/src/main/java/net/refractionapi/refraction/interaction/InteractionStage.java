@@ -64,7 +64,7 @@ public class InteractionStage {
         this.onSwitch.accept(this.npcInteraction);
         CompoundTag tag = new CompoundTag();
         tag.putString("stage", goTo);
-        tag.putString("button", Component.Serializer.toJson(button));
+        tag.putString("button", Component.Serializer.toJson(button, this.npcInteraction.player.registryAccess()));
         RefractionMessages.sendToServer(new SyncInteractionC2SPacket(this.npcInteraction.getBuilder().getId(), tag));
     }
 

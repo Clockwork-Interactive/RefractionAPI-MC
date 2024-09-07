@@ -1,0 +1,2 @@
+/g c
+/gamemode creative

@@ -1,6 +1,5 @@
 package net.refractionapi.refraction.capabilities;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -18,7 +17,7 @@ public class CapabilityUtil {
 
     public static void attachCapability(AttachCapabilitiesEvent<? extends CapabilityProvider<?>> event, ICapabilityProvider provider, Capability<?> capability) {
         if (!event.getObject().getCapability(capability).isPresent()) {
-            event.addCapability(new ResourceLocation(Refraction.MOD_ID, provider.getClass().getSimpleName().toLowerCase()), provider);
+            event.addCapability(Refraction.id(provider.getClass().getSimpleName().toLowerCase()), provider);
         }
     }
 

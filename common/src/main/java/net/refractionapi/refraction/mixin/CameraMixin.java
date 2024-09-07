@@ -23,6 +23,8 @@ public abstract class CameraMixin implements ICameraMixin {
     @Shadow
     private Entity entity;
 
+    @Shadow protected abstract void move(float zoom, float dy, float dx);
+
     /**
      * Currently Unused as current equations don't require them, but can be introduced later for more creative control
      * private static final int FREQUENCY = 60;
@@ -59,7 +61,7 @@ public abstract class CameraMixin implements ICameraMixin {
 
             double camX = (0.25 - pEntity.level().random.nextDouble() / 2) * cameraShakeMultiplier;
             double camY = (0.25 - pEntity.level().random.nextDouble() / 2) * cameraShakeMultiplier;
-            move(0, camY, camX);
+            move(0.0F, (float) camY, (float) camX);
         }
     }
 
@@ -90,6 +92,4 @@ public abstract class CameraMixin implements ICameraMixin {
         this.intensity = Mth.clamp(intensity, 0, 10);
     }
 
-    @Shadow
-    protected abstract void move(double pDistanceOffset, double pVerticalOffset, double pHorizontalOffset);
 }

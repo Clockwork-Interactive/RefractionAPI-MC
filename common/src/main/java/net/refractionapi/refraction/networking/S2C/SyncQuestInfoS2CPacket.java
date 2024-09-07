@@ -3,6 +3,7 @@ package net.refractionapi.refraction.networking.S2C;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.networking.Packet;
 import net.refractionapi.refraction.quest.client.ClientQuestInfo;
@@ -29,18 +30,18 @@ public class SyncQuestInfoS2CPacket extends Packet {
 
     public SyncQuestInfoS2CPacket(FriendlyByteBuf buf) {
         this.inQuest = buf.readBoolean();
-        this.questName = buf.readComponent();
-        this.description = buf.readComponent();
-        this.partDescription = buf.readList(FriendlyByteBuf::readComponent);
+        this.questName = (Component) FormattedText.of(buf.readUtf());
+        this.description = (Component) FormattedText.of(buf.readUtf());
+        this.partDescription = buf.readList((buf1) -> (Component) FormattedText.of(buf1.readUtf()));
         this.tag = buf.readNbt();
     }
 
     @Override
     public void write(FriendlyByteBuf buf) {
         buf.writeBoolean(this.inQuest);
-        buf.writeComponent(this.questName);
-        buf.writeComponent(this.description);
-        buf.writeCollection(this.partDescription, FriendlyByteBuf::writeComponent);
+        buf.writeUtf(this.questName.getString());
+        buf.writeUtf(this.description.getString());
+        buf.writeCollection(this.partDescription, (buf1, component) -> buf1.writeUtf(component.getString()));
         buf.writeNbt(this.tag);
     }
 

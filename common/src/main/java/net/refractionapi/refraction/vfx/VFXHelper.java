@@ -2,13 +2,10 @@ package net.refractionapi.refraction.vfx;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
@@ -20,17 +17,6 @@ public class VFXHelper {
 
     static Random random = new Random();
 
-    /**
-     * Adds glint without an enchantment.
-     *
-     * @param stack Stack to add glint to.
-     */
-    public static void addGlint(ItemStack stack) {
-        CompoundTag tag = stack.getOrCreateTag();
-        tag.put("Enchantments", new ListTag());
-        ListTag listtag = tag.getList("Enchantments", 10);
-        listtag.add(new CompoundTag());
-    }
 
     /**
      * Summon particles around given entity.

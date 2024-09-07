@@ -13,6 +13,7 @@
     "client": [
         "CameraMixin",
         "GameRendererMixin",
+        "GuiMixin",
         "KeyboardInputMixin"
     ],
     "server": [

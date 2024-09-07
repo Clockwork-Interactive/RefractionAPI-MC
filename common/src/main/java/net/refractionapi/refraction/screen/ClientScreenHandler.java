@@ -5,8 +5,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.refractionapi.refraction.networking.C2S.SendScreenDataC2SPacket;
 import net.refractionapi.refraction.networking.RefractionMessages;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class ClientScreenHandler {
 

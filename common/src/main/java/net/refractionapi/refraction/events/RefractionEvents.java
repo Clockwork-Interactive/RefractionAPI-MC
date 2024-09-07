@@ -1,6 +1,11 @@
 package net.refractionapi.refraction.events;
 
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.world.level.LevelAccessor;
+import net.refractionapi.refraction.cutscenes.client.CinematicBars;
+import net.refractionapi.refraction.platform.RefractionServices;
+import net.refractionapi.refraction.quest.client.QuestRenderer;
+import org.apache.logging.log4j.util.InternalApi;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +16,7 @@ public interface RefractionEvents {
     Set<Runnable> serverProcesses = new HashSet<>();
     Set<Consumer<LevelAccessor>> levelProcesses = new HashSet<>();
     Set<Runnable> serverStoppingListeners = new HashSet<>();
+    Set<Consumer<LayeredDraw>> registerLayers = new HashSet<>();
 
     default void addServerProcess(Runnable runnable) {
         serverProcesses.add(runnable);
@@ -22,6 +28,15 @@ public interface RefractionEvents {
 
     default void addLevelProcess(Consumer<LevelAccessor> runnable) {
         levelProcesses.add(runnable);
+    }
+
+    default void addLayerRegistry(Consumer<LayeredDraw> layer) {
+        registerLayers.add(layer);
+    }
+
+    @InternalApi
+    default void registerLayers(LayeredDraw layeredDraw) {
+        registerLayers.forEach((layer) -> layer.accept(layeredDraw));
     }
 
     default void serverTick(boolean post) {
@@ -41,6 +56,13 @@ public interface RefractionEvents {
         for (Runnable runnable : serverStoppingListeners) {
             runnable.run();
         }
+    }
+
+     default void registerOverlays() {
+        RefractionServices.EVENTS.addLayerRegistry((layer) -> {
+            layer.add(new LayeredDraw().add(CinematicBars::bars), () -> true);
+            layer.add(new LayeredDraw().add(QuestRenderer::quest), () -> true);
+        });
     }
 
 }

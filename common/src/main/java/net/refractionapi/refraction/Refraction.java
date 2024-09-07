@@ -1,5 +1,6 @@
 package net.refractionapi.refraction;
 
+import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.cutscenes.CutsceneHandler;
 import net.refractionapi.refraction.examples.interaction.ExampleInteractionRegistry;
 import net.refractionapi.refraction.examples.screen.ExampleScreenRegistry;
@@ -23,6 +24,10 @@ public class Refraction {
         CutsceneHandler.init();
         ExampleInteractionRegistry.init();
         ExampleScreenRegistry.init();
+    }
+
+    public static ResourceLocation id(String id) {
+        return ResourceLocation.tryBuild(MOD_ID, id);
     }
 
 }

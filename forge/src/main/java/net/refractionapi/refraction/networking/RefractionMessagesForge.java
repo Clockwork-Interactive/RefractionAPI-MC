@@ -1,24 +1,18 @@
 package net.refractionapi.refraction.networking;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.SimpleChannel;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.client.ClientData;
 
-public class RefractionMessagesForge implements RefractionMessages{
+public class RefractionMessagesForge implements RefractionMessages {
 
-    private static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder
-            .named(new ResourceLocation(Refraction.MOD_ID, "messages"))
-            .networkProtocolVersion(() -> "1.0")
-            .clientAcceptedVersions(s -> true)
-            .serverAcceptedVersions(s -> true)
-            .simpleChannel();
+    public static final SimpleChannel INSTANCE = ChannelBuilder.named(Refraction.id("main")).simpleChannel();
 
     private static int packetId = 0;
 
@@ -28,7 +22,7 @@ public class RefractionMessagesForge implements RefractionMessages{
 
     @Override
     public <P extends Packet> void register(Class<P> msgClass, RNetworkDirection direction) {
-        INSTANCE.messageBuilder(msgClass, id(), direction == RNetworkDirection.PLAY_TO_CLIENT ? NetworkDirection.PLAY_TO_CLIENT : NetworkDirection.PLAY_TO_SERVER)
+        INSTANCE.messageBuilder(msgClass, id(), direction.equals(RNetworkDirection.PLAY_TO_CLIENT) ? NetworkDirection.PLAY_TO_CLIENT : NetworkDirection.PLAY_TO_SERVER)
                 .decoder(byteBuf -> {
                     try {
                         return msgClass.getConstructor(FriendlyByteBuf.class).newInstance(byteBuf);
@@ -37,23 +31,23 @@ public class RefractionMessagesForge implements RefractionMessages{
                     }
                 })
                 .encoder(Packet::write)
-                .consumerMainThread((msg, supplier) -> msg.handle(supplier.get().getSender() == null ? ClientData.getPlayer() : supplier.get().getSender(), (c) -> supplier.get().enqueueWork(c)))
+                .consumerMainThread((packet, context) -> packet.handle(context.isClientSide() ? ClientData.getPlayer() : context.getSender(), context::enqueueWork))
                 .add();
     }
 
     @Override
     public <MSG extends Packet> void sendServer(MSG message) {
-        INSTANCE.sendToServer(message);
+        INSTANCE.send(message, PacketDistributor.SERVER.noArg());
     }
 
     @Override
     public <MSG extends Packet> void sendPlayer(MSG message, ServerPlayer player) {
-        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
+        INSTANCE.send(message, PacketDistributor.PLAYER.with(player));
     }
 
     @Override
-    public <MSG extends Packet> void sendAllTracking(MSG message, LivingEntity player) {
-        INSTANCE.send(PacketDistributor.ALL.noArg(), message);
+    public <MSG extends Packet> void sendAllTracking(MSG message, LivingEntity living) {
+        INSTANCE.send(message, PacketDistributor.TRACKING_ENTITY_AND_SELF.with(living));
     }
 
 }

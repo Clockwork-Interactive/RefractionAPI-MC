@@ -2,13 +2,14 @@ package net.refractionapi.refraction.cutscenes.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 
 import java.awt.*;
 
 public class CinematicBars {
     
-    public static void bars(GuiGraphics guiGraphics, float partial) {
+    public static void bars(GuiGraphics guiGraphics, DeltaTracker partial) {
         if (!ClientCutsceneData.hasBars) return;
 
         float degrees = ClientCutsceneData.currentRot;
