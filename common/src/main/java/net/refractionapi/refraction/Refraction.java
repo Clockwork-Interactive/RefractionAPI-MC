@@ -1,6 +1,9 @@
 package net.refractionapi.refraction;
 
 import net.refractionapi.refraction.cutscenes.CutsceneHandler;
+import net.refractionapi.refraction.examples.interaction.ExampleInteractionRegistry;
+import net.refractionapi.refraction.examples.screen.ExampleScreenRegistry;
+import net.refractionapi.refraction.platform.RefractionServices;
 import net.refractionapi.refraction.runnable.RunnableCooldownHandler;
 import net.refractionapi.refraction.runnable.RunnableHandler;
 import net.refractionapi.refraction.runnable.TickableProccesor;
@@ -18,6 +21,8 @@ public class Refraction {
         RunnableCooldownHandler.init();
         TickableProccesor.init();
         CutsceneHandler.init();
+        ExampleInteractionRegistry.init();
+        ExampleScreenRegistry.init();
     }
 
 }

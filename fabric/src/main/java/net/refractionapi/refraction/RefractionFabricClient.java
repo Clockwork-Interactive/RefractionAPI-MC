@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-import net.fabricmc.fabric.impl.client.screen.ScreenExtensions;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.InteractionResult;
 import net.refractionapi.refraction.cutscenes.client.CinematicBars;
@@ -23,16 +22,12 @@ public class RefractionFabricClient implements ClientModInitializer, ScreenEvent
         ClientTickEvents.END_CLIENT_TICK.register((minecraft) -> RefractionClientEvents.clientTick(true));
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> RefractionClientEvents.loggedOut());
         AttackEntityCallback.EVENT.register((player, world, hand, entity, entityHitResult) -> InteractionResult.sidedSuccess(RefractionClientEvents.onAttack()));
-        ScreenEvents.BEFORE_INIT.register((client, screen, width, height) -> {
-            if (screen instanceof ScreenExtensions screenExtensions) {
-                screenExtensions.fabric_getRemoveEvent().register(this);
-            }
-        });
+        ScreenEvents.BEFORE_INIT.register((client, screen, width, height) -> ScreenEvents.remove(screen).register(this));
     }
 
     @Override
     public void onRemove(Screen screen) {
-        RefractionClientEvents.setScreen(screen);
+        RefractionClientEvents.onRemove(screen);
     }
 
 }

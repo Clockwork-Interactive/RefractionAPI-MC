@@ -25,6 +25,11 @@ public interface IPlatformHelper {
     boolean isDevelopmentEnvironment();
 
     /**
+     * Is a client environment
+     */
+    boolean isClient();
+
+    /**
      * Gets the name of the environment type as a string.
      *
      * @return The name of the environment type.

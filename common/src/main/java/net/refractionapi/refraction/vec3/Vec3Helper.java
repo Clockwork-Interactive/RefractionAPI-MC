@@ -73,13 +73,19 @@ public class Vec3Helper {
 
     /**
      * Calculates if a vec3 is in a certain angle. <br>
-     * To check if an entity is not behind a wall, use {@link LivingEntity#hasLineOfSight(Entity)}
      * Limits: 1 &lt;= angle &lt;= 360;
      */
-    public static boolean isInAngle(Entity entity, Vec3 vec3, double angle) {
-        Vec3 dirVec = new Vec3(vec3.x - entity.getX(), vec3.y - entity.getY(), vec3.z - entity.getZ()).normalize();
-        double dot = dirVec.dot(calculateViewVector(entity.getXRot(), entity.getYRot()).normalize());
+    public static boolean isInAngle(Vec3 from, Vec3 to, float xRot, float yRot, double angle) {
+        Vec3 dirVec = new Vec3(to.x - from.x, to.y - from.y, to.z - from.z).normalize();
+        double dot = dirVec.dot(calculateViewVector(xRot, yRot).normalize());
         return dot >= (Mth.lerp(angle / 360, 1.0F, -1.0F));
+    }
+
+    /**
+     * To check if an entity is not behind a wall, use {@link LivingEntity#hasLineOfSight(Entity)}
+     */
+    public static boolean isInAngle(Entity entity, Vec3 vec3, double angle) {
+        return isInAngle(entity.position(), vec3, entity.getXRot(), entity.getYRot(), angle);
     }
 
     public static boolean isInAngle(Entity entity, BlockPos pos, double angle) {

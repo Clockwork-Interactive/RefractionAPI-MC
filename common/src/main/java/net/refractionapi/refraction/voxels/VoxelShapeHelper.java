@@ -127,14 +127,11 @@ public class VoxelShapeHelper {
      * @return Returns Index value counterclockwise from North/West in X (NDSU/WDEU | 0123)
      */
     public static int getXZIndex(Direction direction) {
-        switch (direction) {
-            default:
-            case NORTH:
-            case WEST: return 0;
-            case DOWN: return 1;
-            case SOUTH:
-            case EAST: return 2;
-            case UP: return 3;
-        }
+        return switch (direction) {
+            default -> 0;
+            case DOWN -> 1;
+            case SOUTH, EAST -> 2;
+            case UP -> 3;
+        };
     }
 }

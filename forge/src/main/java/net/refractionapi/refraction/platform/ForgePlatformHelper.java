@@ -21,4 +21,9 @@ public class ForgePlatformHelper implements IPlatformHelper {
         return !FMLLoader.isProduction();
     }
 
+    @Override
+    public boolean isClient() {
+        return FMLLoader.getDist().isClient();
+    }
+
 }
