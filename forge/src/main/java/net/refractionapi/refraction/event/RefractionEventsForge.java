@@ -3,6 +3,7 @@ package net.refractionapi.refraction.event;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -22,7 +23,7 @@ public class RefractionEventsForge implements RefractionEvents {
 
     @SubscribeEvent
     public static void livingTick(LivingEvent.LivingTickEvent event) {
-        RefractionCommonData.livingTick(event.getEntity());;
+        RefractionCommonData.livingTick(event.getEntity());
     }
 
     @SubscribeEvent
@@ -32,17 +33,22 @@ public class RefractionEventsForge implements RefractionEvents {
 
     @SubscribeEvent
     public static void serverTick(TickEvent.ServerTickEvent event) {
-        RefractionServices.EVENTS.serverTick(event.phase == TickEvent.Phase.END);
+        RefractionEvents.SERVER_TICK.invoker().onTick(event.phase == TickEvent.Phase.END);
     }
 
     @SubscribeEvent
     public static void levelTick(TickEvent.LevelTickEvent event) {
-        RefractionServices.EVENTS.levelTick(event.level, event.phase == TickEvent.Phase.END);
+        RefractionEvents.LEVEL_TICK.invoker().onTick(event.level, event.phase == TickEvent.Phase.END);
     }
 
     @SubscribeEvent
     public static void serverStopping(ServerStoppingEvent event) {
-        RefractionServices.EVENTS.serverStopping();
+        RefractionEvents.SERVER_STOPPING.invoker().onStop();
+    }
+
+    @SubscribeEvent
+    public static void loadLevel(LevelEvent.Load event) {
+        RefractionEvents.LOAD_LEVEL.invoker().onLoad(event.getLevel());
     }
 
 }
