@@ -1,8 +1,6 @@
 package net.refractionapi.refraction.events;
 
 import net.minecraft.world.level.LevelAccessor;
-import net.refractionapi.refraction.cutscenes.client.CinematicBars;
-import net.refractionapi.refraction.quest.client.QuestRenderer;
 
 public interface RefractionEvents {
 
@@ -26,18 +24,6 @@ public interface RefractionEvents {
             listener.onStop();
         }
     });
-    RefractionEvent<RegisterLayers> REGISTER_LAYERS = new RefractionEventCaller<>(RegisterLayers.class, listeners -> layeredDraw -> {
-        for (RegisterLayers listener : listeners) {
-            listener.register(layeredDraw);
-        }
-    });
-
-    default void registerOverlays() {
-        REGISTER_LAYERS.register(layer -> {
-            layer.add(new LayeredDraw().add(CinematicBars::bars), () -> true);
-            layer.add(new LayeredDraw().add(QuestRenderer::quest), () -> true);
-        });
-    }
 
     @FunctionalInterface
     interface ServerTick {
@@ -57,11 +43,6 @@ public interface RefractionEvents {
     @FunctionalInterface
     interface LoadLevel {
         void onLoad(LevelAccessor accessor);
-    }
-
-    @FunctionalInterface
-    interface RegisterLayers {
-        void register(LayeredDraw layeredDraw);
     }
 
 }
