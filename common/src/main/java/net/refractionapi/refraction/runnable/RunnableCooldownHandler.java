@@ -1,7 +1,7 @@
 package net.refractionapi.refraction.runnable;
 
 import net.refractionapi.refraction.Refraction;
-import net.refractionapi.refraction.platform.RefractionServices;
+import net.refractionapi.refraction.events.RefractionEvents;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -35,7 +35,7 @@ public class RunnableCooldownHandler {
     }
 
     public static void init() {
-        RefractionServices.EVENTS.addServerProcess(() -> {
+        RefractionEvents.SERVER_TICK.register((post) -> {
             Iterator<Map.Entry<Runnable, Integer>> iterator = RUNNABLE_TICK_MAP.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<Runnable, Integer> entry = iterator.next();

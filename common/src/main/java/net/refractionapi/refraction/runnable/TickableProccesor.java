@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.runnable;
 
 import net.minecraft.world.level.LevelAccessor;
+import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.platform.RefractionServices;
 
 import java.util.HashMap;
@@ -36,7 +37,7 @@ public class TickableProccesor {
     }
 
     public static void init() {
-        RefractionServices.EVENTS.addLevelProcess((level) -> {
+        RefractionEvents.LEVEL_TICK.register((level, post) -> {
             RUNNABLES.keySet().removeIf(processor -> !processor.running || !processor.supplier.getAsBoolean());
             RUNNABLES.entrySet().stream().filter((entry) -> entry.getValue().equals(level)).forEach((processor) -> processor.getKey().process.run());
         });

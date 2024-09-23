@@ -1,7 +1,7 @@
 package net.refractionapi.refraction.runnable;
 
 import net.refractionapi.refraction.Refraction;
-import net.refractionapi.refraction.platform.RefractionServices;
+import net.refractionapi.refraction.events.RefractionEvents;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +66,7 @@ public class RunnableHandler<T> {
     }
 
     public static void init() {
-        RefractionServices.EVENTS.addServerProcess(() -> {
+        RefractionEvents.SERVER_TICK.register((post) -> {
             ListIterator<RunnableHandler<?>> iterator = RUNNABLES.listIterator();
             while (iterator.hasNext()) {
                 RunnableHandler<?> runnableHandler = iterator.next();

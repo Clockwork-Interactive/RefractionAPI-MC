@@ -3,7 +3,7 @@ package net.refractionapi.refraction.mixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.LayeredDraw;
-import net.refractionapi.refraction.platform.RefractionServices;
+import net.refractionapi.refraction.events.RefractionEvents;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,7 +20,7 @@ public class GuiMixin {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(Minecraft pMinecraft, CallbackInfo ci) {
-        RefractionServices.EVENTS.registerLayers(this.layers);
+        RefractionEvents.REGISTER_LAYERS.invoker().register(layers);
     }
 
 }

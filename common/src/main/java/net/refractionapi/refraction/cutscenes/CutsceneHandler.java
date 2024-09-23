@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.cutscenes;
 
 import net.minecraft.world.entity.LivingEntity;
+import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.platform.RefractionServices;
 
 import java.util.HashMap;
@@ -17,7 +18,7 @@ public class CutsceneHandler {
     }
 
     public static void init() {
-        RefractionServices.EVENTS.addServerProcess(() -> {
+        RefractionEvents.SERVER_TICK.register((post) -> {
             Iterator<Map.Entry<LivingEntity, List<Cutscene>>> mapIterator = QUEUE.entrySet().iterator();
 
             while (mapIterator.hasNext()) {
@@ -54,7 +55,7 @@ public class CutsceneHandler {
                 }
             }
         });
-        RefractionServices.EVENTS.addServerStoppingListener(() -> {
+        RefractionEvents.SERVER_STOPPING.register(() -> {
             QUEUE.forEach((player, cutscenes) -> {
                 for (Cutscene cutscene : cutscenes) {
                     cutscene.stop();
