@@ -2,6 +2,8 @@ package net.refractionapi.refraction;
 
 import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.cutscenes.CutsceneHandler;
+import net.refractionapi.refraction.data.RefractionData;
+import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.examples.interaction.ExampleInteractionRegistry;
 import net.refractionapi.refraction.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.runnable.RunnableCooldownHandler;
@@ -23,6 +25,7 @@ public class Refraction {
         CutsceneHandler.init();
         ExampleInteractionRegistry.init();
         ExampleScreenRegistry.init();
+        RefractionEvents.PLAYER_JOINED.register(RefractionData::get);
     }
 
     public static ResourceLocation id(String id) {

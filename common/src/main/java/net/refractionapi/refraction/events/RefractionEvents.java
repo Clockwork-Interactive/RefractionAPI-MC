@@ -1,6 +1,6 @@
 package net.refractionapi.refraction.events;
 
-import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.LevelAccessor;
 import net.refractionapi.refraction.cutscenes.client.CinematicBars;
 import net.refractionapi.refraction.quest.client.QuestRenderer;
@@ -39,6 +39,11 @@ public interface RefractionEvents {
             layer.add(new LayeredDraw().add(QuestRenderer::quest), () -> true);
         });
     }
+    RefractionEvent<PlayerJoin> PLAYER_JOINED = new RefractionEventCaller<>(PlayerJoin.class, listeners -> player -> {
+        for (PlayerJoin listener : listeners) {
+            listener.onJoin(player);
+        }
+    });
 
     @FunctionalInterface
     interface ServerTick {
@@ -53,6 +58,11 @@ public interface RefractionEvents {
     @FunctionalInterface
     interface ServerStopping {
         void onStop();
+    }
+
+    @FunctionalInterface
+    interface PlayerJoin {
+        void onJoin(ServerPlayer serverPlayer);
     }
 
     @FunctionalInterface
