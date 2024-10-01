@@ -9,7 +9,7 @@ import net.refractionapi.refraction.platform.RefractionServices;
 
 import java.util.HashMap;
 
-public class SerializableHandler<C extends Serializable> {
+public class SerializableHandler<C extends Syncable> {
 
     protected final HashMap<C, Integer> HANDLER = new HashMap<>();
 
@@ -23,7 +23,7 @@ public class SerializableHandler<C extends Serializable> {
     }
 
     @SuppressWarnings("unchecked")
-    public void sync(Serializable data, Entity syncTo) {
+    public void sync(Syncable data, Entity syncTo) {
         if (syncTo instanceof ServerPlayer serverPlayer) {
             FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
             data.write(buf);

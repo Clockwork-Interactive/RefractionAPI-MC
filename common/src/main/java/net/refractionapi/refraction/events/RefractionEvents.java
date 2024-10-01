@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.events;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.LevelAccessor;
 
 public interface RefractionEvents {
@@ -24,6 +25,11 @@ public interface RefractionEvents {
             listener.onStop();
         }
     });
+    RefractionEvent<PlayerJoin> PLAYER_JOINED = new RefractionEventCaller<>(PlayerJoin.class, listeners -> player -> {
+        for (PlayerJoin listener : listeners) {
+            listener.onJoin(player);
+        }
+    });
 
     @FunctionalInterface
     interface ServerTick {
@@ -38,6 +44,11 @@ public interface RefractionEvents {
     @FunctionalInterface
     interface ServerStopping {
         void onStop();
+    }
+
+    @FunctionalInterface
+    interface PlayerJoin {
+        void onJoin(ServerPlayer serverPlayer);
     }
 
     @FunctionalInterface

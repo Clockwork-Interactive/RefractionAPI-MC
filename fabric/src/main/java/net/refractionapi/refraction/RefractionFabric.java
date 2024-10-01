@@ -5,13 +5,13 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.refractionapi.refraction.event.RefractionCommonData;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.networking.RefractionMessages;
-import net.refractionapi.refraction.platform.RefractionServices;
 
 public class RefractionFabric implements ModInitializer {
 
@@ -35,6 +35,7 @@ public class RefractionFabric implements ModInitializer {
         ServerTickEvents.END_WORLD_TICK.register(world -> RefractionEvents.LEVEL_TICK.invoker().onTick(world, true));
         ServerLivingEntityEvents.AFTER_DEATH.register(RefractionCommonData::death);
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> RefractionEvents.SERVER_STOPPING.invoker().onStop());
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> RefractionEvents.PLAYER_JOINED.invoker().onJoin(handler.getPlayer()));
         ServerWorldEvents.LOAD.register((server, world) -> RefractionEvents.LOAD_LEVEL.invoker().onLoad(world));
     }
 

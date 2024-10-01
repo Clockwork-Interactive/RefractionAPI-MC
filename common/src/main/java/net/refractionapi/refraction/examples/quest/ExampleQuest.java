@@ -23,9 +23,7 @@ public class ExampleQuest extends Quest {
                 .addQuestPoint(new LocationPoint(this, this.getPlayer().position().add(10, 0, 0), 5.0D))
                 .addQuestPoint(new ItemPoint(this, Items.DIAMOND, 2))
                 .addQuestPoint(new ItemPoint(this, Items.IRON_INGOT, 1))
-                .onCompletion((questPart -> {
-                    questPart.getPlayer().displayClientMessage(Component.literal("Part completed!").withStyle(ChatFormatting.GREEN), false);
-                }))
+                .onCompletion((questPart -> questPart.getPlayer().displayClientMessage(Component.literal("Part completed!").withStyle(ChatFormatting.GREEN), false)))
                 .newPart(Component.literal("Example description 2").withStyle(ChatFormatting.RED))
                 .addQuestPoint(new LocationPoint(this, this.getPlayer().position().add(20, 0, 0), 5.0D))
                 .newPart(Component.literal("Example description 3"))

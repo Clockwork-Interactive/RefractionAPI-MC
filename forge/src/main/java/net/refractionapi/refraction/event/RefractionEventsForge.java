@@ -1,17 +1,16 @@
 package net.refractionapi.refraction.event;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.events.RefractionEvents;
-import net.refractionapi.refraction.networking.RefractionMessages;
-import net.refractionapi.refraction.platform.RefractionServices;
 
 @Mod.EventBusSubscriber(modid = Refraction.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class RefractionEventsForge implements RefractionEvents {
@@ -49,6 +48,12 @@ public class RefractionEventsForge implements RefractionEvents {
     @SubscribeEvent
     public static void loadLevel(LevelEvent.Load event) {
         RefractionEvents.LOAD_LEVEL.invoker().onLoad(event.getLevel());
+    }
+
+    @SubscribeEvent
+    public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer)
+            RefractionEvents.PLAYER_JOINED.invoker().onJoin(serverPlayer);
     }
 
 }
