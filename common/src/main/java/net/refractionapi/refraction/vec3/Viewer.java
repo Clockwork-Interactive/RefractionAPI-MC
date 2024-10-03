@@ -18,6 +18,8 @@ public class Viewer {
     protected Consumer<Entity> onLook = (e) -> {};
     protected Consumer<Entity> onStopLooking = (e) -> {};
     protected Consumer<Entity> whileLooking = (e) -> {};
+    protected Runnable noObservor = () -> {};
+    protected Runnable hasObservor = () -> {};
     protected Predicate<Entity> entityPredicate = (e) -> true;
     protected float fovRange = 90.0F;
     protected float range = 12.0F;
@@ -54,6 +56,16 @@ public class Viewer {
         return this;
     }
 
+    public Viewer noObservor(Runnable runnable) {
+        this.noObservor = runnable;
+        return this;
+    }
+
+    public Viewer hasObservor(Runnable runnable) {
+        this.hasObservor = runnable;
+        return this;
+    }
+
     public Viewer predicate(Predicate<Entity> predicate) {
         this.entityPredicate = predicate;
         return this;
@@ -77,8 +89,11 @@ public class Viewer {
         List<Entity> lookers = this.getLookers();
         lookers.stream().filter((entity) -> this.previous.stream().noneMatch((e) -> e.equals(entity))).forEach((newEntity) -> this.onLook.accept(newEntity));
         this.previous.stream().filter((entity) -> lookers.stream().noneMatch((e) -> e.equals(entity))).forEach((oldEntity) -> this.onStopLooking.accept(oldEntity));
-        if (!lookers.isEmpty())
+        if (!lookers.isEmpty()) {
             lookers.forEach(this.whileLooking);
+            this.hasObservor.run();
+        } else
+            this.noObservor.run();
         this.previous = lookers;
     }
 
