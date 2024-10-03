@@ -1,6 +1,9 @@
 package net.refractionapi.refraction.data;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
+
+import java.util.HashMap;
 
 /**
  * Class syncer <br>

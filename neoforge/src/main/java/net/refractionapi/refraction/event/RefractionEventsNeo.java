@@ -1,9 +1,11 @@
 package net.refractionapi.refraction.event;
 
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -55,6 +57,12 @@ public class RefractionEventsNeo implements RefractionEvents {
     @SubscribeEvent
     public static void serverStopping(ServerStoppingEvent event) {
         RefractionEvents.SERVER_STOPPING.invoker().onStop();
+    }
+
+    @SubscribeEvent
+    public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer)
+            RefractionEvents.PLAYER_JOINED.invoker().onJoin(serverPlayer);
     }
 
 }
