@@ -8,6 +8,7 @@ import net.refractionapi.refraction.runnable.TickableProccesor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -25,10 +26,11 @@ public class Viewer {
     protected float range = 12.0F;
     protected List<Entity> previous = new ArrayList<>();
     private boolean discarded = false;
+    private BooleanSupplier shouldRun = () -> !this.discarded;
 
     public Viewer(LevelAccessor level) {
         this.level = level;
-        new TickableProccesor().process(this::tick).shouldRun(() -> !this.discarded).start(this.level);
+        new TickableProccesor().process(this::tick).shouldRun(this.shouldRun).start(this.level);
     }
 
     public Viewer setOrigin(Vec3 origin) {
@@ -78,6 +80,11 @@ public class Viewer {
 
     public Viewer setRange(float range) {
         this.range = range;
+        return this;
+    }
+
+    public Viewer shouldRun(BooleanSupplier shouldRun) {
+        this.shouldRun = shouldRun;
         return this;
     }
 
