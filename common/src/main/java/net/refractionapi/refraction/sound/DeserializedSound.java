@@ -4,13 +4,17 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.function.Consumer;
 
-public class DeserializedSound extends PlayableTickableSound {
+public abstract class DeserializedSound extends PlayableTickableSound {
 
-    protected DeserializedSound(CompoundTag tag, SoundEvent p_235076_, SoundSource p_235077_, RandomSource p_235078_, Consumer<PlayableTickableSound> onTick, Consumer<PlayableTickableSound> onStop) {
-        super(p_235076_, p_235077_, p_235078_, onTick, onStop);
+    public final LivingEntity entity;
+
+    protected DeserializedSound(LivingEntity living, CompoundTag tag, SoundEvent soundEvent, SoundSource soundSource, RandomSource randomSource) {
+        super(soundEvent, soundSource, randomSource);
+        this.entity = living;
     }
 
 }

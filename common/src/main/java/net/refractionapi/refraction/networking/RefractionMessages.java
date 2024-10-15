@@ -25,6 +25,7 @@ public interface RefractionMessages {
         registerPacket(SetScreenS2CPacket.class, RNetworkDirection.PLAY_TO_CLIENT);
         registerPacket(SendScreenDataS2CPacket.class, RNetworkDirection.PLAY_TO_CLIENT);
         registerPacket(SendScreenDataC2SPacket.class, RNetworkDirection.PLAY_TO_SERVER);
+        registerPacket(StopTickingSoundS2CPacket.class, RNetworkDirection.PLAY_TO_CLIENT);
     }
 
     static <MSG extends Packet> void sendToServer(MSG message) {
