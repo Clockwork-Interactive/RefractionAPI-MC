@@ -64,6 +64,10 @@ public class ClientData {
         return Minecraft.getInstance().player;
     }
 
+    public static LivingEntity getEntity(int id) {
+        return Minecraft.getInstance().level.getEntity(id) instanceof LivingEntity livingEntity ? livingEntity : null;
+    }
+
     public static void handleInteraction(Supplier<NPCInteraction> interaction, CompoundTag tag) {
         String stage = tag.getString("stage");
         boolean close = tag.getBoolean("close");

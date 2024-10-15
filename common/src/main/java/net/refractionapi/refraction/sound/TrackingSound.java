@@ -11,7 +11,7 @@ public class TrackingSound extends PlayableTickableSound {
     private int ticks;
 
     public TrackingSound(SoundEvent soundEvent, LivingEntity livingEntity, boolean looping, int loopingTicks) {
-        super(soundEvent, SoundSource.MASTER, livingEntity.getRandom(), (v) -> {}, (v) -> {});
+        super(soundEvent, SoundSource.MASTER, livingEntity.getRandom());
         this.entity = livingEntity;
         this.looping = looping;
         this.loopingTicks = loopingTicks;
