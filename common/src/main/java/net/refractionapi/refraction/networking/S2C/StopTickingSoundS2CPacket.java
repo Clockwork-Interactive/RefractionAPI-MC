@@ -5,7 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.networking.Packet;
-import net.refractionapi.refraction.sound.TickableSoundRegistry;
+import net.refractionapi.refraction.feature.sound.TickableSoundRegistry;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;

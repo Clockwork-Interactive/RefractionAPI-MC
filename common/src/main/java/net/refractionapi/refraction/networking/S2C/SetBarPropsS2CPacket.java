@@ -2,8 +2,8 @@ package net.refractionapi.refraction.networking.S2C;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
-import net.refractionapi.refraction.math.EasingFunctions;
+import net.refractionapi.refraction.feature.cutscenes.client.ClientCutsceneData;
+import net.refractionapi.refraction.helper.math.EasingFunctions;
 import net.refractionapi.refraction.networking.Packet;
 import org.jetbrains.annotations.Nullable;
 

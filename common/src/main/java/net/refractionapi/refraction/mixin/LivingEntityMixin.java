@@ -2,8 +2,8 @@ package net.refractionapi.refraction.mixin;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.refractionapi.refraction.cutscenes.Cutscene;
-import net.refractionapi.refraction.cutscenes.CutsceneHandler;
+import net.refractionapi.refraction.feature.cutscenes.Cutscene;
+import net.refractionapi.refraction.feature.cutscenes.CutsceneHandler;
 import net.refractionapi.refraction.mixininterfaces.ILivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

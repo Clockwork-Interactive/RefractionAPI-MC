@@ -1,9 +1,9 @@
 package net.refractionapi.refraction.data;
 
 import net.minecraft.world.entity.player.Player;
-import net.refractionapi.refraction.event.RefractionCommonData;
-import net.refractionapi.refraction.screen.ScreenBuilder;
-import net.refractionapi.refraction.screen.ServerScreen;
+import net.refractionapi.refraction.events.event.RefractionCommonData;
+import net.refractionapi.refraction.feature.screen.ScreenBuilder;
+import net.refractionapi.refraction.feature.screen.ServerScreen;
 
 import java.util.Optional;
 

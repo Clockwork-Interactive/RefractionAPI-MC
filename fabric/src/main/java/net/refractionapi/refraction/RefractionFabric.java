@@ -9,7 +9,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.refractionapi.refraction.event.RefractionCommonData;
+import net.refractionapi.refraction.events.event.RefractionCommonData;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.networking.RefractionMessages;
 

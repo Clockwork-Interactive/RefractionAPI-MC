@@ -1,15 +1,14 @@
 package net.refractionapi.refraction;
 
-import net.minecraft.resources.ResourceLocation;
-import net.refractionapi.refraction.cutscenes.CutsceneHandler;
+import net.refractionapi.refraction.feature.cutscenes.CutsceneHandler;
 import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.events.RefractionEvents;
-import net.refractionapi.refraction.examples.interaction.ExampleInteractionRegistry;
-import net.refractionapi.refraction.examples.screen.ExampleScreenRegistry;
+import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionRegistry;
+import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.platform.RefractionServices;
-import net.refractionapi.refraction.runnable.RunnableCooldownHandler;
-import net.refractionapi.refraction.runnable.RunnableHandler;
-import net.refractionapi.refraction.runnable.TickableProccesor;
+import net.refractionapi.refraction.helper.runnable.RunnableCooldownHandler;
+import net.refractionapi.refraction.helper.runnable.RunnableHandler;
+import net.refractionapi.refraction.helper.runnable.TickableProccesor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

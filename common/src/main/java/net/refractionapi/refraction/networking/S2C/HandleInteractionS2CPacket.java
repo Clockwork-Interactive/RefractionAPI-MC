@@ -3,7 +3,7 @@ package net.refractionapi.refraction.networking.S2C;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.refractionapi.refraction.interaction.InteractionBuilder;
+import net.refractionapi.refraction.feature.interaction.InteractionBuilder;
 import net.refractionapi.refraction.networking.Packet;
 import org.jetbrains.annotations.Nullable;
 
