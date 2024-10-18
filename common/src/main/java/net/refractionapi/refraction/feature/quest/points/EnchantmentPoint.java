@@ -6,9 +6,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.refractionapi.refraction.feature.quest.Quest;
-
-import java.util.Map;
+import net.refractionapi.refraction.helper.registry.RegistryHelper;
 
 public class EnchantmentPoint extends QuestPoint {
 

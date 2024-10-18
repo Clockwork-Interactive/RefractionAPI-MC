@@ -1,5 +1,6 @@
 package net.refractionapi.refraction;
 
+import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.feature.cutscenes.CutsceneHandler;
 import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.events.RefractionEvents;

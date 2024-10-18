@@ -3,8 +3,8 @@ package net.refractionapi.refraction.events;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.LevelAccessor;
-import net.refractionapi.refraction.cutscenes.client.CinematicBars;
-import net.refractionapi.refraction.quest.client.QuestRenderer;
+import net.refractionapi.refraction.feature.cutscenes.client.CinematicBars;
+import net.refractionapi.refraction.feature.quest.client.QuestRenderer;
 
 public interface RefractionEvents {
 

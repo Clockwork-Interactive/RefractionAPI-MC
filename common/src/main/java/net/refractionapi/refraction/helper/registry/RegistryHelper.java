@@ -1,4 +1,4 @@
-package net.refractionapi.refraction.registry;
+package net.refractionapi.refraction.helper.registry;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
