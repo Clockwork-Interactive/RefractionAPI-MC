@@ -10,14 +10,14 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
-import net.refractionapi.refraction.examples.interaction.ExampleInteractionScreen;
-import net.refractionapi.refraction.examples.screen.ExampleScreen;
-import net.refractionapi.refraction.interaction.NPCInteraction;
-import net.refractionapi.refraction.math.EasingFunctions;
-import net.refractionapi.refraction.quest.client.ClientQuestInfo;
-import net.refractionapi.refraction.screen.ClientScreenHandler;
-import net.refractionapi.refraction.sound.TrackingSound;
+import net.refractionapi.refraction.feature.cutscenes.client.ClientCutsceneData;
+import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionScreen;
+import net.refractionapi.refraction.feature.examples.screen.ExampleScreen;
+import net.refractionapi.refraction.feature.interaction.NPCInteraction;
+import net.refractionapi.refraction.helper.math.EasingFunctions;
+import net.refractionapi.refraction.feature.quest.client.ClientQuestInfo;
+import net.refractionapi.refraction.feature.screen.ClientScreenHandler;
+import net.refractionapi.refraction.feature.sound.TrackingSound;
 
 import java.util.function.Supplier;
 

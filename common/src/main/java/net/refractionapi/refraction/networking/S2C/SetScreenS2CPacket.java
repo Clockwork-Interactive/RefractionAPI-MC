@@ -5,7 +5,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.networking.Packet;
-import net.refractionapi.refraction.screen.ScreenBuilder;
+import net.refractionapi.refraction.feature.screen.ScreenBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;

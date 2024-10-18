@@ -6,7 +6,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
 import net.refractionapi.refraction.client.ClientData;
-import net.refractionapi.refraction.cutscenes.client.ClientCutsceneData;
+import net.refractionapi.refraction.feature.cutscenes.client.ClientCutsceneData;
 import net.refractionapi.refraction.mixininterfaces.ICameraMixin;
 import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Mixin;

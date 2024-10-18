@@ -8,9 +8,9 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.InteractionResult;
-import net.refractionapi.refraction.cutscenes.client.CinematicBars;
-import net.refractionapi.refraction.event.RefractionClientEvents;
-import net.refractionapi.refraction.quest.client.QuestRenderer;
+import net.refractionapi.refraction.feature.cutscenes.client.CinematicBars;
+import net.refractionapi.refraction.events.event.RefractionClientEvents;
+import net.refractionapi.refraction.feature.quest.client.QuestRenderer;
 
 public class RefractionFabricClient implements ClientModInitializer, ScreenEvents.Remove {
 

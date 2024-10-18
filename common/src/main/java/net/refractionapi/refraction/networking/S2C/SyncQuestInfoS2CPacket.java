@@ -5,7 +5,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.networking.Packet;
-import net.refractionapi.refraction.quest.client.ClientQuestInfo;
+import net.refractionapi.refraction.feature.quest.client.ClientQuestInfo;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
