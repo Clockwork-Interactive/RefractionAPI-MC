@@ -8,7 +8,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.platform.RefractionServices;
 
 public class RefractionMessagesFabric implements RefractionMessages {
