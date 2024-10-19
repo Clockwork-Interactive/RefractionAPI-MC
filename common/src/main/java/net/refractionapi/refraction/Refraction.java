@@ -1,14 +1,17 @@
 package net.refractionapi.refraction;
 
-import net.refractionapi.refraction.feature.cutscenes.CutsceneHandler;
+import net.minecraft.resources.ResourceLocation;
+import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.events.RefractionEvents;
+import net.refractionapi.refraction.feature.cutscenes.CutsceneHandler;
 import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionRegistry;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
-import net.refractionapi.refraction.platform.RefractionServices;
+import net.refractionapi.refraction.helper.registry.item.RItems;
 import net.refractionapi.refraction.helper.runnable.RunnableCooldownHandler;
 import net.refractionapi.refraction.helper.runnable.RunnableHandler;
 import net.refractionapi.refraction.helper.runnable.TickableProccesor;
+import net.refractionapi.refraction.platform.RefractionServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +29,13 @@ public class Refraction {
         CutsceneHandler.init();
         ExampleInteractionRegistry.init();
         ExampleScreenRegistry.init();
+        RItems.init();
         RefractionEvents.PLAYER_JOINED.register(RefractionData::get);
         if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) {
             debugTools = true;
+        }
+        if (RefractionServices.PLATFORM.isClient()) {
+            ClientData.load();
         }
     }
 

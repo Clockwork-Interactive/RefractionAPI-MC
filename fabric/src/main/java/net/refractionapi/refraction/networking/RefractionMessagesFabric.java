@@ -8,8 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.refractionapi.refraction.Refraction;
+import net.minecraft.world.level.Level;
 import net.refractionapi.refraction.platform.RefractionServices;
 
 public class RefractionMessagesFabric implements RefractionMessages {
@@ -35,6 +34,13 @@ public class RefractionMessagesFabric implements RefractionMessages {
     @Override
     public <MSG extends Packet> void sendServer(MSG message) {
         ClientPlayNetworking.send(FabricMessageWrapper.wrap(message));
+    }
+
+    @Override
+    public <MSG extends Packet> void sendAll(MSG message, Level level) {
+        for (ServerPlayer player : PlayerLookup.all(level.getServer())) {
+            sendPlayer(message, player);
+        }
     }
 
     @Override

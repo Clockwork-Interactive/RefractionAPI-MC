@@ -4,8 +4,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
@@ -45,15 +47,17 @@ public class FloodFiller {
         return this;
     }
 
-    public Stream<BlockInfo> floodFill(BlockPos origin) {
+    public FloodFill floodFill(BlockPos origin) {
         this.origin = origin;
         return this.floodFill();
     }
 
-    public Stream<BlockInfo> floodFill() {
+    public FloodFill floodFill() {
         final Stream.Builder<BlockInfo> builder = Stream.builder();
         final LinkedList<BlockPos> queue = new LinkedList<>();
+        final List<BlockPos> visited = new LinkedList<>();
         queue.add(this.origin);
+        visited.add(this.origin);
 
         int xMax = this.origin.getX() + this.maxSpread;
         int yMax = this.origin.getY() + this.maxSpread;
@@ -64,6 +68,7 @@ public class FloodFiller {
 
         while (!queue.isEmpty()) {
             BlockPos pos = queue.poll();
+            visited.add(pos);
             BlockState state = this.level.getBlockState(pos);
             int x = pos.getX();
             int y = pos.getY();
@@ -78,14 +83,14 @@ public class FloodFiller {
             this.postAdd.accept(state, pos);
             for (Direction direction : this.directions) {
                 BlockPos offset = pos.relative(direction);
-                if (queue.contains(offset)) {
+                if (queue.contains(offset) || visited.contains(offset)) {
                     continue;
                 }
                 queue.add(offset);
             }
         }
 
-        return builder.build();
+        return new FloodFill(builder.build().toList());
     }
 
     public static Direction[] all() {
@@ -107,5 +112,32 @@ public class FloodFiller {
     public record BlockInfo(BlockState state, BlockPos pos) {
 
     }
+
+    public record FloodFill(List<BlockInfo> blocks) {
+
+        public AABB createBoundingBox() {
+                double minX = Double.MAX_VALUE;
+                double minY = Double.MAX_VALUE;
+                double minZ = Double.MAX_VALUE;
+                double maxX = Double.MIN_VALUE;
+                double maxY = -64;
+                double maxZ = Double.MIN_VALUE;
+                for (BlockInfo block : this.blocks) {
+                    BlockPos pos = block.pos;
+                    minX = Math.min(minX, pos.getX());
+                    minY = Math.min(minY, pos.getY());
+                    minZ = Math.min(minZ, pos.getZ());
+                    maxX = Math.max(maxX, pos.getX());
+                    maxY = Math.max(maxY, pos.getY());
+                    maxZ = Math.max(maxZ, pos.getZ());
+                }
+                return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
+            }
+
+            public BlockPos getCenter() {
+                return BlockPos.containing(this.createBoundingBox().getCenter());
+            }
+
+        }
 
 }

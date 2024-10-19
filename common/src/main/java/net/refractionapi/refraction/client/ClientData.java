@@ -10,6 +10,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.refractionapi.refraction.debug.RDebugRenderer;
 import net.refractionapi.refraction.feature.cutscenes.client.ClientCutsceneData;
 import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionScreen;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreen;
@@ -18,6 +19,7 @@ import net.refractionapi.refraction.helper.math.EasingFunctions;
 import net.refractionapi.refraction.feature.quest.client.ClientQuestInfo;
 import net.refractionapi.refraction.feature.screen.ClientScreenHandler;
 import net.refractionapi.refraction.feature.sound.TrackingSound;
+import net.refractionapi.refraction.util.Keybindings;
 
 import java.util.function.Supplier;
 
@@ -77,6 +79,11 @@ public class ClientData {
             return;
         }
         Minecraft.getInstance().setScreen(new ExampleInteractionScreen(interaction.get()));
+    }
+
+    public static void load() {
+        Keybindings.init();
+        RDebugRenderer.init();
     }
 
     public static void reset() {

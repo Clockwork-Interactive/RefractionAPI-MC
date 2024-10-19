@@ -5,6 +5,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.refractionapi.refraction.client.ClientData;
+import net.refractionapi.refraction.debug.RDebugRenderer;
 import net.refractionapi.refraction.feature.cutscenes.client.ClientCutsceneData;
 import net.refractionapi.refraction.feature.screen.RefractionScreen;
 
@@ -26,6 +27,7 @@ public class RefractionClientEvents {
     }
 
     public static void clientTick(boolean post) {
+        RDebugRenderer.tickAll(post);
         if (post) return;
         if (Minecraft.getInstance().isSingleplayer() && Minecraft.getInstance().isPaused()) return;
         if (ClientData.startFOV != -1) {
