@@ -4,14 +4,18 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.events.RefractionEvents;
+import net.refractionapi.refraction.events.event.RefractionCommonData;
 
+@EventBusSubscriber(modid = Refraction.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class RefractionEventsNeo implements RefractionEvents {
 
     @SubscribeEvent

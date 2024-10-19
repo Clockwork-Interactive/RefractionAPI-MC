@@ -3,6 +3,7 @@ package net.refractionapi.refraction.networking;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.PacketDistributor;
@@ -38,6 +39,11 @@ public class RefractionMessagesForge implements RefractionMessages {
     @Override
     public <MSG extends Packet> void sendServer(MSG message) {
         INSTANCE.send(message, PacketDistributor.SERVER.noArg());
+    }
+
+    @Override
+    public <MSG extends Packet> void sendAll(MSG message, Level level) {
+        INSTANCE.send(message, PacketDistributor.ALL.noArg());
     }
 
     @Override

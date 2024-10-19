@@ -122,7 +122,7 @@ public class ScreenBuilder<T extends ServerScreen> {
                 throw new NullPointerException("Client Screen Creator must be set");
             }
             if (this.serverHandler == null) {
-                throw new NullPointerException("Server Handler must be set");
+                throw new NullPointerException("Server Entry must be set");
             }
             if (this.serverScreenCreator == null) {
                 throw new NullPointerException("Server Screen Creator must be set");

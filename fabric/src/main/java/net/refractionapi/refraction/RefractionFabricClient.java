@@ -8,8 +8,9 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.InteractionResult;
-import net.refractionapi.refraction.feature.cutscenes.client.CinematicBars;
+import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.events.event.RefractionClientEvents;
+import net.refractionapi.refraction.feature.cutscenes.client.CinematicBars;
 import net.refractionapi.refraction.feature.quest.client.QuestRenderer;
 
 public class RefractionFabricClient implements ClientModInitializer, ScreenEvents.Remove {
@@ -23,6 +24,7 @@ public class RefractionFabricClient implements ClientModInitializer, ScreenEvent
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> RefractionClientEvents.loggedOut());
         AttackEntityCallback.EVENT.register((player, world, hand, entity, entityHitResult) -> InteractionResult.sidedSuccess(RefractionClientEvents.onAttack()));
         ScreenEvents.BEFORE_INIT.register((client, screen, width, height) -> ScreenEvents.remove(screen).register(this));
+        ClientData.load();
     }
 
     @Override

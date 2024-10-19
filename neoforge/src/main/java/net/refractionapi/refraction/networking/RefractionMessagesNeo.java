@@ -5,6 +5,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -31,6 +32,11 @@ public class RefractionMessagesNeo implements RefractionMessages {
     @Override
     public <MSG extends Packet> void sendServer(MSG message) {
         PacketDistributor.sendToServer(message);
+    }
+
+    @Override
+    public <MSG extends Packet> void sendAll(MSG message, Level level) {
+        PacketDistributor.sendToAllPlayers(message);
     }
 
     @Override
