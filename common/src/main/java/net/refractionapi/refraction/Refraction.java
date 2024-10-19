@@ -23,6 +23,9 @@ public class Refraction {
     public static boolean debugTools = false;
 
     public static void init() {
+        if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) {
+            debugTools = true;
+        }
         RunnableHandler.init();
         RunnableCooldownHandler.init();
         TickableProccesor.init();
@@ -31,9 +34,6 @@ public class Refraction {
         ExampleScreenRegistry.init();
         RItems.init();
         RefractionEvents.PLAYER_JOINED.register(RefractionData::get);
-        if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) {
-            debugTools = true;
-        }
         if (RefractionServices.PLATFORM.isClient()) {
             ClientData.load();
         }
