@@ -23,11 +23,9 @@ public class RAABBRenderer extends RDebugRenderer {
 
     @Override
     protected void render(PoseStack poseStack, MultiBufferSource multiBufferSource) {
-        Vec3 camera = this.cameraPosition();
         this.boxes.removeIf((color, time) -> time.getFirst() + (time.getSecond() * 1000L) < Util.getMillis());
         this.boxes.forEach((box, color, time) -> {
-            AABB offsetBounds = new AABB(box.minX - camera.x - 0.51F, box.minY - camera.y - 0.51F, box.minZ - camera.z - 0.51F, box.maxX - camera.x + 0.51F, box.maxY - camera.y + 0.51F, box.maxZ - camera.z + 0.51F);
-            renderBox(offsetBounds, color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, 1.0F, poseStack, multiBufferSource);
+            renderLineBox(box, color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, 1.0F, poseStack, multiBufferSource);
         });
     }
 
