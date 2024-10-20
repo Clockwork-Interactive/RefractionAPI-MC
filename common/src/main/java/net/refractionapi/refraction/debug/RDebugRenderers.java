@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.AABB;
+import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.DebugRendererS2CPacket;
 
@@ -23,6 +24,7 @@ public class RDebugRenderers {
     }
 
     public static void send(String id, CompoundTag tag, ServerLevel level) {
+        if (!Refraction.debugTools) return;
         RefractionMessages.sendToAll(new DebugRendererS2CPacket(id, tag), level);
     }
 
