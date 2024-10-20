@@ -59,8 +59,8 @@ public abstract class RDebugRenderer {
         RenderSystem.lineWidth(lineWidth);
         stack.translate(-cam.x, -cam.y, -cam.z);
         VertexConsumer builder = source.getBuffer(RenderType.LINES);
-        builder.addVertex(stack.last(), (float) (start.x), (float) (start.y), (float) (start.z)).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-        builder.addVertex(stack.last(), (float) (end.x), (float) (end.y), (float) (end.z)).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
+        builder.vertex(stack.last().pose(), (float) (start.x), (float) (start.y), (float) (start.z)).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F);
+        builder.vertex(stack.last().pose(), (float) (end.x), (float) (end.y), (float) (end.z)).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F);
         RenderSystem.lineWidth(1.0F);
         stack.popPose();
     }
