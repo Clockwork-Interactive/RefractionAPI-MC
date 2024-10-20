@@ -123,7 +123,7 @@ public class FloodFiller {
                 min = min(min, pos);
                 max = max(max, pos);
             }
-            return new AABB(min, max);
+            return new AABB(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
         }
 
         public BlockPos getCenter() {
