@@ -116,28 +116,28 @@ public class FloodFiller {
     public record FloodFill(List<BlockInfo> blocks) {
 
         public AABB createBoundingBox() {
-                double minX = Double.MAX_VALUE;
-                double minY = Double.MAX_VALUE;
-                double minZ = Double.MAX_VALUE;
-                double maxX = Double.MIN_VALUE;
-                double maxY = -64;
-                double maxZ = Double.MIN_VALUE;
-                for (BlockInfo block : this.blocks) {
-                    BlockPos pos = block.pos;
-                    minX = Math.min(minX, pos.getX());
-                    minY = Math.min(minY, pos.getY());
-                    minZ = Math.min(minZ, pos.getZ());
-                    maxX = Math.max(maxX, pos.getX());
-                    maxY = Math.max(maxY, pos.getY());
-                    maxZ = Math.max(maxZ, pos.getZ());
-                }
-                return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
+            BlockPos min = this.blocks.get(0).pos;
+            BlockPos max = this.blocks.get(0).pos;
+            for (BlockInfo block : this.blocks) {
+                BlockPos pos = block.pos;
+                min = min(min, pos);
+                max = max(max, pos);
             }
-
-            public BlockPos getCenter() {
-                return BlockPos.containing(this.createBoundingBox().getCenter());
-            }
-
+            return new AABB(min, max);
         }
+
+        public BlockPos getCenter() {
+            return BlockPos.containing(this.createBoundingBox().getCenter());
+        }
+
+        private static BlockPos max(BlockPos a, BlockPos b) {
+            return new BlockPos(Math.max(a.getX(), b.getX()), Math.max(a.getY(), b.getY()), Math.max(a.getZ(), b.getZ()));
+        }
+
+        private static BlockPos min(BlockPos a, BlockPos b) {
+            return new BlockPos(Math.min(a.getX(), b.getX()), Math.min(a.getY(), b.getY()), Math.min(a.getZ(), b.getZ()));
+        }
+
+    }
 
 }
