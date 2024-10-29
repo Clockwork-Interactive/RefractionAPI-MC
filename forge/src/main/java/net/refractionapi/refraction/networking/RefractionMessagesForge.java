@@ -5,7 +5,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -50,7 +49,7 @@ public class RefractionMessagesForge implements RefractionMessages{
 
     @Override
     public <MSG extends Packet> void sendAll(MSG message, Level level) {
-        INSTANCE.send(message, PacketDistributor.ALL.noArg());
+        INSTANCE.send(PacketDistributor.ALL.noArg(), message);
     }
 
     @Override
