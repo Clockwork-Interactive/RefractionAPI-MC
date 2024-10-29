@@ -116,8 +116,8 @@ public class FloodFiller {
     public record FloodFill(List<BlockInfo> blocks) {
 
         public AABB createBoundingBox() {
-            BlockPos min = this.blocks.get(0).pos;
-            BlockPos max = this.blocks.get(0).pos;
+            BlockPos min = this.blocks.getFirst().pos;
+            BlockPos max = this.blocks.getFirst().pos;
             for (BlockInfo block : this.blocks) {
                 BlockPos pos = block.pos;
                 min = min(min, pos);

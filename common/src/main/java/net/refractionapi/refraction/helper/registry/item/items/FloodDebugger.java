@@ -21,7 +21,6 @@ public class FloodDebugger extends Item {
         BlockPos pos = pContext.getClickedPos();
         FloodFiller floodFiller = FloodFiller.create(pContext.getLevel(), pos);
         floodFiller.setMaxSpread(10);
-        floodFiller.setDirections(FloodFiller.horizontal());
         AABB aabb = floodFiller.floodFill().createBoundingBox();
         RDebugRenderers.renderAABB(aabb, 255, 0, 0, 5, serverLevel);
         return super.useOn(pContext);
