@@ -35,6 +35,10 @@ dependencies {
      implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 }
 
+jar {
+    destinationDirectory = file("../builds/")
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {

@@ -1,7 +1,7 @@
 package net.refractionapi.refraction.helper.registry;
 
 import net.minecraft.resources.ResourceLocation;
-import net.refractionapi.refraction.Refraction;
+import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 
 import java.util.function.Supplier;
 
@@ -12,7 +12,7 @@ public class RRegister<T> implements Supplier<T> {
 
     public RRegister(String id, Supplier<T> value) {
         this.value = value;
-        this.id = Refraction.id(id);
+        this.id = RModRegistrar.id(id, 3);
     }
 
     @Override

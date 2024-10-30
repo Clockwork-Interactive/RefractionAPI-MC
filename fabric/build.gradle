@@ -53,6 +53,10 @@ processResources {
     from project(":common").sourceSets.main.resources
 }
 
+remapJar {
+    destinationDirectory = file("../builds/")
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {

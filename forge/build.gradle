@@ -96,6 +96,10 @@ processResources {
 
 jar.finalizedBy('reobfJar')
 
+jar {
+    destinationDirectory = file("../builds/")
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
