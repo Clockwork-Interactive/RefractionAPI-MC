@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 
+// TODO Auto register mods
 public class RModRegistrar {
 
     private static final StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);

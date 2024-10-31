@@ -15,7 +15,8 @@
     "DebugRendererMixin",
     "GameRendererMixin",
     "KeyboardInputMixin",
-    "MinecraftMixin"
+    "MinecraftMixin",
+    "ScreenMixin"
   ],
   "server": [
   ],

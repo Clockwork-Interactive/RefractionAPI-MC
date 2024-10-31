@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -10,11 +11,14 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.debug.RDebugRenderer;
 import net.refractionapi.refraction.feature.cutscenes.client.ClientCutsceneData;
 import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionScreen;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreen;
 import net.refractionapi.refraction.feature.interaction.NPCInteraction;
+import net.refractionapi.refraction.feature.screen.RefractionScreen;
+import net.refractionapi.refraction.feature.screen.ScreenBuilder;
 import net.refractionapi.refraction.helper.math.EasingFunctions;
 import net.refractionapi.refraction.feature.quest.client.ClientQuestInfo;
 import net.refractionapi.refraction.feature.screen.ClientScreenHandler;
@@ -58,8 +62,24 @@ public class ClientData {
         Minecraft.getInstance().getSoundManager().play(new EntityBoundSoundInstance(event, SoundSource.AMBIENT, 1.0F, 1.0F, Minecraft.getInstance().player, RandomSource.create().nextLong()));
     }
 
-    public static ExampleScreen createScreen(String id) {
-        return new ExampleScreen(id);
+    @SuppressWarnings("unchecked")
+    public static <T extends Screen> T createScreen(ScreenBuilder<?> builder, Object... args) {
+        Class<? extends Screen> screenClass = ClientScreenHandler.getScreen(builder);
+        if (screenClass == null) return null;
+        try {
+            return (T) screenClass.getConstructor(formClassArray(args)).newInstance(args);
+        } catch (Exception e) {
+            Refraction.LOGGER.error("Failed to create screen", e);
+            return null;
+        }
+    }
+
+    public static Class<?>[] formClassArray(Object... args) {
+        Class<?>[] classes = new Class[args.length];
+        for (int i = 0; i < args.length; i++) {
+            classes[i] = args[i].getClass();
+        }
+        return classes;
     }
 
     public static Player getPlayer() {
@@ -84,6 +104,7 @@ public class ClientData {
     public static void load() {
         Keybindings.init();
         RDebugRenderer.init();
+        ClientScreenHandler.init();
     }
 
     public static void reset() {
