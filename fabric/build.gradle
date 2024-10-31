@@ -35,3 +35,7 @@ loom {
         }
     }
 }
+
+remapJar {
+    destinationDirectory = file("../builds/")
+}

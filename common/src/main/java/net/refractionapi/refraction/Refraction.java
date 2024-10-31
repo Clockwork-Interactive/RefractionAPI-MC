@@ -7,6 +7,7 @@ import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.cutscenes.CutsceneHandler;
 import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionRegistry;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
+import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 import net.refractionapi.refraction.helper.registry.item.RItems;
 import net.refractionapi.refraction.helper.runnable.RunnableCooldownHandler;
 import net.refractionapi.refraction.helper.runnable.RunnableHandler;
@@ -23,6 +24,7 @@ public class Refraction {
     public static boolean debugTools = false;
 
     public static void init() {
+        RModRegistrar.registerSelf(MOD_ID);
         if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) {
             debugTools = true;
         }

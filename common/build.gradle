@@ -23,6 +23,10 @@ dependencies {
     annotationProcessor group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.3.5'
 }
 
+jar {
+    destinationDirectory = file("../builds/")
+}
+
 configurations {
     commonJava {
         canBeResolved = false

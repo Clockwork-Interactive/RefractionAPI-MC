@@ -36,4 +36,8 @@ neoForge {
     }
 }
 
+jar {
+    destinationDirectory = file("../builds/")
+}
+
 sourceSets.main.resources { srcDir 'src/generated/resources' }
