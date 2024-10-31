@@ -8,7 +8,6 @@ import net.refractionapi.refraction.feature.screen.ServerScreen;
 public class ExampleScreenRegistry {
 
     public static final ScreenBuilder<ExampleServerScreen> EXAMPLE_SCREEN = new ScreenBuilder.Builder()
-            .clientScreenCreator((args) -> ClientData.createScreen((String) args[0]))
             .serverScreenCreator(ExampleServerScreen::new)
             .serializer((args) -> {
                 CompoundTag tag = new CompoundTag();
@@ -16,7 +15,7 @@ public class ExampleScreenRegistry {
                 return tag;
             })
             .deserializer((tag) -> new Object[]{tag.getString("data")})
-            .serverHandler(ServerScreen::handle)
+            .clientAccessible()
             .build("example_screen");
 
 

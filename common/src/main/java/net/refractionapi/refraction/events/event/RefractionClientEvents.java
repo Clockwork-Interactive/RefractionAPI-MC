@@ -17,8 +17,8 @@ public class RefractionClientEvents {
     public static final List<ResourceLocation> overlays = new ArrayList<>();
 
     public static void onRemove(Screen screen) {
-        if (screen instanceof RefractionScreen) {
-            ClientData.screenHandler.onClose(false);
+        if (screen instanceof RefractionScreen refractionScreen) {
+            //ClientData.screenHandler.onClose(false, refractionScreen);
         }
     }
 

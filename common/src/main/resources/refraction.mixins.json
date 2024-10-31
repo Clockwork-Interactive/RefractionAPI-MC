@@ -16,7 +16,8 @@
     "GameRendererMixin",
     "GuiMixin",
     "KeyboardInputMixin",
-    "MinecraftMixin"
+    "MinecraftMixin",
+    "ScreenMixin"
   ],
   "server": [
   ],

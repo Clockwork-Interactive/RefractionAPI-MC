@@ -27,7 +27,7 @@ public class ExampleScreen extends Screen implements RefractionScreen {
     }
 
     @Override
-    public void handleServerEvent(CompoundTag tag) {
+    public void handleServerEvent(Code code, CompoundTag tag) {
         Refraction.LOGGER.info("Received data from server: {}", tag.getString("data"));
     }
 

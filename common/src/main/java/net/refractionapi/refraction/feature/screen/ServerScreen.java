@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.SendScreenDataS2CPacket;
 import net.refractionapi.refraction.networking.S2C.SetScreenS2CPacket;
+import org.jetbrains.annotations.ApiStatus;
 
 public abstract class ServerScreen {
 
@@ -24,15 +25,21 @@ public abstract class ServerScreen {
         return this.player.isAlive();
     }
 
+    public boolean canClose() {
+        return true;
+    }
+
     public void onClose() {
 
     }
 
+    @ApiStatus.Internal
+    public void closeInternal() {
+        ScreenBuilder.sendCode(this.player, RefractionScreen.Code.CLOSE);
+    }
+
     public void close() {
         this.builder.onClose(this.player);
-        CompoundTag tag = new CompoundTag();
-        tag.putBoolean("close", true);
-        RefractionMessages.sendToPlayer(new SendScreenDataS2CPacket(tag), this.player);
     }
 
     public void sendData(CompoundTag tag) {
