@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.refractionapi.refraction.Refraction;
 
 import java.util.function.BiConsumer;
 
@@ -74,7 +73,6 @@ public class RAAB extends AABB {
         Vec3[][] positions = new Vec3[2][4];
         for (int i = 0; i < finalCoods.length; i += 3) {
             positions[i / 12][i % 4] = new Vec3(finalCoods[i], finalCoods[i + 1], finalCoods[i + 2]);
-            Refraction.LOGGER.debug("pos[{}][{}] = {x:{},y:{},z:{}}", i / 12, i % 4, finalCoods[i], finalCoods[i + 1], finalCoods[i + 2]);
         }
         transform(positions);
         double[] minMax = getMinMax(positions);

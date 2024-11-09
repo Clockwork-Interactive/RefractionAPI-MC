@@ -3,6 +3,7 @@ package net.refractionapi.refraction.debug.debuggers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.refractionapi.refraction.debug.RDebugRenderer;

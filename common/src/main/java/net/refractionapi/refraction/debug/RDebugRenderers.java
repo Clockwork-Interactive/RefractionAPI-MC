@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.AABB;
 import net.refractionapi.refraction.Refraction;
+import net.refractionapi.refraction.helper.vec3.RAAB;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.DebugRendererS2CPacket;
 
@@ -21,6 +22,10 @@ public class RDebugRenderers {
         tag.putInt("blue", b);
         tag.putInt("time", time);
         send("aabb", tag, level);
+    }
+
+    public static void renderRAAB(RAAB aabb, int r, int g, int b, int time, ServerLevel level) {
+        CompoundTag tag = new CompoundTag();
     }
 
     public static void send(String id, CompoundTag tag, ServerLevel level) {
