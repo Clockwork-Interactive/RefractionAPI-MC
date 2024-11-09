@@ -14,7 +14,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Random;
 
 import static net.refractionapi.refraction.helper.vec3.Vec3Helper.calculateViewVector;
-import static net.refractionapi.refraction.helper.vec3.Vec3Helper.getDegreesBetweenTwoPoints;
+import static net.refractionapi.refraction.helper.vec3.Vec3Helper.getDegreesBetweenPoints;
 
 public class VFXHelper {
 
@@ -70,7 +70,7 @@ public class VFXHelper {
      */
     public static void particleLine(ParticleOptions particle, Vec3 pos1, Vec3 pos2, ServerLevel serverLevel) {
         int range = (int) pos1.distanceTo(pos2);
-        float[] degrees = getDegreesBetweenTwoPoints(pos1, pos2);
+        float[] degrees = getDegreesBetweenPoints(pos1, pos2);
         for (int x = 0; x < range; x++) {
             Vec3 vec3 = calculateViewVector(degrees[0], degrees[1]).scale(-x);
             Vec3 vec31 = pos1.add(vec3);
