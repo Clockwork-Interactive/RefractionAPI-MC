@@ -34,9 +34,10 @@ public class SerializableHandler<C extends Syncable> {
     public static Class<?>[] formClassArray(Object... objects) {
         Class<?>[] classes = new Class[objects.length];
         for (int i = 0; i < objects.length; i++) {
-            classes[i] = objects[i].getClass();
+            classes[i] = objects.getClass();
         }
         return classes;
     }
+
 
 }
