@@ -190,7 +190,7 @@ public class ScreenBuilder<T extends ServerScreen> {
                 this.clientScreenCreator = (args, builder) -> ClientData.createScreen(builder, args);
             }
             if (this.serverHandler == null) {
-                this.serverHandler = ServerScreen::handle;
+                this.serverHandler = ServerScreen::handleScreen;
             }
             if (this.serverScreenCreator == null) {
                 throw new NullPointerException("Server Screen Creator must be set");

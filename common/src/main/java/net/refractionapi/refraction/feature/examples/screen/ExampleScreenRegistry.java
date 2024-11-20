@@ -1,9 +1,8 @@
 package net.refractionapi.refraction.feature.examples.screen;
 
 import net.minecraft.nbt.CompoundTag;
-import net.refractionapi.refraction.client.ClientData;
+import net.refractionapi.refraction.client.screen.RDashboardServer;
 import net.refractionapi.refraction.feature.screen.ScreenBuilder;
-import net.refractionapi.refraction.feature.screen.ServerScreen;
 
 public class ExampleScreenRegistry {
 
@@ -15,8 +14,14 @@ public class ExampleScreenRegistry {
                 return tag;
             })
             .deserializer((tag) -> new Object[]{tag.getString("data")})
-            .clientAccessible()
             .build("example_screen");
+
+    public static final ScreenBuilder<RDashboardServer> DASHBOARD = new ScreenBuilder.Builder()
+            .serverScreenCreator(RDashboardServer::new)
+            .serializer((a) -> new CompoundTag())
+            .deserializer((tag) -> new Object[]{})
+            .clientAccessible()
+            .build("dashboard");
 
 
 

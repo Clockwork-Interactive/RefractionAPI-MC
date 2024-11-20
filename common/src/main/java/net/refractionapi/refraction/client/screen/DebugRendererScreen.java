@@ -23,7 +23,7 @@ public class DebugRendererScreen extends Screen {
     protected void init() {
         int y = 0;
         for (String renderer : RDebugRenderer.getRenderers()) {
-            Checkbox checkbox = new RCheckbox(this.width / 2 - 20, y, 20, 20,Component.literal(renderer.toUpperCase(Locale.ROOT)), RDebugRenderer.isEnabled(renderer), (checkbox1 -> RDebugRenderer.toggle(renderer)));
+            Checkbox checkbox = new RCheckbox(this.width / 2 - 20, y, 20, 20, Component.literal(renderer.toUpperCase(Locale.ROOT)), RDebugRenderer.isEnabled(renderer), (checkbox1 -> RDebugRenderer.toggle(renderer)));
             this.renderers.add(checkbox);
             this.addRenderableWidget(checkbox);
             y += 22;

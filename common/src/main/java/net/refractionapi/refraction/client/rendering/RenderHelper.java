@@ -39,7 +39,7 @@ public class RenderHelper {
     }
 
     /**
-     *  Same as {@link net.minecraft.client.gui.GuiGraphics#fill(int, int, int, int, int)}, but uses {@link Color} instead of integers.
+     * Same as {@link net.minecraft.client.gui.GuiGraphics#fill(int, int, int, int, int)}, but uses {@link Color} instead of integers.
      */
     public static void fill(PoseStack stack, int minX, int minY, int maxX, int maxY, Color color) {
         Matrix4f matrix4f = stack.last().pose();
@@ -59,10 +59,10 @@ public class RenderHelper {
         RenderSystem.enableBlend();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferbuilder.vertex(matrix4f, (float)minX, (float)minY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)minX, (float)maxY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)maxX, (float)maxY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)maxX, (float)minY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+        bufferbuilder.vertex(matrix4f, (float) minX, (float) minY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+        bufferbuilder.vertex(matrix4f, (float) minX, (float) maxY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+        bufferbuilder.vertex(matrix4f, (float) maxX, (float) maxY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+        bufferbuilder.vertex(matrix4f, (float) maxX, (float) minY, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
         BufferUploader.drawWithShader(bufferbuilder.end());
         RenderSystem.disableBlend();
     }

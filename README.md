@@ -1,3 +1,8 @@
+# What is Refraction?
+This library has no specific purpose, it's just a collection of utilities that I've made for my own projects. <br>
+I've decided to make it public so that others can use it as well. <br>
+If you have any suggestions or want to contribute, feel free to do so! <br>
+
 # You might be wondering how to add this project without the maven repository.
 Build Refraction and get the jar file from the target folder. Add it to your project lib folder (make one if you haven't).
 Then add the jar file as a flatdir dependency in your build.gradle file.

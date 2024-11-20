@@ -48,6 +48,11 @@ public abstract class ServerScreen {
 
     public abstract void handle(CompoundTag tag);
 
+    @ApiStatus.Internal
+    public void handleScreen(CompoundTag tag) {
+        this.builder.handleServer(this, tag);
+    }
+
     public ServerPlayer getPlayer() {
         return this.player;
     }
