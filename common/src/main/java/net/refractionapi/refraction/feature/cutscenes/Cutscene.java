@@ -7,12 +7,12 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.Vec3;
 import net.refractionapi.refraction.feature.cutscenes.point.PointHandler;
 import net.refractionapi.refraction.helper.math.EasingFunctions;
+import net.refractionapi.refraction.helper.vec3.Vec3Helper;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.InvokeCutsceneS2CPacket;
 import net.refractionapi.refraction.networking.S2C.SetBarPropsS2CPacket;
 import net.refractionapi.refraction.networking.S2C.SetFOVS2CPacket;
 import net.refractionapi.refraction.networking.S2C.SetZRotS2CPacket;
-import net.refractionapi.refraction.helper.vec3.Vec3Helper;
 
 import java.util.ArrayList;
 import java.util.List;

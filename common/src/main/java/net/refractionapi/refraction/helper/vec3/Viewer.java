@@ -16,11 +16,16 @@ public class Viewer {
 
     protected final LevelAccessor level;
     protected Vec3 origin = Vec3.ZERO;
-    protected Consumer<Entity> onLook = (e) -> {};
-    protected Consumer<Entity> onStopLooking = (e) -> {};
-    protected Consumer<Entity> whileLooking = (e) -> {};
-    protected Runnable noObservor = () -> {};
-    protected Runnable hasObservor = () -> {};
+    protected Consumer<Entity> onLook = (e) -> {
+    };
+    protected Consumer<Entity> onStopLooking = (e) -> {
+    };
+    protected Consumer<Entity> whileLooking = (e) -> {
+    };
+    protected Runnable noObservor = () -> {
+    };
+    protected Runnable hasObservor = () -> {
+    };
     protected Predicate<Entity> entityPredicate = (e) -> true;
     protected float fovRange = 90.0F;
     protected float range = 12.0F;

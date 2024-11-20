@@ -12,6 +12,9 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
+import static net.refractionapi.refraction.helper.vec3.Vec3Helper.max;
+import static net.refractionapi.refraction.helper.vec3.Vec3Helper.min;
+
 public class FloodFiller {
 
     protected final Level level;
@@ -128,14 +131,6 @@ public class FloodFiller {
 
         public BlockPos getCenter() {
             return BlockPos.containing(this.createBoundingBox().getCenter());
-        }
-
-        private static BlockPos max(BlockPos a, BlockPos b) {
-            return new BlockPos(Math.max(a.getX(), b.getX()), Math.max(a.getY(), b.getY()), Math.max(a.getZ(), b.getZ()));
-        }
-
-        private static BlockPos min(BlockPos a, BlockPos b) {
-            return new BlockPos(Math.min(a.getX(), b.getX()), Math.min(a.getY(), b.getY()), Math.min(a.getZ(), b.getZ()));
         }
 
     }

@@ -27,6 +27,8 @@ import net.refractionapi.refraction.util.Keybindings;
 
 import java.util.function.Supplier;
 
+import static net.refractionapi.refraction.data.SerializableHandler.formClassArray;
+
 public class ClientData {
 
     public static boolean canMove = true;
@@ -72,14 +74,6 @@ public class ClientData {
             Refraction.LOGGER.error("Failed to create screen", e);
             return null;
         }
-    }
-
-    public static Class<?>[] formClassArray(Object... args) {
-        Class<?>[] classes = new Class[args.length];
-        for (int i = 0; i < args.length; i++) {
-            classes[i] = args[i].getClass();
-        }
-        return classes;
     }
 
     public static Player getPlayer() {

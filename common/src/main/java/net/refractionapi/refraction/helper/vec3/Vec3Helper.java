@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.helper.vec3;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -63,7 +64,7 @@ public class Vec3Helper {
     /**
      * @return float[0] = xRot; float[1] = yRot;
      */
-    public static float[] getDegreesBetweenTwoPoints(Vec3 pos1, Vec3 pos2) {
+    public static float[] getDegreesBetweenPoints(Vec3 pos1, Vec3 pos2) {
         double differenceInX = pos1.x - pos2.x;
         double differenceInY = pos1.y - pos2.y;
         double differenceInZ = pos1.z - pos2.z;
@@ -208,6 +209,39 @@ public class Vec3Helper {
 
     public static BlockPos findSolid(Level level, Vec3 vec3, float y) {
         return findSolid(level, BlockPos.containing(vec3), (int) y);
+    }
+
+    /**
+     * Creates the missing 2 corners to create a rectangle.
+     */
+    public static Vec3[] createRectangle(Vec3 diagonal1, Vec3 diagonal2) {
+        Vec3[] corners = new Vec3[2];
+        corners[0] = new Vec3(diagonal2.x, diagonal1.y, diagonal1.z);
+        corners[1] = new Vec3(diagonal1.x, diagonal2.y, diagonal2.z);
+        return corners;
+    }
+
+    /**
+     * Creates the missing 2 corners to create a rectangle.
+     */
+    public static BlockPos[] createRectangle(BlockPos diagonal1, BlockPos diagonal2) {
+        BlockPos[] corners = new BlockPos[2];
+        corners[0] = new BlockPos(diagonal2.getX(), diagonal1.getY(), diagonal1.getZ());
+        corners[1] = new BlockPos(diagonal1.getX(), diagonal2.getY(), diagonal2.getZ());
+        return corners;
+    }
+
+    public static BlockPos max(BlockPos a, BlockPos b) {
+        return new BlockPos(Math.max(a.getX(), b.getX()), Math.max(a.getY(), b.getY()), Math.max(a.getZ(), b.getZ()));
+    }
+
+    public static BlockPos min(BlockPos a, BlockPos b) {
+        return new BlockPos(Math.min(a.getX(), b.getX()), Math.min(a.getY(), b.getY()), Math.min(a.getZ(), b.getZ()));
+    }
+
+    public static Direction getDirection(Vec3 from, Vec3 to) {
+        Vec3 vec3 = to.subtract(from);
+        return Direction.getNearest(vec3.x, vec3.y, vec3.z);
     }
 
     public static BlockPos findSolid(Level level, Vec3 vec3) {
