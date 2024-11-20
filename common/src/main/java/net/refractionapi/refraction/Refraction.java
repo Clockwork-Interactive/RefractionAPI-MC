@@ -16,12 +16,16 @@ import net.refractionapi.refraction.platform.RefractionServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
+
 public class Refraction {
 
     public static final String MOD_ID = "refraction";
     public static final String MOD_NAME = "Refraction";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
     public static boolean debugTools = false;
+    public static final Color refractionPrimary = new Color(20, 13, 26);
+    public static final Color refractionSecondary = new Color(55, 20, 82);
 
     public static void init() {
         RModRegistrar.registerSelf(MOD_ID);

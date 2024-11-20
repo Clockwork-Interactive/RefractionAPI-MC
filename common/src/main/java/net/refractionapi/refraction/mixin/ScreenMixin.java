@@ -14,8 +14,9 @@ public class ScreenMixin {
     @Inject(at = @At("HEAD"), method = "onClose", cancellable = true)
     public void close(CallbackInfo ci) {
         if (this instanceof RefractionScreen screen) {
-            ClientData.screenHandler.onClose(false);
-            ci.cancel();
+            ClientData.screenHandler.onClose(screen, false);
+            if (!screen.screenClosingAuthority())
+                ci.cancel();
         }
     }
 

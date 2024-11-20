@@ -3,6 +3,7 @@ package net.refractionapi.refraction.feature.screen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
+import net.refractionapi.refraction.client.screen.RDashboard;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreen;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.networking.C2S.SendScreenDataC2SPacket;
@@ -41,7 +42,7 @@ public class ClientScreenHandler {
         RefractionMessages.sendToServer(new SendScreenDataC2SPacket(RefractionScreen.Code.OPEN, builder.getNBTId(args)));
     }
 
-    public void onClose(boolean server) {
+    public void onClose(RefractionScreen screen, boolean server) {
         if (!server) {
             RefractionMessages.sendToServer(new SendScreenDataC2SPacket(RefractionScreen.Code.CLOSE));
         } else {
@@ -61,7 +62,7 @@ public class ClientScreenHandler {
 
     public void handleServerEvent(RefractionScreen.Code code, CompoundTag tag) {
         if (code.equals(RefractionScreen.Code.CLOSE)) {
-            this.onClose(true);
+            this.onClose(null, true);
             return;
         } else if (code.equals(RefractionScreen.Code.REOPEN)) {
             this.reopenScreen();
@@ -95,6 +96,7 @@ public class ClientScreenHandler {
 
     public static void init() {
         registerScreen(ExampleScreenRegistry.EXAMPLE_SCREEN, ExampleScreen.class);
+        registerScreen(ExampleScreenRegistry.DASHBOARD, RDashboard.class);
     }
 
 }

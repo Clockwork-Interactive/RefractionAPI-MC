@@ -14,6 +14,10 @@ public interface RefractionScreen {
         ClientData.screenHandler.sendData(tag);
     }
 
+    default boolean screenClosingAuthority() {
+        return true;
+    }
+
     default Code getCode(CompoundTag tag) {
         return Code.codes.getOrDefault(tag.getString("code"), Code.INVALID);
     }

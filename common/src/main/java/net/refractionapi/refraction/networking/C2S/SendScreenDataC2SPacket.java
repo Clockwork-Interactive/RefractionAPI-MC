@@ -65,7 +65,8 @@ public class SendScreenDataC2SPacket extends Packet {
                                 serverScreen.close();
                         }
                         case DATA -> serverScreen.handle(this.tag);
-                        default -> Refraction.LOGGER.warn("Invalid screen handle request : {}", player.getName().getString());
+                        default ->
+                                Refraction.LOGGER.warn("Invalid screen handle request : {}", player.getName().getString());
                     }
                 }));
             }

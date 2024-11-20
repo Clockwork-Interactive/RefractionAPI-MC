@@ -3,6 +3,8 @@ package net.refractionapi.refraction.mixin;
 import net.minecraft.client.Minecraft;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.client.screen.DebugRendererScreen;
+import net.refractionapi.refraction.client.screen.RDashboard;
+import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.util.Keybindings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +18,7 @@ public class MinecraftMixin {
     private void handleKeybinds(CallbackInfo ci) {
         if (!Refraction.debugTools) return;
         while (Keybindings.DEBUG_RENDERERS.mapping().consumeClick()) {
-            Minecraft.getInstance().setScreen(new DebugRendererScreen());
+            ExampleScreenRegistry.DASHBOARD.setScreen();
         }
     }
 
