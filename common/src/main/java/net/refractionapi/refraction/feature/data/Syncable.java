@@ -33,7 +33,7 @@ public interface Syncable<C extends Syncable<C>> {
             return;
         } catch (Exception ignored) {
         }
-        serializers.computeIfAbsent((Class<? extends Syncable<?>>) this.getClass(), (c) -> new SerializableHandler<>()).add(this);
+        this.syncBuilder();
     }
 
     void write(FriendlyByteBuf buf);
