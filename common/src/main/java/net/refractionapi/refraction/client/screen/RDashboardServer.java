@@ -21,7 +21,7 @@ public class RDashboardServer extends ServerScreen {
 
     @Override
     public boolean stillValid() {
-        return Refraction.debugTools;
+        return Refraction.debugTools && getPlayer().hasPermissions(2);
     }
 
     @Override

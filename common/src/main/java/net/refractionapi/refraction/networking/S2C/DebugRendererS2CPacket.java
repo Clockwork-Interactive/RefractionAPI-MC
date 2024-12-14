@@ -1,6 +1,6 @@
 package net.refractionapi.refraction.networking.S2C;
 
-import net.minecraft.nbt.CompoundTag;
+import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.debug.RDebugRenderer;
@@ -12,27 +12,27 @@ import java.util.function.Consumer;
 public class DebugRendererS2CPacket extends Packet {
 
     private final String router;
-    private final CompoundTag nbt;
+    private final FriendlyByteBuf buf;
 
-    public DebugRendererS2CPacket(String router, CompoundTag nbt) {
+    public DebugRendererS2CPacket(String router, FriendlyByteBuf buf) {
         this.router = router;
-        this.nbt = nbt;
+        this.buf = buf;
     }
 
     public DebugRendererS2CPacket(FriendlyByteBuf buf) {
         this.router = buf.readUtf();
-        this.nbt = buf.readNbt();
+        this.buf = new FriendlyByteBuf(Unpooled.copiedBuffer(buf.readByteArray()));
     }
 
     @Override
     public void write(FriendlyByteBuf buf) {
         buf.writeUtf(this.router);
-        buf.writeNbt(this.nbt);
+        buf.writeByteArray(this.buf.array());
     }
 
     @Override
     public void handle(@Nullable Player player, Consumer<Runnable> context) {
-        context.accept(() -> RDebugRenderer.route(this.router, this.nbt));
+        context.accept(() -> RDebugRenderer.route(this.router, this.buf));
     }
 
 }

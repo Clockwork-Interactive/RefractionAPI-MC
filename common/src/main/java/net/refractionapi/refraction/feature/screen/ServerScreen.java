@@ -25,6 +25,10 @@ public abstract class ServerScreen {
         return this.player.isAlive();
     }
 
+    public boolean canOpen() {
+        return this.stillValid();
+    }
+
     public boolean canClose() {
         return true;
     }

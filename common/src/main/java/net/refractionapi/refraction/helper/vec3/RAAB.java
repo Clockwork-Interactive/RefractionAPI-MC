@@ -243,6 +243,7 @@ public class RAAB extends AABB {
     }
 
     // Overcomplicated, could just grab position[0][0] -> position[1][2];
+    // although, it possibly would not be minMax but maxMin --Zeus
     private static double[] getMinMax(Vec3[][] positions) {
         double minX = Double.MAX_VALUE;
         double minY = Double.MAX_VALUE;

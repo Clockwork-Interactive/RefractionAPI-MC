@@ -6,6 +6,7 @@ import net.minecraft.Util;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.refractionapi.refraction.debug.RDebugRenderer;
@@ -34,13 +35,13 @@ public class AABBRenderer extends RDebugRenderer {
     }
 
     @Override
-    protected void fromPacket(CompoundTag tag) {
-        BlockPos corner1 = BlockPos.of(tag.getLong("blockpos1"));
-        BlockPos corner2 = BlockPos.of(tag.getLong("blockpos2"));
-        int red = tag.getInt("red");
-        int green = tag.getInt("green");
-        int blue = tag.getInt("blue");
-        int time = tag.getInt("time");
+    protected void fromPacket(FriendlyByteBuf buf) {
+        BlockPos corner1 = buf.readBlockPos();
+        BlockPos corner2 = buf.readBlockPos();
+        int red = buf.readInt();
+        int green = buf.readInt();
+        int blue = buf.readInt();
+        int time = buf.readInt();
         AABB box = new AABB(corner1.getCenter(), corner2.getCenter());
         this.boxes.put(box, new Color(red, green, blue), Pair.of(Util.getMillis(), time));
     }

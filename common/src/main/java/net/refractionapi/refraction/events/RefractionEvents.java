@@ -1,5 +1,8 @@
 package net.refractionapi.refraction.events;
 
+import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.LevelAccessor;
 
@@ -30,6 +33,11 @@ public interface RefractionEvents {
             listener.onJoin(player);
         }
     });
+    RefractionEvent<RegisterCommands> REGISTER_COMMANDS = new RefractionEventCaller<>(RegisterCommands.class, listeners -> stack -> {
+        for (RegisterCommands listener : listeners) {
+            listener.register(stack);
+        }
+    });
 
     @FunctionalInterface
     interface ServerTick {
@@ -54,6 +62,16 @@ public interface RefractionEvents {
     @FunctionalInterface
     interface LoadLevel {
         void onLoad(LevelAccessor accessor);
+    }
+
+    @FunctionalInterface
+    interface RegisterLayers {
+        void register(LayeredDraw layeredDraw);
+    }
+
+    @FunctionalInterface
+    interface RegisterCommands {
+        void register(CommandDispatcher<CommandSourceStack> registrar);
     }
 
 }
