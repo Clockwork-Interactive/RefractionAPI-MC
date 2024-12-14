@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 /**
  * Class syncer <br>
- * Register with {@link Syncable#syncBuilder()} in the constructor <br>
+ * Register with {@link Syncable#setSynced()} in the constructor <br>
  * See {@link SyncedDataExample}
  */
 public interface Syncable<C extends Syncable<C>> {
