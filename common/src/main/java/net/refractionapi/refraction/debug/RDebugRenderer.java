@@ -9,15 +9,14 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.debug.debuggers.AABBRenderer;
+import net.refractionapi.refraction.debug.debuggers.PathfindingRenderer;
 import net.refractionapi.refraction.debug.debuggers.RAABBRenderer;
 import net.refractionapi.refraction.helper.vec3.RAAB;
-import net.refractionapi.refraction.helper.vec3.Vec3Helper;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +35,7 @@ public abstract class RDebugRenderer {
      */
     public static AABBRenderer aabbRenderer;
     public static RAABBRenderer raabbRenderer;
+    public static PathfindingRenderer pathfindingRenderer;
 
     public RDebugRenderer(String id) {
         this.minecraft = Minecraft.getInstance();
@@ -50,7 +50,7 @@ public abstract class RDebugRenderer {
 
     protected abstract void tick(boolean post);
 
-    protected abstract void fromPacket(CompoundTag tag);
+    protected abstract void fromPacket(FriendlyByteBuf buf);
 
     protected void renderLineBox(AABB aabb, float red, float green, float blue, float alpha, PoseStack stack, MultiBufferSource source) {
         LevelRenderer.renderLineBox(stack, source.getBuffer(RenderType.LINES), aabb, red, green, blue, alpha);
@@ -120,6 +120,13 @@ public abstract class RDebugRenderer {
         return new AABB(aabb.minX - camera.x - 0.51F, aabb.minY - camera.y - 0.51F, aabb.minZ - camera.z - 0.51F, aabb.maxX - camera.x + 0.51F, aabb.maxY - camera.y + 0.51F, aabb.maxZ - camera.z + 0.51F);
     }
 
+    protected float distanceToCamera(BlockPos pos) {
+        Vec3 camPos = this.cameraPosition();
+        return (float) (
+                Math.abs((double) pos.getX() - camPos.x) + Math.abs((double) pos.getY() - camPos.y) + Math.abs((double) pos.getZ() - camPos.z)
+        );
+    }
+
     protected Vec3 cameraPosition() {
         return Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
     }
@@ -158,10 +165,10 @@ public abstract class RDebugRenderer {
         return renderers.keySet();
     }
 
-    public static void route(String id, CompoundTag tag) {
+    public static void route(String id, FriendlyByteBuf buf) {
         RDebugRenderer renderer = renderers.get(id);
         if (renderer != null) {
-            renderer.fromPacket(tag);
+            renderer.fromPacket(buf);
         } else {
             Refraction.LOGGER.warn("Router not found {}", id);
         }
@@ -170,6 +177,7 @@ public abstract class RDebugRenderer {
     public static void init() {
         aabbRenderer = new AABBRenderer();
         raabbRenderer = new RAABBRenderer();
+        pathfindingRenderer = new PathfindingRenderer();
     }
 
 }

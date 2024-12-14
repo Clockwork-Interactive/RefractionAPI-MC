@@ -4,7 +4,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionRegistry;
 import net.refractionapi.refraction.feature.quest.QuestHandler;
 import net.refractionapi.refraction.feature.quest.points.InteractionPoint;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,7 +16,6 @@ public class EntityMixin {
 
     @Inject(at = @At("RETURN"), method = "interact")
     public void interact(Player pPlayer, InteractionHand pHand, CallbackInfoReturnable<InteractionResult> cir) {
-        ExampleInteractionRegistry.EXAMPLE_INTERACTION.sendInteraction(pPlayer, pPlayer);
         if (cir.getReturnValue() != InteractionResult.FAIL) {
             if (QuestHandler.QUESTS.containsKey(pPlayer.getUUID())) {
                 QuestHandler.QUESTS.get(pPlayer.getUUID()).getQuestPoints().forEach(questPoint -> {

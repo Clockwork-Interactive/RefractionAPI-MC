@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.event;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -55,6 +56,11 @@ public class RefractionEventsForge implements RefractionEvents {
     public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer)
             RefractionEvents.PLAYER_JOINED.invoker().onJoin(serverPlayer);
+    }
+
+    @SubscribeEvent
+    public static void registerCommands(RegisterCommandsEvent event) {
+        RefractionEvents.REGISTER_COMMANDS.invoker().register(event.getDispatcher());
     }
 
 }

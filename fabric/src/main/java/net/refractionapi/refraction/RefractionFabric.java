@@ -1,18 +1,17 @@
 package net.refractionapi.refraction;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.refractionapi.refraction.events.event.RefractionCommonData;
 import net.refractionapi.refraction.events.RefractionEvents;
+import net.refractionapi.refraction.events.event.RefractionCommonData;
 import net.refractionapi.refraction.networking.RefractionMessages;
 
 public class RefractionFabric implements ModInitializer {
@@ -39,6 +38,7 @@ public class RefractionFabric implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> RefractionEvents.SERVER_STOPPING.invoker().onStop());
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> RefractionEvents.PLAYER_JOINED.invoker().onJoin(handler.getPlayer()));
         ServerWorldEvents.LOAD.register((server, world) -> RefractionEvents.LOAD_LEVEL.invoker().onLoad(world));
+        CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) -> RefractionEvents.REGISTER_COMMANDS.invoker().register(dispatcher));
     }
 
 }

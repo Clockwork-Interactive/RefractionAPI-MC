@@ -20,7 +20,7 @@ public class GuiMixin {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(Minecraft pMinecraft, CallbackInfo ci) {
-        RefractionEvents.REGISTER_LAYERS.invoker().register(layers);
+        //RefractionEvents.REGISTER_LAYERS.invoker().register(layers);
     }
 
 }

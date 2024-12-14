@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
@@ -19,7 +20,7 @@ import net.refractionapi.refraction.events.event.RefractionCommonData;
 public class RefractionEventsNeo implements RefractionEvents {
 
     @SubscribeEvent
-    public static void playerTick(PlayerTickEvent event) {
+    public static void playerTick(PlayerTickEvent.Pre event) {
         RefractionCommonData.playerTick(event.getEntity());
     }
 
@@ -67,6 +68,11 @@ public class RefractionEventsNeo implements RefractionEvents {
     public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer)
             RefractionEvents.PLAYER_JOINED.invoker().onJoin(serverPlayer);
+    }
+
+    @SubscribeEvent
+    public static void registerCommands(RegisterCommandsEvent event) {
+        RefractionEvents.REGISTER_COMMANDS.invoker().register(event.getDispatcher());
     }
 
 }

@@ -1,6 +1,8 @@
 package net.refractionapi.refraction.events;
 
+import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.LevelAccessor;
 import net.refractionapi.refraction.feature.cutscenes.client.CinematicBars;
@@ -28,22 +30,22 @@ public interface RefractionEvents {
             listener.onStop();
         }
     });
-    RefractionEvent<RegisterLayers> REGISTER_LAYERS = new RefractionEventCaller<>(RegisterLayers.class, listeners -> layeredDraw -> {
-        for (RegisterLayers listener : listeners) {
-            listener.register(layeredDraw);
-        }
-    });
     RefractionEvent<PlayerJoin> PLAYER_JOINED = new RefractionEventCaller<>(PlayerJoin.class, listeners -> player -> {
         for (PlayerJoin listener : listeners) {
             listener.onJoin(player);
         }
     });
+    RefractionEvent<RegisterCommands> REGISTER_COMMANDS = new RefractionEventCaller<>(RegisterCommands.class, listeners -> stack -> {
+        for (RegisterCommands listener : listeners) {
+            listener.register(stack);
+        }
+    });
 
     default void registerOverlays() {
-        REGISTER_LAYERS.register(layer -> {
-            layer.add(new LayeredDraw().add(CinematicBars::bars), () -> true);
-            layer.add(new LayeredDraw().add(QuestRenderer::quest), () -> true);
-        });
+        // REGISTER_LAYERS.register(layer -> {
+        //     layer.add(new LayeredDraw().add(CinematicBars::bars), () -> true);
+        //     layer.add(new LayeredDraw().add(QuestRenderer::quest), () -> true);
+        // });
     }
 
     @FunctionalInterface
@@ -74,6 +76,11 @@ public interface RefractionEvents {
     @FunctionalInterface
     interface RegisterLayers {
         void register(LayeredDraw layeredDraw);
+    }
+
+    @FunctionalInterface
+    interface RegisterCommands {
+        void register(CommandDispatcher<CommandSourceStack> registrar);
     }
 
 }

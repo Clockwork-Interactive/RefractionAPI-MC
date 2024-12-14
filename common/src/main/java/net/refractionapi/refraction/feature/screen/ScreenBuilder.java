@@ -30,7 +30,15 @@ public class ScreenBuilder<T extends ServerScreen> {
     private final Function<ServerPlayer, T> serverScreenCreator;
     private final boolean clientAccessible;
 
-    private ScreenBuilder(String id, Function<Object[], CompoundTag> serializer, Function<CompoundTag, Object[]> deserializer, BiFunction<Object[], ScreenBuilder<?>, Object> clientScreenCreator, BiConsumer<T, CompoundTag> serverHandler, Function<ServerPlayer, T> serverScreenCreator, boolean clientAccessible) {
+    private ScreenBuilder(
+            String id,
+            Function<Object[], CompoundTag> serializer,
+            Function<CompoundTag, Object[]> deserializer,
+            BiFunction<Object[], ScreenBuilder<?>, Object> clientScreenCreator,
+            BiConsumer<T, CompoundTag> serverHandler,
+            Function<ServerPlayer, T> serverScreenCreator,
+            boolean clientAccessible
+    ) {
         this.id = id;
         this.serializer = serializer;
         this.deserializer = deserializer;
@@ -58,7 +66,9 @@ public class ScreenBuilder<T extends ServerScreen> {
     public void setScreen(Player player, Object... args) {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
         RefractionData data = RefractionData.get(player);
-        data.screen = this.serverScreenCreator.apply(serverPlayer);
+        ServerScreen screen = this.serverScreenCreator.apply(serverPlayer);
+        if (!screen.canOpen()) return;
+        data.screen = screen;
         data.screen.init(args);
         data.builder = this;
     }
