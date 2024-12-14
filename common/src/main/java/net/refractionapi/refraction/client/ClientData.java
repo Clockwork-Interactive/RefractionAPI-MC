@@ -12,7 +12,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.Refraction;
-import net.refractionapi.refraction.data.SerializableHandler;
+import net.refractionapi.refraction.feature.data.ClientSyncer;
+import net.refractionapi.refraction.feature.data.SerializableHandler;
 import net.refractionapi.refraction.debug.RDebugRenderer;
 import net.refractionapi.refraction.feature.cutscenes.client.ClientCutsceneData;
 import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionScreen;
@@ -115,6 +116,7 @@ public class ClientData {
         easingFunctionZRot = EasingFunctions.LINEAR;
         ClientCutsceneData.reset();
         ClientQuestInfo.reset();
+        ClientSyncer.SERIALIZERS.clear();
     }
 
 }
