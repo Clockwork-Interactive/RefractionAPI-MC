@@ -5,7 +5,7 @@ import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.cutscenes.CutsceneHandler;
-import net.refractionapi.refraction.feature.examples.data.SyncedDataExample;
+import net.refractionapi.refraction.feature.examples.atda.AtdaExampleRegistry;
 import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionRegistry;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.helper.clazz.RModRegistrar;
@@ -41,13 +41,9 @@ public class Refraction {
         ExampleInteractionRegistry.init();
         ExampleScreenRegistry.init();
         RItems.init();
+        AtdaExampleRegistry.init();
         RefractionEvents.PLAYER_JOINED.register(RefractionData::get);
-        RefractionEvents.PLAYER_JOINED.register((player) -> {
-            new SyncedDataExample(player, 1, 2.0F).sync(player);
-        });
-        RefractionEvents.REGISTER_COMMANDS.register((registrar -> {
-            new RDebugCommand(registrar);
-        }));
+        RefractionEvents.REGISTER_COMMANDS.register((RDebugCommand::new));
         if (RefractionServices.PLATFORM.isClient()) {
             ClientData.load();
         }

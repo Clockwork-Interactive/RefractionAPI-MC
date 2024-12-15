@@ -5,6 +5,7 @@ import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.LevelAccessor;
+import net.refractionapi.refraction.feature.atda.IAtdaProvider;
 
 public interface RefractionEvents {
 
@@ -36,6 +37,16 @@ public interface RefractionEvents {
     RefractionEvent<RegisterCommands> REGISTER_COMMANDS = new RefractionEventCaller<>(RegisterCommands.class, listeners -> stack -> {
         for (RegisterCommands listener : listeners) {
             listener.register(stack);
+        }
+    });
+    RefractionEvent<RegisterAtda> REGISTER_ATDA = new RefractionEventCaller<>(RegisterAtda.class, listeners -> provider -> {
+        for (RegisterAtda listener : listeners) {
+            listener.register(provider);
+        }
+    });
+    RefractionEvent<PlayerClone> PLAYER_CLONE = new RefractionEventCaller<>(PlayerClone.class, listeners -> (current, old) -> {
+        for (PlayerClone listener : listeners) {
+            listener.clone(current, old);
         }
     });
 
@@ -72,6 +83,16 @@ public interface RefractionEvents {
     @FunctionalInterface
     interface RegisterCommands {
         void register(CommandDispatcher<CommandSourceStack> registrar);
+    }
+
+    @FunctionalInterface
+    interface RegisterAtda {
+        void register(IAtdaProvider provider);
+    }
+
+    @FunctionalInterface
+    interface PlayerClone {
+        void clone(ServerPlayer current, ServerPlayer old);
     }
 
 }

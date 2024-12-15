@@ -4,11 +4,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.refractionapi.refraction.feature.data.Syncable;
 
-public abstract class AtdaData implements Syncable<AtdaData> {
+public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
 
     public abstract void save(CompoundTag tag);
 
-    public abstract void load(CompoundTag tag);
+    public void load(CompoundTag tag) {
+
+    }
 
     @Override
     public void write(FriendlyByteBuf buf) {
@@ -19,5 +21,7 @@ public abstract class AtdaData implements Syncable<AtdaData> {
     public void read(FriendlyByteBuf buf) {
         this.load(buf.readNbt());
     }
+
+    public abstract void copyFrom(T data);
 
 }

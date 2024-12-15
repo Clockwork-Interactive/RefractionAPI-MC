@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public abstract class AtdaProvider<E, T extends AtdaData> implements IAtdaProvider<T>, GenericBuilder<T> {
+public abstract class AtdaProvider<E, T extends AtdaData<T>> implements IAtdaProvider, GenericBuilder<T> {
 
     private T data;
 
@@ -17,8 +17,9 @@ public abstract class AtdaProvider<E, T extends AtdaData> implements IAtdaProvid
     }
 
     @Override
-    public @NotNull <O, D extends AtdaData> Optional<T> getAtda(Atda<O, D> holder) {
-        return holder == this.getHolder() ? Optional.of(this.getData()) : Optional.empty();
+    @SuppressWarnings("unchecked")
+    public @NotNull <O, D extends AtdaData<D>> Optional<D> getAtda(Atda<O, D> holder) {
+        return holder == this.getHolder() ? (Optional<D>) Optional.of(this.getData()) : Optional.empty();
     }
 
     @Override
