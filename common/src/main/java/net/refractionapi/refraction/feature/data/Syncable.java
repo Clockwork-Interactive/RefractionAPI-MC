@@ -23,17 +23,16 @@ public interface Syncable<C extends Syncable<C>> {
     }
 
     @SuppressWarnings("unchecked")
-    default SerializableHandler<C> syncBuilder() {
+    default SerializableHandler<C> setSynced() {
         return (SerializableHandler<C>) serializers.computeIfAbsent((Class<? extends Syncable<?>>) this.getClass(), (c) -> new SerializableHandler<>()).add(this);
     }
 
-    default void setSynced() {
-        try {
-            this.getClass().getConstructor(FriendlyByteBuf.class).newInstance((FriendlyByteBuf) null);
-            return;
-        } catch (Exception ignored) {
-        }
-        this.syncBuilder();
+    default void serialize(FriendlyByteBuf buf) {
+
+    }
+
+    default Object[] deserialize(FriendlyByteBuf buf) {
+        return new Object[]{};
     }
 
     void write(FriendlyByteBuf buf);

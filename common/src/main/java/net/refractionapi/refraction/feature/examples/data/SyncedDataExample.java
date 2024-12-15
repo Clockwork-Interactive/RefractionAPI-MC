@@ -20,22 +20,26 @@ public class SyncedDataExample implements Syncable<SyncedDataExample> {
     }
 
     public SyncedDataExample(FriendlyByteBuf friendlyByteBuf) {
-        Object[] synced = this.syncBuilder()
-                .serializer((data, buf) -> {
-                    buf.writeInt(data.anEntity.getId());
-                    buf.writeInt(data.anInt);
-                    buf.writeFloat(data.aFloat);
-                })
-                .deserializer((buf -> new Object[]{
-                        ClientData.getEntity(buf.readInt()),
-                        buf.readInt(),
-                        buf.readFloat()
-                }))
-                .get(friendlyByteBuf);
-
+        Object[] synced = this.setSynced().get(this, friendlyByteBuf);
         this.anEntity = (Entity) synced[0];
         this.anInt = (int) synced[1];
         this.aFloat = (float) synced[2];
+    }
+
+    @Override
+    public void serialize(FriendlyByteBuf buf) {
+        buf.writeInt(this.anEntity.getId());
+        buf.writeInt(this.anInt);
+        buf.writeFloat(this.aFloat);
+    }
+
+    @Override
+    public Object[] deserialize(FriendlyByteBuf buf) {
+        return new Object[]{
+                ClientData.getEntity(buf.readInt()),
+                buf.readInt(),
+                buf.readFloat()
+        };
     }
 
     @Override

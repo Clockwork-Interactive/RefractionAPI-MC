@@ -9,31 +9,20 @@ import net.refractionapi.refraction.platform.RefractionServices;
 
 import java.util.HashMap;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public class SerializableHandler<C extends Syncable<C>> {
 
     protected final HashMap<C, Integer> HANDLER = new HashMap<>();
-    protected Function<FriendlyByteBuf, Object[]> deserializer = (buf) -> new Object[0];
-    protected BiConsumer<C, FriendlyByteBuf> serializer = (obj, buf) -> {
-    };
+    protected BiFunction<C, FriendlyByteBuf, Object[]> deserializer = Syncable::deserialize;
+    protected BiConsumer<C, FriendlyByteBuf> serializer = Syncable::serialize;
 
     public SerializableHandler() {
 
     }
 
-    public SerializableHandler<C> serializer(BiConsumer<C, FriendlyByteBuf> serializer) {
-        this.serializer = serializer;
-        return this;
-    }
-
-    public SerializableHandler<C> deserializer(Function<FriendlyByteBuf, Object[]> deserializer) {
-        this.deserializer = deserializer;
-        return this;
-    }
-
-    public Object[] get(FriendlyByteBuf buf) {
-        return buf == null ? new Object[]{} : this.deserializer.apply(buf);
+    public Object[] get(C obj, FriendlyByteBuf buf) {
+        return buf == null ? new Object[]{} : this.deserializer.apply(obj, buf);
     }
 
     public <T> SerializableHandler<C> add(T data) {
