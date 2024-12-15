@@ -5,13 +5,17 @@ import net.minecraft.nbt.CompoundTag;
 import javax.annotation.Nonnull;
 import java.util.Optional;
 
-public interface IAtdaProvider<T extends AtdaData> {
+public interface IAtdaProvider {
 
     @Nonnull
-    <O, D extends AtdaData>  Optional<T> getAtda(Atda<O, D> holder);
+    <O, D extends AtdaData<D>>  Optional<D> getAtda(Atda<O, D> holder);
 
-    void serialize(CompoundTag tag);
+    default void serialize(CompoundTag tag) {
 
-    void deserialize(CompoundTag tag);
+    }
+
+    default void deserialize(CompoundTag tag) {
+
+    }
 
 }
