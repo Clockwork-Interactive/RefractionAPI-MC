@@ -4,7 +4,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.atda.Atda;
 import net.refractionapi.refraction.feature.atda.AtdaData;
@@ -22,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Optional;
 
 @Mixin(Entity.class)
-public class EntityMixin implements IEntity {
+public abstract class EntityMixin implements IEntity {
 
     @Inject(at = @At("RETURN"), method = "interact")
     public void interact(Player pPlayer, InteractionHand pHand, CallbackInfoReturnable<InteractionResult> cir) {
@@ -37,6 +39,11 @@ public class EntityMixin implements IEntity {
         }
     }
 
+    @Inject(at = @At("TAIL"), method = "<init>")
+    public void initEntity(EntityType<?> pEntityType, Level pLevel, CallbackInfo ci) {
+        RefractionEvents.REGISTER_ATDA.invoker().register(this);
+    }
+
     @Inject(at = @At("RETURN"), method = "saveWithoutId", cancellable = true)
     public void addInject(CompoundTag pCompound, CallbackInfoReturnable<CompoundTag> cir) {
         CompoundTag tag = Atda.serializeAll(this);
@@ -46,7 +53,6 @@ public class EntityMixin implements IEntity {
 
     @Inject(at = @At("RETURN"), method = "load")
     public void loadInject(CompoundTag pCompound, CallbackInfo ci) {
-        RefractionEvents.REGISTER_ATDA.invoker().register(this);
         Atda.deserializeAll(this, pCompound);
     }
 

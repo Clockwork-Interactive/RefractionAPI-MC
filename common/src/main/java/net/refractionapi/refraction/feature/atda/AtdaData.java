@@ -8,9 +8,7 @@ public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
 
     public abstract void save(CompoundTag tag);
 
-    public void load(CompoundTag tag) {
-
-    }
+    public abstract void load(CompoundTag tag);
 
     @Override
     public void write(FriendlyByteBuf buf) {
