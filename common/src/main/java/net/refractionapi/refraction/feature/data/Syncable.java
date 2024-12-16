@@ -1,10 +1,14 @@
 package net.refractionapi.refraction.feature.data;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import net.refractionapi.refraction.feature.examples.data.SyncedDataExample;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Class syncer <br>
@@ -13,13 +17,20 @@ import java.util.HashMap;
  */
 public interface Syncable<C extends Syncable<C>> {
 
-    HashMap<Class<? extends Syncable<?>>, SerializableHandler<?>> serializers = new HashMap<>();
+    ConcurrentHashMap<Class<? extends Syncable<?>>, SerializableHandler<?>> serializers = new ConcurrentHashMap<>();
 
     default void sync(Entity sync) {
         if (!serializers.containsKey(this.getClass()) || !serializers.get(this.getClass()).HANDLER.containsKey(this)) {
             throw new IllegalStateException("No handler for " + this.getClass().getName());
         }
         serializers.get(this.getClass()).sync(this, sync);
+    }
+
+    default void syncAll(Level level) {
+        if (!(level instanceof ServerLevel serverLevel)) return;
+        for (ServerPlayer player : serverLevel.players()) {
+            this.sync(player);
+        }
     }
 
     @SuppressWarnings("unchecked")

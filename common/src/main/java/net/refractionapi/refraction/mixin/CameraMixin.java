@@ -35,7 +35,7 @@ public abstract class CameraMixin implements ICameraMixin {
     @Unique
     private int shakeDurationTick = 0;
     @Unique
-    private int intensity = 10; //Value clamped from 0-10 to change intensity of shake
+    private float intensity = 10; //Value clamped from 0-10 to change intensity of shake
 
     protected CameraMixin() {
     }
@@ -86,7 +86,7 @@ public abstract class CameraMixin implements ICameraMixin {
      * @param intensity       Clamped 0 - 10 that controls how intense the shake is
      */
     @Override
-    public void startCameraShake(int durationInTicks, int intensity) {
+    public void startCameraShake(int durationInTicks, float intensity) {
         this.shakeStartTick = durationInTicks;
         this.shakeDurationTick = durationInTicks;
         this.intensity = Mth.clamp(intensity, 0, 10);
