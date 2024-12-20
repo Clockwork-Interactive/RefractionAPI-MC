@@ -16,6 +16,7 @@ import net.refractionapi.refraction.feature.quest.points.InteractionPoint;
 import net.refractionapi.refraction.mixininterfaces.IEntity;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,6 +26,10 @@ import java.util.Optional;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin implements IEntity {
+
+    @Shadow public abstract int getId();
+
+    @Shadow public abstract Level level();
 
     @Inject(at = @At("RETURN"), method = "interact")
     public void interact(Player pPlayer, InteractionHand pHand, CallbackInfoReturnable<InteractionResult> cir) {
@@ -56,6 +61,11 @@ public abstract class EntityMixin implements IEntity {
         Atda.deserializeAll(this, pCompound);
     }
 
+    @Inject(at = @At("RETURN"), method = "tick")
+    public void tick(CallbackInfo ci) {
+        Atda.tickProviders(this);
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <C, D extends IAtdaProvider> void addData(Atda<C, ?> registry, D providers) {
@@ -70,4 +80,13 @@ public abstract class EntityMixin implements IEntity {
         return Atda.get(holder, (O) this);
     }
 
+    @Override
+    public String getSyncID() {
+        return "" + this.getId();
+    }
+
+    @Override
+    public Level getLevel() {
+        return this.level();
+    }
 }

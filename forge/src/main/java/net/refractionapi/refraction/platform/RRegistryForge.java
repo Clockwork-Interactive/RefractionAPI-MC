@@ -17,14 +17,12 @@ public class RRegistryForge implements RRegistry {
 
     @Override
     public RRegister<Block> registerBlock(String id, Supplier<Block> block) {
-        RRegister<Block> register = new RRegister<>(id, BLOCKS.register(id, block));
-        return register;
+        return new RRegister<>(id, BLOCKS.register(id, block));
     }
 
     @Override
     public RRegister<Item> registerItem(String id, Supplier<Item> item) {
-        RRegister<Item> register = new RRegister<>(id, ITEMS.register(id, item));
-        return register;
+        return new RRegister<>(id, ITEMS.register(id, item));
     }
 
 }

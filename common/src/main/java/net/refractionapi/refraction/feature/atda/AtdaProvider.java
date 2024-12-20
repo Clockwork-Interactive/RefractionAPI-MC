@@ -2,18 +2,42 @@ package net.refractionapi.refraction.feature.atda;
 
 import net.minecraft.nbt.CompoundTag;
 import net.refractionapi.refraction.helper.misc.GenericBuilder;
+import org.apache.logging.log4j.util.InternalApi;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public abstract class AtdaProvider<E, T extends AtdaData<T>> implements IAtdaProvider, GenericBuilder<T> {
+public abstract class AtdaProvider<E, D extends AtdaData<D>> implements IAtdaProvider, GenericBuilder<D> {
 
-    private T data;
+    private D data;
 
-    protected abstract Atda<E, T> getHolder();
+    protected abstract Atda<E, D> getHolder();
 
-    private T getData() {
+    private D getData() {
         return this.data == null ? this.data = build() : this.data;
+    }
+
+    public D copyData() {
+        D copy = build();
+        copy.copyFrom(getData());
+        return copy;
+    }
+
+    public D data(E lookup) {
+        return readOnly(lookup) ? copyData() : getData();
+    }
+
+    @InternalApi
+    public <O> void tickInternal(O obj) {
+        tick((E) obj);
+    }
+
+    public void tick(E obj) {
+
+    }
+
+    public <O> boolean readOnly(O obj) {
+        return false;
     }
 
     @Override

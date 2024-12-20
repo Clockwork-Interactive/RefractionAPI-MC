@@ -26,8 +26,12 @@ public class SerializableHandler<C extends Syncable<C>> {
     }
 
     public <T> SerializableHandler<C> add(T data) {
-        this.HANDLER.put((C) data, this.HANDLER.size());
+        this.HANDLER.computeIfAbsent((C) data,  (d) -> this.HANDLER.size());
         return this;
+    }
+
+    public int getID(C data) {
+        return this.HANDLER.getOrDefault(data, -1);
     }
 
     @SuppressWarnings("unchecked")

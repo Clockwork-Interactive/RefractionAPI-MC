@@ -17,11 +17,16 @@ public class RandomItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Player player = context.getPlayer();
+        if (player.level().isClientSide)
+            AtdaExampleRegistry.EXAMPLE.get(player).ifPresent(data -> {
+                data.exampleData++;
+                Refraction.LOGGER.info("Example client data: {}", data.exampleData);
+            });
         if (!(player instanceof ServerPlayer serverPlayer)) return super.useOn(context);
         AtdaExampleRegistry.EXAMPLE.get(serverPlayer).ifPresent(data -> {
-            Refraction.LOGGER.info("Example data: {}", data.exampleData);
             data.exampleData++;
-            Refraction.LOGGER.info("Example data: {}", data.exampleData);
+            Refraction.LOGGER.info("Example server data: {}", data.exampleData);
+            data.sync(player);
         });
         return super.useOn(context);
     }

@@ -22,10 +22,10 @@ public class ClientSyncer<T extends Syncable<?>> {
 
     @SuppressWarnings("unchecked")
     public <C> void handleSerializer(Class<C> clazz, int id, FriendlyByteBuf buf, FriendlyByteBuf constArgs) {
-        this.cache.computeIfAbsent(id, (i) -> {
+         this.cache.computeIfAbsent(id, (i) -> {
             T byteBuf = createConstructed((Class<T>) clazz, constArgs);
             return byteBuf == null ? createEmpty((Class<T>) clazz) : byteBuf;
-        }).read(buf);
+        }).onSync(buf, id);
     }
 
     private T createEmpty(Class<T> clazz) {

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
@@ -30,6 +31,7 @@ public class Atda<E, D extends AtdaData<D>> {
 
     static final HashMap<ResourceLocation, Atda<?, ?>> data = new HashMap<>();
     final HashMap<E, List<IAtdaProvider>> providers = new HashMap<>();
+    final HashMap<String, AtdaData<?>> clientLookup = new HashMap<>();
     final ResourceLocation id;
 
     private Atda(ResourceLocation identifier) {
@@ -62,19 +64,53 @@ public class Atda<E, D extends AtdaData<D>> {
         });
     }
 
+    @SuppressWarnings("unchecked")
     public static <O, D extends AtdaData<D>> Optional<D> get(Atda<O, D> holder, O lookup) {
         Atda<?, ?> proper = data.get(holder.id);
         if (proper == null) throw new IllegalArgumentException("Atda not registered %s".formatted(holder.id));
-        for (IAtdaProvider iAtdaProvider : proper.providers.getOrDefault(lookup, List.of())) {
-            Optional<D> data = iAtdaProvider.getAtda(holder);
-            if (data.isPresent())
-                return data;
+        return (Optional<D>) Optional.ofNullable(proper.internalGet(lookup));
+    }
+
+    @SuppressWarnings("unchecked")
+    private <O> D internalGet(O lookup) {
+        if (!(lookup instanceof IAtdaProvider lookupProvider))
+            throw new RuntimeException("Invalid lookup called for non-IAdtaProvider class %s".formatted(lookup.getClass().toString()));
+        if (lookupProvider.getLevel().isClientSide) {
+            AtomicReference<D> dAtomicReference = new AtomicReference<>();
+            this.clientLookup.forEach((id, data) -> {
+                if (id.equals(lookupProvider.getSyncID() + data.getClass().getName())) {
+                    dAtomicReference.set((D) data);
+                }
+            });
+            return dAtomicReference.get();
         }
-        return Optional.empty();
+        for (IAtdaProvider iAtdaProvider : safeGet(lookup)) {
+            Optional<D> data = iAtdaProvider.getAtda(this);
+            if (data.isPresent()) {
+                data.get().setSyncables(lookupProvider, this);
+                return iAtdaProvider instanceof AtdaProvider<?, ?> provider ? provider.readOnly(lookup) ? (D) provider.copyData() : data.get() : data.get();
+            }
+        }
+        return null;
     }
 
     public Optional<D> get(E lookup) {
         return get(this, lookup);
+    }
+
+    public static Atda<?, ?> fromMap(ResourceLocation id) {
+        return data.get(id);
+    }
+
+    public static <O> void tickProviders(O lookup) {
+        safeGet(lookup).stream().filter((provider -> provider instanceof AtdaProvider<?, ?>)).forEach((provider -> ((AtdaProvider<?, ?>) provider).tickInternal(lookup)));
+    }
+
+    public static <O> List<IAtdaProvider> safeGet(O lookup) {
+        return data.values().stream().map(atda -> atda.providers.getOrDefault(lookup, new ArrayList<>())).reduce(new ArrayList<>(), (a, b) -> {
+            a.addAll(b);
+            return a;
+        });
     }
 
     public static <O> CompoundTag serializeAll(O lookup) {
