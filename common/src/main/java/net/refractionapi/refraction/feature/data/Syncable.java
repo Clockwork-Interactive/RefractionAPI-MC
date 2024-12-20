@@ -7,7 +7,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.refractionapi.refraction.feature.examples.data.SyncedDataExample;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -21,7 +20,7 @@ public interface Syncable<C extends Syncable<C>> {
 
     default void sync(Entity sync) {
         if (!serializers.containsKey(this.getClass()) || !serializers.get(this.getClass()).HANDLER.containsKey(this)) {
-            throw new IllegalStateException("No handler for " + this.getClass().getName());
+            throw new IllegalStateException("this.setSynced() has not been called in a constructor for %s".formatted(this.getClass().getName()));
         }
         serializers.get(this.getClass()).sync(this, sync);
     }
@@ -49,5 +48,9 @@ public interface Syncable<C extends Syncable<C>> {
     void write(FriendlyByteBuf buf);
 
     void read(FriendlyByteBuf buf);
+
+    default void onSync(FriendlyByteBuf buf, int id) {
+        this.read(buf);
+    }
 
 }

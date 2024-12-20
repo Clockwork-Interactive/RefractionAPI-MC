@@ -15,15 +15,13 @@ public class RRegistryFabric implements RRegistry {
     @Override
     public RRegister<Block> registerBlock(String id, Supplier<Block> block) {
         Block blockInstance = Registry.register(BuiltInRegistries.BLOCK, Refraction.id(id), block.get());
-        RRegister<Block> register = new RRegister<>(id, () -> blockInstance);
-        return register;
+        return new RRegister<>(id, () -> blockInstance);
     }
 
     @Override
     public RRegister<Item> registerItem(String id, Supplier<Item> item) {
         Item itemInstance = Registry.register(BuiltInRegistries.ITEM, Refraction.id(id), item.get());
-        RRegister<Item> register = new RRegister<>(id, () -> itemInstance);
-        return register;
+        return new RRegister<>(id, () -> itemInstance);
     }
 
 }
