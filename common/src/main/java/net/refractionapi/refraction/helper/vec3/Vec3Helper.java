@@ -131,7 +131,7 @@ public class Vec3Helper {
      */
     public static void smoothLerp(Entity entity, Vec3 start, Vec3 end, int ticks, EasingFunctions easingFunction) {
         Runnabler.create().run(ticks, (runnabler) -> {
-                    float lerpTicks = (float) runnabler.ticksLeft() / ticks;
+                    float lerpTicks = (float) (ticks - runnabler.ticksLeft()) / ticks;
                     lerpTicks = easingFunction.getEasing(lerpTicks);
                     Vec3 lerp = start.lerp(end, lerpTicks);
                     Vec3 currentPos = entity.position();
