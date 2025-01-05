@@ -128,7 +128,8 @@ public class Runnabler {
                 }
                 if (process.ticksLeft > 0 || process.ticksLeft == -1) {
                     process.run.accept(process);
-                    process.ticksLeft--;
+                    if (process.ticksLeft != -1)
+                        process.ticksLeft--;
                 } else {
                     process.stop(StopCase.FINISHED);
                 }
