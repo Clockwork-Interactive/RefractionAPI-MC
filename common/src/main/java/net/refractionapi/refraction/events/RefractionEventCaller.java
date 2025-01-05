@@ -1,13 +1,14 @@
 package net.refractionapi.refraction.events;
 
-import java.util.function.Function;
+import net.refractionapi.refraction.Refraction;
 
 import java.lang.reflect.Array;
+import java.util.function.Function;
 
 public class RefractionEventCaller<T> extends RefractionEvent<T> {
 
     private final Function<T[], T> invoker;
-    private T[] listeners;
+    private volatile T[] listeners;
     private final Class<T> type;
 
     public RefractionEventCaller(Class<T> type, Function<T[], T> invoker) {
@@ -21,6 +22,10 @@ public class RefractionEventCaller<T> extends RefractionEvent<T> {
     public void register(T listener) {
         T[] newListeners = (T[]) Array.newInstance(type, listeners.length + 1);
         System.arraycopy(listeners, 0, newListeners, 0, listeners.length);
+        if (newListeners.length < listeners.length) { // failed to copy
+            Refraction.LOGGER.error("Failed to register listener: {}", listener);
+            return;
+        }
         newListeners[listeners.length] = listener;
         listeners = newListeners;
         this.update();

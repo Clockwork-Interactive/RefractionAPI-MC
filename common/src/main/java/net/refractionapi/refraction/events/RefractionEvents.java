@@ -14,8 +14,20 @@ public interface RefractionEvents {
             listener.onLoad(world);
         }
     });
-    RefractionEvent<ServerTick> SERVER_TICK = new RefractionEventCaller<>(ServerTick.class, listeners -> post -> {
-        for (ServerTick listener : listeners) {
+    RefractionEvent<CommonTick> COMMON_TICK = new RefractionEventCaller<>(CommonTick.class, listeners -> (server, post) -> {
+        for (CommonTick listener : listeners) {
+            listener.onTick(server, post);
+        }
+    });
+    RefractionEvent<Tick> SERVER_TICK = new RefractionEventCaller<>(Tick.class, listeners -> post -> {
+        COMMON_TICK.invoker().onTick(true, post);
+        for (Tick listener : listeners) {
+            listener.onTick(post);
+        }
+    });
+    RefractionEvent<Tick> CLIENT_TICK = new RefractionEventCaller<>(Tick.class, listeners -> post -> {
+        COMMON_TICK.invoker().onTick(false, post);
+        for (Tick listener : listeners) {
             listener.onTick(post);
         }
     });
@@ -58,8 +70,13 @@ public interface RefractionEvents {
     }
 
     @FunctionalInterface
-    interface ServerTick {
+    interface Tick {
         void onTick(boolean post);
+    }
+
+    @FunctionalInterface
+    interface CommonTick {
+        void onTick(boolean server, boolean post);
     }
 
     @FunctionalInterface

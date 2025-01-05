@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -29,8 +30,8 @@ import java.util.function.Consumer;
  */
 public class Atda<E, D extends AtdaData<D>> {
 
-    static final HashMap<ResourceLocation, Atda<?, ?>> data = new HashMap<>();
-    final HashMap<E, List<IAtdaProvider>> providers = new HashMap<>();
+    static final ConcurrentHashMap<ResourceLocation, Atda<?, ?>> data = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<E, List<IAtdaProvider>> providers = new ConcurrentHashMap<>();
     final HashMap<String, AtdaData<?>> clientLookup = new HashMap<>();
     final ResourceLocation id;
 

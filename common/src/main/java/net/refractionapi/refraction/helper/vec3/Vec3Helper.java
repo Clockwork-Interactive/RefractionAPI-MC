@@ -9,11 +9,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.refractionapi.refraction.helper.math.EasingFunctions;
-import net.refractionapi.refraction.helper.runnable.RunnableHandler;
+import net.refractionapi.refraction.helper.runnable.Runnabler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Vec3Helper {
 
@@ -131,18 +130,16 @@ public class Vec3Helper {
      * Smoothly lerp an entity from start to end over a given amount of ticks.
      */
     public static void smoothLerp(Entity entity, Vec3 start, Vec3 end, int ticks, EasingFunctions easingFunction) {
-        AtomicInteger tick = new AtomicInteger(0);
-        RunnableHandler.addRunnable(() -> {
-            tick.getAndIncrement();
-            float lerpTicks = (float) tick.get() / ticks;
-            lerpTicks = easingFunction.getEasing(lerpTicks);
-            Vec3 lerp = start.lerp(end, lerpTicks);
-            Vec3 currentPos = entity.position();
-            Vec3 delta = lerp.subtract(currentPos);
-            entity.setDeltaMovement(delta);
-            entity.hurtMarked = true;
-            entity.setPosRaw(lerp.x, lerp.y, lerp.z);
-        }, ticks);
+        Runnabler.create().run(ticks, (runnabler) -> {
+                    float lerpTicks = (float) runnabler.ticksLeft() / ticks;
+                    lerpTicks = easingFunction.getEasing(lerpTicks);
+                    Vec3 lerp = start.lerp(end, lerpTicks);
+                    Vec3 currentPos = entity.position();
+                    Vec3 delta = lerp.subtract(currentPos);
+                    entity.setDeltaMovement(delta);
+                    entity.hurtMarked = true;
+                    entity.setPosRaw(lerp.x, lerp.y, lerp.z);
+                });
     }
 
     public static Vec3 getVec(LivingEntity livingEntity, float distance, float offset) {

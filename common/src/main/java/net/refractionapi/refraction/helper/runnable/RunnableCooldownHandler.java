@@ -7,6 +7,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Deprecated, use {@link Runnabler} instead
+ */
+@Deprecated
 public class RunnableCooldownHandler {
 
     public static final Map<Runnable, Integer> RUNNABLE_TICK_MAP = new ConcurrentHashMap<>();

@@ -13,6 +13,7 @@ import net.refractionapi.refraction.helper.command.RDebugCommand;
 import net.refractionapi.refraction.helper.registry.item.RItems;
 import net.refractionapi.refraction.helper.runnable.RunnableCooldownHandler;
 import net.refractionapi.refraction.helper.runnable.RunnableHandler;
+import net.refractionapi.refraction.helper.runnable.Runnabler;
 import net.refractionapi.refraction.helper.runnable.TickableProccesor;
 import net.refractionapi.refraction.platform.RefractionServices;
 import org.slf4j.Logger;
@@ -34,6 +35,7 @@ public class Refraction {
         if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) {
             debugTools = true;
         }
+        Runnabler.init();
         RunnableHandler.init();
         RunnableCooldownHandler.init();
         TickableProccesor.init();

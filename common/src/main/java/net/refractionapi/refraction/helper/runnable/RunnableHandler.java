@@ -9,6 +9,10 @@ import java.util.ListIterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+/**
+ * Deprecated, use {@link Runnabler} instead
+ */
+@Deprecated
 public class RunnableHandler<T> {
 
     public static final List<RunnableHandler<?>> RUNNABLES = new ArrayList<>();

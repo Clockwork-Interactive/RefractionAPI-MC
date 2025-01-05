@@ -11,7 +11,7 @@ import net.refractionapi.refraction.events.event.RefractionClientEvents;
 import net.refractionapi.refraction.feature.screen.RefractionScreen;
 
 @EventBusSubscriber(modid = Refraction.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
-public class RefractionForgeClient {
+public class RefractionNeoClient {
 
     @SubscribeEvent
     public static void closeScreen(ScreenEvent.Closing event) {

@@ -26,7 +26,7 @@ public class SerializableHandler<C extends Syncable<C>> {
     }
 
     public <T> SerializableHandler<C> add(T data) {
-        this.HANDLER.computeIfAbsent((C) data,  (d) -> this.HANDLER.size());
+        this.HANDLER.put((C) data,  this.HANDLER.size());
         return this;
     }
 

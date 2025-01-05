@@ -29,6 +29,8 @@ public abstract class AtdaProvider<E, D extends AtdaData<D>> implements IAtdaPro
 
     @InternalApi
     public <O> void tickInternal(O obj) {
+        if (getData() == null || this.data == null || this.data.atdaSync == null || this.data.providerSync == null)
+            return;
         tick((E) obj);
     }
 
