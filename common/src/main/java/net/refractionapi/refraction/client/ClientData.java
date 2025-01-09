@@ -13,6 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.debug.RDebugRenderer;
+import net.refractionapi.refraction.feature.channel.TwoWayIntermediary;
 import net.refractionapi.refraction.feature.cutscenes.client.ClientCutsceneData;
 import net.refractionapi.refraction.feature.data.ClientSyncer;
 import net.refractionapi.refraction.feature.data.SerializableHandler;
@@ -117,6 +118,7 @@ public class ClientData {
         ClientCutsceneData.reset();
         ClientQuestInfo.reset();
         ClientSyncer.SERIALIZERS.clear();
+        TwoWayIntermediary.instance(false).reset();
     }
 
 }

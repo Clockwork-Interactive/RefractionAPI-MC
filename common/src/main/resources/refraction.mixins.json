@@ -10,7 +10,7 @@
     "LivingEntityMixin",
     "PathMixin",
     "PathNavigationMixin",
-    "PlayerMixin",
+    "PlayerMixin"
   ],
   "client": [
     "CameraMixin",
