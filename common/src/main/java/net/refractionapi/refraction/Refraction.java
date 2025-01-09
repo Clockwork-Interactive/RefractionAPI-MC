@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.events.RefractionEvents;
+import net.refractionapi.refraction.feature.channel.TwoWayIntermediary;
 import net.refractionapi.refraction.feature.cutscenes.CutsceneHandler;
 import net.refractionapi.refraction.feature.examples.atda.AtdaExampleRegistry;
 import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionRegistry;
@@ -46,6 +47,7 @@ public class Refraction {
         AtdaExampleRegistry.init();
         RefractionEvents.PLAYER_JOINED.register(RefractionData::get);
         RefractionEvents.REGISTER_COMMANDS.register((RDebugCommand::new));
+        RefractionEvents.SERVER_STARTED.register(TwoWayIntermediary::init);
         if (RefractionServices.PLATFORM.isClient()) {
             ClientData.load();
         }

@@ -5,6 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.refractionapi.refraction.networking.C2S.SendScreenDataC2SPacket;
 import net.refractionapi.refraction.networking.C2S.SyncInteractionC2SPacket;
+import net.refractionapi.refraction.networking.C2S.TwoWayC2SPacket;
 import net.refractionapi.refraction.networking.S2C.*;
 import net.refractionapi.refraction.platform.RefractionServices;
 
@@ -29,6 +30,8 @@ public interface RefractionMessages {
         registerPacket(StopTickingSoundS2CPacket.class, RNetworkDirection.PLAY_TO_CLIENT);
         registerPacket(DebugRendererS2CPacket.class, RNetworkDirection.PLAY_TO_CLIENT);
         registerPacket(SerializerS2CPacket.class, RNetworkDirection.PLAY_TO_CLIENT);
+        registerPacket(TwoWayS2CPacket.class, RNetworkDirection.PLAY_TO_CLIENT);
+        registerPacket(TwoWayC2SPacket.class, RNetworkDirection.PLAY_TO_SERVER);
     }
 
     static <MSG extends Packet> void sendToServer(MSG message) {

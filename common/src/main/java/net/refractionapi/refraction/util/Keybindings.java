@@ -11,7 +11,6 @@ public interface Keybindings {
 
     Mapping DEBUG_RENDERERS = register("debug_renderers", InputConstants.KEY_F7, KEY_CATEGORY_REFRACTION);
 
-
     static Mapping register(String id, int key, String category) {
         Mapping mapping = new Mapping(id, new KeyMapping(id, key, category));
         RefractionServices.KEYBINDINGS.register(mapping);

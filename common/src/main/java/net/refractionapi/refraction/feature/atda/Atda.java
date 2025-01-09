@@ -66,10 +66,22 @@ public class Atda<E, D extends AtdaData<D>> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <O, D extends AtdaData<D>> Optional<D> get(Atda<O, D> holder, O lookup) {
+    public static <O, D extends AtdaData<D>> D getRaw(Atda<O, D> holder, O lookup) {
         Atda<?, ?> proper = data.get(holder.id);
         if (proper == null) throw new IllegalArgumentException("Atda not registered %s".formatted(holder.id));
-        return (Optional<D>) Optional.ofNullable(proper.internalGet(lookup));
+        return (D) proper.internalGet(lookup);
+    }
+
+    public static <O, D extends AtdaData<D>> Optional<D> get(Atda<O, D> holder, O look) {
+        return Optional.ofNullable(getRaw(holder, look));
+    }
+
+    public Optional<D> get(E lookup) {
+        return get(this, lookup);
+    }
+
+    public D getRaw(E lookup) {
+        return getRaw(this, lookup);
     }
 
     @SuppressWarnings("unchecked")
@@ -93,10 +105,6 @@ public class Atda<E, D extends AtdaData<D>> {
             }
         }
         return null;
-    }
-
-    public Optional<D> get(E lookup) {
-        return get(this, lookup);
     }
 
     public static Atda<?, ?> fromMap(ResourceLocation id) {

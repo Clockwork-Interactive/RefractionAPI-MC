@@ -3,6 +3,7 @@ package net.refractionapi.refraction.events;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.LevelAccessor;
 import net.refractionapi.refraction.feature.atda.IAtdaProvider;
@@ -39,6 +40,11 @@ public interface RefractionEvents {
     RefractionEvent<ServerStopping> SERVER_STOPPING = new RefractionEventCaller<>(ServerStopping.class, listeners -> () -> {
         for (ServerStopping listener : listeners) {
             listener.onStop();
+        }
+    });
+    RefractionEvent<ServerStarted> SERVER_STARTED = new RefractionEventCaller<>(ServerStarted.class, listeners -> server -> {
+        for (ServerStarted listener : listeners) {
+            listener.onStart(server);
         }
     });
     RefractionEvent<PlayerJoin> PLAYER_JOINED = new RefractionEventCaller<>(PlayerJoin.class, listeners -> player -> {
@@ -87,6 +93,11 @@ public interface RefractionEvents {
     @FunctionalInterface
     interface ServerStopping {
         void onStop();
+    }
+
+    @FunctionalInterface
+    interface ServerStarted {
+        void onStart(MinecraftServer server);
     }
 
     @FunctionalInterface

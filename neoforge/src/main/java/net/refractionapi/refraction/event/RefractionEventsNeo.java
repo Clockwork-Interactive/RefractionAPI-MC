@@ -8,6 +8,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -62,6 +63,11 @@ public class RefractionEventsNeo implements RefractionEvents {
     @SubscribeEvent
     public static void serverStopping(ServerStoppingEvent event) {
         RefractionEvents.SERVER_STOPPING.invoker().onStop();
+    }
+
+    @SubscribeEvent
+    public static void serverStarted(ServerStartedEvent event) {
+        RefractionEvents.SERVER_STARTED.invoker().onStart(event.getServer());
     }
 
     @SubscribeEvent
