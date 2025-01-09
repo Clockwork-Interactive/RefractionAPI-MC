@@ -157,7 +157,7 @@ public class TwoWayChannel {
     }
 
     public void receive(@Nullable Player player, String routerID, FriendlyByteBuf buf) {
-        if (this.isClosed() || !this.isCommunicating()) return;
+        if (this.isClosed() || !this.isCommunicating() || !this.valid.getAsBoolean()) return;
         Router router = this.ROUTERS.get(routerID);
         if (router == null) {
             Refraction.LOGGER.warn("Received message for unknown router: {}", routerID);
