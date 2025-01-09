@@ -13,27 +13,31 @@ public class ServerObject implements Syncable<ServerObject> {
 
     public ServerObject(Player owner) {
         this.channel = new TwoWayChannel(owner.level())
-                .sender(this::send)
-                .receiver((player, buf) -> player != null ? receive(player, buf) : 0)
+                .router(this::receiveDefault, this::sendDefault)
+                .router("api", this::receiveDefault, this::sendAPI)
                 .owner(owner)
                 .rule(TwoWayChannel.Rule.OWNER)
                 .open();
         this.setSynced();
         this.sync(owner);
-        this.channel.send();
+        this.channel.send("api");
     }
 
     public ServerObject() {
         this.channel = null;
     }
 
-    public void send(FriendlyByteBuf buf) {
+    public void sendDefault(FriendlyByteBuf buf) {
         buf.writeUtf("ServerObject");
     }
 
-    public int receive(Player player, FriendlyByteBuf buf) {
+    public int receiveDefault(Player player, FriendlyByteBuf buf) {
         Refraction.LOGGER.info("{} sent by {}", buf.readUtf(), player.getName().getString());
         return 1;
+    }
+
+    public void sendAPI(FriendlyByteBuf buf) {
+        buf.writeUtf("ServerObject API");
     }
 
     public static void init() {
