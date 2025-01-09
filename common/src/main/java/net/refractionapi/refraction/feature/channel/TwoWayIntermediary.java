@@ -35,13 +35,15 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
             this.syncConfig.syncAll((ServerLevel) channel.level);
     }
 
-    public void sendTo(boolean isServer, UUID uuid, boolean terminated) {
+    public void sendTo(boolean isServer, String routerID, UUID uuid, boolean terminated) {
         Optional<TwoWayChannel> channel = CHANNELS.get(uuid);
         if (channel == null) return;
         channel.ifPresent(c -> {
             FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
             buf.writeBoolean(terminated);
-            c.sender.message(buf);
+            buf.writeUtf(routerID);
+            boolean msg = c.message(routerID, buf);
+            if (!msg) return;
             if (!isServer)
                 RefractionMessages.sendToServer(new TwoWayC2SPacket(uuid, buf));
             else
@@ -49,12 +51,12 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
         });
     }
 
-    public void sendTo(boolean isServer, UUID uuid) {
-        sendTo(isServer, uuid, false);
+    public void sendTo(boolean isServer, String router, UUID uuid) {
+        sendTo(isServer, router, uuid, false);
     }
 
     public void terminate(UUID uuid) {
-        sendTo(true, uuid, true);
+        sendTo(true, "", uuid, true);
     }
 
     public void read(Player player, UUID uuid, FriendlyByteBuf buf) {
@@ -62,6 +64,7 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
         if (channel == null) return;
         channel.ifPresent(c -> {
             boolean terminated = buf.readBoolean();
+            String routerID = buf.readUtf();
             if (terminated && player.level().isClientSide) {
                 if (c.closeOnTerminate)
                     c.close();
@@ -71,9 +74,8 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
             if (player != null) {
                 if (!c.canCommunicate.apply((ServerPlayer) player)) return;
             }
-            if (!c.valid.getAsBoolean()) return;
             c.setCommunicating();
-            c.listener.handle(player, buf);
+            c.receive(player, routerID, buf);
         });
     }
 

@@ -15,7 +15,7 @@ public class ClientObject {
 
     public static int listen(@Nullable Player player, FriendlyByteBuf buf) {
         Refraction.LOGGER.info("{} sent by server", buf.readUtf());
-        channel.send();
+        channel.send("api");
         return 1;
     }
 
@@ -25,8 +25,7 @@ public class ClientObject {
 
     public static void init(UUID id) {
         channel = new TwoWayChannel(Minecraft.getInstance().level, id)
-                .receiver(ClientObject::listen)
-                .sender(ClientObject::send)
+                .router("api", ClientObject::listen, ClientObject::send)
                 .open();
     }
 }
