@@ -35,14 +35,15 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
             this.syncConfig.syncAll((ServerLevel) channel.level);
     }
 
-    public void sendTo(boolean isServer, String routerID, UUID uuid, boolean terminated) {
+    public void sendTo(boolean isServer, String routerID, UUID uuid, TwoWayChannel.Extra extra, boolean terminated) {
         Optional<TwoWayChannel> channel = CHANNELS.get(uuid);
         if (channel == null) return;
         channel.ifPresent(c -> {
             FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
             buf.writeBoolean(terminated);
             buf.writeUtf(routerID);
-            boolean msg = c.message(routerID, buf);
+            boolean msg = c.message(routerID, buf) || extra != null;
+            if (extra != null) extra.message(buf);
             if (!msg) return;
             if (!isServer)
                 RefractionMessages.sendToServer(new TwoWayC2SPacket(uuid, buf));
@@ -51,12 +52,16 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
         });
     }
 
-    public void sendTo(boolean isServer, String router, UUID uuid) {
-        sendTo(isServer, router, uuid, false);
+    public void sendTo(boolean isServer, String router, TwoWayChannel.Extra extra, UUID uuid) {
+        sendTo(isServer, router, uuid, extra, false);
     }
 
-    public void terminate(UUID uuid) {
-        sendTo(true, "", uuid, true);
+    public void sendTo(boolean isServer, String router, UUID uuid) {
+        sendTo(isServer, router, uuid, null, false);
+    }
+
+    protected void terminate(UUID uuid) {
+        sendTo(true, "", uuid, null, true);
     }
 
     public void read(Player player, UUID uuid, FriendlyByteBuf buf) {
@@ -72,8 +77,8 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
                 CHANNELS.remove(uuid);
                 return;
             }
-            if (player != null) {
-                if (!c.canCommunicate.apply((ServerPlayer) player)) return;
+            if (player instanceof ServerPlayer serverPlayer) {
+                if (!c.canCommunicate.apply(serverPlayer)) return;
             }
             c.setCommunicating();
             c.receive(player, routerID, buf);

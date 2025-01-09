@@ -85,6 +85,10 @@ public class TwoWayChannel {
         return this.router(DEFAULT, listener, sender);
     }
 
+    public TwoWayChannel router(String id, Listener listener) {
+        return this.router(id, listener, null);
+    }
+
     public TwoWayChannel valid(BooleanSupplier valid) {
         this.valid = valid;
         return this;
@@ -110,14 +114,23 @@ public class TwoWayChannel {
         if (this.isOpen()) throw new IllegalStateException("Channel is already open");
         if (this.listenerID == null) throw new IllegalStateException("Listener ID must be set before opening channel");
         this.status = this.owner == null ? Status.OPEN : Status.COMMUNICATING; // we know a player will communicate
-        TwoWayIntermediary.instance(!level.isClientSide).addChannel(this);
+        this.instance().addChannel(this);
         return this;
+    }
+
+    public TwoWayIntermediary instance() {
+        return TwoWayIntermediary.instance(!level.isClientSide);
+    }
+
+    public void terminate() {
+        if (this.level.isClientSide) throw new UnsupportedOperationException("Cannot terminate channel on client side");
+        this.instance().terminate(this.listenerID);
     }
 
     public TwoWayChannel close() {
         if (this.isClosed()) throw new IllegalStateException("Channel is already closed");
         this.status = Status.CLOSED;
-        TwoWayIntermediary instance = TwoWayIntermediary.instance(!level.isClientSide);
+        TwoWayIntermediary instance = instance();
         instance.terminate(this.listenerID);
         instance.CHANNELS.remove(this.listenerID);
         return this;
@@ -146,10 +159,14 @@ public class TwoWayChannel {
         return this.status == Status.CLOSED;
     }
 
-    public boolean send(String routerID) {
+    public boolean send(String routerID, TwoWayChannel.Extra extra) {
         if (this.isClosed()) return false;
-        TwoWayIntermediary.instance(!level.isClientSide).sendTo(!this.level.isClientSide, routerID, this.listenerID);
+        this.instance().sendTo(!this.level.isClientSide, routerID, extra, this.listenerID);
         return true;
+    }
+
+    public boolean send(String routerID) {
+        return this.send(routerID, null);
     }
 
     public boolean send() {
@@ -182,6 +199,11 @@ public class TwoWayChannel {
 
     @FunctionalInterface
     public interface Sender {
+        void message(FriendlyByteBuf buf);
+    }
+
+    @FunctionalInterface
+    public interface Extra {
         void message(FriendlyByteBuf buf);
     }
 

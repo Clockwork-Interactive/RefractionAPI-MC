@@ -15,7 +15,7 @@ public class ClientObject {
 
     public static int listen(@Nullable Player player, FriendlyByteBuf buf) {
         Refraction.LOGGER.info("{} sent by server", buf.readUtf());
-        channel.send("api");
+        channel.send("api", (byteBuf) -> byteBuf.writeUtf("ExtraData"));
         return 1;
     }
 
