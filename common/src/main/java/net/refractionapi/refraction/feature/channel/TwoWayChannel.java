@@ -12,7 +12,6 @@ import net.refractionapi.refraction.networking.S2C.TwoWayS2CPacket;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BooleanSupplier;
@@ -178,7 +177,7 @@ public class TwoWayChannel {
 
     @FunctionalInterface
     public interface Listener {
-        int handle(@Nullable Player player, FriendlyByteBuf buf);
+        int handle(Player player, FriendlyByteBuf buf);
     }
 
     @FunctionalInterface
