@@ -55,6 +55,7 @@ public class TwoWayChannel {
     public TwoWayChannel owner(Entity owner) {
         if (!(owner instanceof ServerPlayer player)) throw new IllegalArgumentException("Owner must be a player");
         this.owner = player;
+        this.rule(Rule.OWNER);
         return this;
     }
 
@@ -147,7 +148,7 @@ public class TwoWayChannel {
     }
 
     public boolean send(String routerID) {
-        if (this.isClosed() || !this.isCommunicating()) return false;
+        if (this.isClosed()) return false;
         TwoWayIntermediary.instance(!level.isClientSide).sendTo(!this.level.isClientSide, routerID, this.listenerID);
         return true;
     }
@@ -168,7 +169,7 @@ public class TwoWayChannel {
     }
 
     public boolean message(String routerID, FriendlyByteBuf buf) {
-        if (this.isClosed() || !this.isCommunicating()) return false;
+        if (this.isClosed()) return false;
         Router router = this.ROUTERS.get(routerID);
         if (router == null || router.sender == null) return false;
         router.sender.message(buf);
