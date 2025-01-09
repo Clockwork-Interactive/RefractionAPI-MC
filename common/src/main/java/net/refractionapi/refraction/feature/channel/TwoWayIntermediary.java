@@ -65,6 +65,7 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
         channel.ifPresent(c -> {
             boolean terminated = buf.readBoolean();
             String routerID = buf.readUtf();
+            // terminations only happen on the client side
             if (terminated && player.level().isClientSide) {
                 if (c.closeOnTerminate)
                     c.close();

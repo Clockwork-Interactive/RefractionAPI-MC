@@ -3,6 +3,7 @@ package net.refractionapi.refraction.networking.S2C;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
+import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.feature.channel.TwoWayIntermediary;
 import net.refractionapi.refraction.networking.Packet;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +35,7 @@ public class TwoWayS2CPacket extends Packet {
     public void handle(@Nullable Player player, Consumer<Runnable> context) {
         context.accept(() -> {
             if (player == null) return;
-            TwoWayIntermediary.instance(false).read(null, this.uuid, this.buf);
+            TwoWayIntermediary.instance(false).read(ClientData.getPlayer(), this.uuid, this.buf);
         });
     }
 }
