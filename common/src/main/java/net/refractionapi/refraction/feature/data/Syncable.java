@@ -33,6 +33,19 @@ public interface Syncable<C extends Syncable<C>> {
     }
 
     @SuppressWarnings("unchecked")
+    default int getSyncID() {
+        return this.syncableHandler().getID((C) this);
+    }
+
+    @SuppressWarnings("unchecked")
+    default SerializableHandler<C> syncableHandler() {
+        if (!serializers.containsKey(this.getClass())) {
+            throw new IllegalStateException("this.setSynced() has not been called in a constructor for %s".formatted(this.getClass().getName()));
+        }
+        return (SerializableHandler<C>) serializers.get(this.getClass());
+    }
+
+    @SuppressWarnings("unchecked")
     default SerializableHandler<C> setSynced() {
         return (SerializableHandler<C>) serializers.computeIfAbsent((Class<? extends Syncable<?>>) this.getClass(), (c) -> new SerializableHandler<>()).add(this);
     }
