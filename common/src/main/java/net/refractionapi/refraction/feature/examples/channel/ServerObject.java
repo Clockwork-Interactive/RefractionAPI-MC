@@ -15,11 +15,12 @@ public class ServerObject implements Syncable<ServerObject> {
         this.channel = new TwoWayChannel(owner.level())
                 .router(this::receiveDefault, this::sendDefault)
                 .router("api", this::receiveDefault, this::sendAPI)
-                .owner(owner)
-                .rule(TwoWayChannel.Rule.OWNER)
                 .open();
         this.setSynced();
         this.sync(owner);
+        // without an owner set, we're sending a message into the abyss
+        // every player will receive this message,
+        // and every player can send messages to this object
         this.channel.send("api");
     }
 
