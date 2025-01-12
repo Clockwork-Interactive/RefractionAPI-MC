@@ -35,7 +35,7 @@ public class Viewer {
 
     public Viewer(LevelAccessor level) {
         this.level = level;
-        new TickableProccesor().process(this::tick).shouldRun(this.shouldRun).start(this.level);
+        new TickableProccesor().process((accessor, post) -> this.tick()).shouldRun(this.shouldRun).start(this.level);
     }
 
     public Viewer setOrigin(Vec3 origin) {

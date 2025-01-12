@@ -25,7 +25,12 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
     protected final ConcurrentHashMap<UUID, Optional<TwoWayChannel>> CHANNELS = new ConcurrentHashMap<>();
 
     public TwoWayIntermediary() {
-        INSTANCE[INSTANCE.length - 1] = this;
+        this(0);
+    }
+
+    public TwoWayIntermediary(int index) {
+        if (INSTANCE[index] == null)
+            INSTANCE[index] = this;
         this.setSynced();
     }
 
@@ -35,36 +40,39 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
             this.syncConfig.syncAll((ServerLevel) channel.level);
     }
 
-    public void sendTo(boolean isServer, String routerID, UUID uuid, TwoWayChannel.Extra extra, boolean terminated) {
+    public void sendTo(boolean isServer, String routerID, UUID uuid, TwoWayChannel.Extra extra, TwoWayChannel.Header header, boolean terminated) {
         Optional<TwoWayChannel> channel = CHANNELS.get(uuid);
         if (channel == null) return;
         channel.ifPresent(c -> {
+            FriendlyByteBuf headerBuf = new FriendlyByteBuf(Unpooled.buffer());
             FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
             buf.writeBoolean(terminated);
             buf.writeUtf(routerID);
             boolean msg = c.message(routerID, buf) || extra != null;
             if (extra != null) extra.message(buf);
             if (!msg) return;
+            if (header != null) header.message(routerID, headerBuf);
+            else c.HEADER.message(routerID, headerBuf);
             if (!isServer)
-                RefractionMessages.sendToServer(new TwoWayC2SPacket(uuid, buf));
+                RefractionMessages.sendToServer(new TwoWayC2SPacket(uuid, headerBuf, buf));
             else
-                c.rule.syncer.accept(c, uuid, buf);
+                c.rule.syncer.accept(c, uuid, headerBuf, buf);
         });
     }
 
-    public void sendTo(boolean isServer, String router, TwoWayChannel.Extra extra, UUID uuid) {
-        sendTo(isServer, router, uuid, extra, false);
+    public void sendTo(boolean isServer, String router, TwoWayChannel.Extra extra, TwoWayChannel.Header header, UUID uuid) {
+        sendTo(isServer, router, uuid, extra, header, false);
     }
 
     public void sendTo(boolean isServer, String router, UUID uuid) {
-        sendTo(isServer, router, uuid, null, false);
+        sendTo(isServer, router, uuid, null, null, false);
     }
 
     protected void terminate(UUID uuid) {
-        sendTo(true, "", uuid, null, true);
+        sendTo(true, "", uuid, null, null, true);
     }
 
-    public void read(Player player, UUID uuid, FriendlyByteBuf buf) {
+    public void read(Player player, UUID uuid, FriendlyByteBuf header, FriendlyByteBuf buf) {
         Optional<TwoWayChannel> channel = CHANNELS.get(uuid);
         if (channel == null) return;
         channel.ifPresent(c -> {
@@ -81,7 +89,8 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
                 if (!c.canCommunicate.apply(serverPlayer)) return;
             }
             c.setCommunicating();
-            c.receive(player, routerID, buf);
+            c.receive(player, routerID, header, buf);
+            c.receivedHeader = null;
         });
     }
 
@@ -101,10 +110,11 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
 
     public static TwoWayIntermediary instance(boolean isServer) {
         int index = isServer ? 0 : 1;
-        return INSTANCE[index] == null ? INSTANCE[index] = new TwoWayIntermediary() : INSTANCE[index];
+        return INSTANCE[index] == null ? INSTANCE[index] = new TwoWayIntermediary(index) : INSTANCE[index];
     }
 
     public static void init(MinecraftServer server) {
-        new TwoWayIntermediary();
+        if (server.isReady())
+            new TwoWayIntermediary();
     }
 }

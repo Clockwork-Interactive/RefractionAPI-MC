@@ -80,19 +80,20 @@ public class Runnabler {
     /**
      * set runtimeTicks to -1 to run infinitely
      */
-    public void run(int delayTicks, int runtimeTicks, Consumer<Runnabler> run) {
+    public Runnabler run(int delayTicks, int runtimeTicks, Consumer<Runnabler> run) {
         this.delayTicks = delayTicks;
         this.ticksLeft = runtimeTicks;
         this.run = run;
         processes.add(this);
+        return this;
     }
 
-    public void start() {
-        run(this.delayTicks, this.ticksLeft, this.run);
+    public Runnabler start() {
+        return run(this.delayTicks, this.ticksLeft, this.run);
     }
 
-    public void run(int runtimeTicks, Consumer<Runnabler> run) {
-        run(0, runtimeTicks, run);
+    public Runnabler run(int runtimeTicks, Consumer<Runnabler> run) {
+        return run(0, runtimeTicks, run);
     }
 
     public void stop() {

@@ -26,6 +26,7 @@ public class ClientObject {
     public static void init(UUID id) {
         channel = new TwoWayChannel(Minecraft.getInstance().level, id)
                 .router("api", ClientObject::listen, ClientObject::send)
+                .header((router, buf) -> buf.writeByte(255))
                 .open();
     }
 }

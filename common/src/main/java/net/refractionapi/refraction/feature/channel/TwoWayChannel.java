@@ -9,12 +9,11 @@ import net.minecraft.world.level.Level;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.TwoWayS2CPacket;
-import org.apache.logging.log4j.util.TriConsumer;
+import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 /**
@@ -31,12 +30,16 @@ public class TwoWayChannel {
     protected final UUID listenerID;
     protected Status status = Status.CLOSED;
     protected Rule rule = Rule.ALL;
+    protected Header HEADER = (router, buf) -> {
+    };
     protected ConcurrentHashMap<String, Router> ROUTERS = new ConcurrentHashMap<>();
     protected ServerPlayer owner = null;
-    protected BooleanSupplier valid = () -> true;
+    protected TriFunction<Player, FriendlyByteBuf, String, Boolean> valid = (player, buf, router) -> true;
     protected Function<ServerPlayer, Boolean> canCommunicate = (player) -> owner == null || player == owner; // non-owner set instances can communicate with anyone
     protected boolean closeOnTerminate = false;
     protected final Level level;
+    @Nullable
+    protected TwoWayChannel.ReceivedHeader receivedHeader;
 
     public TwoWayChannel(Level level) {
         this(level, UUID.randomUUID());
@@ -89,7 +92,7 @@ public class TwoWayChannel {
         return this.router(id, listener, null);
     }
 
-    public TwoWayChannel valid(BooleanSupplier valid) {
+    public TwoWayChannel valid(TriFunction<Player, FriendlyByteBuf, String, Boolean> valid) {
         this.valid = valid;
         return this;
     }
@@ -97,6 +100,15 @@ public class TwoWayChannel {
     public TwoWayChannel canCommunicate(Function<ServerPlayer, Boolean> canCommunicate) {
         this.canCommunicate = canCommunicate;
         return this;
+    }
+
+    public TwoWayChannel header(Header header) {
+        this.HEADER = header;
+        return this;
+    }
+
+    public ReceivedHeader header() {
+        return this.receivedHeader;
     }
 
     public TwoWayChannel rule(Rule rule) {
@@ -159,22 +171,31 @@ public class TwoWayChannel {
         return this.status == Status.CLOSED;
     }
 
-    public boolean send(String routerID, TwoWayChannel.Extra extra) {
+    public boolean send(String routerID, TwoWayChannel.Extra extra, TwoWayChannel.Header header) {
         if (this.isClosed()) return false;
-        this.instance().sendTo(!this.level.isClientSide, routerID, extra, this.listenerID);
+        this.instance().sendTo(!this.level.isClientSide, routerID, extra, header, this.listenerID);
         return true;
     }
 
+    public boolean send(String routerID, TwoWayChannel.Extra extra) {
+        return this.send(routerID, extra, this.HEADER);
+    }
+
+    public boolean send(String routerID, TwoWayChannel.Header header) {
+        return this.send(routerID, null, header);
+    }
+
     public boolean send(String routerID) {
-        return this.send(routerID, null);
+        return this.send(routerID, null, null);
     }
 
     public boolean send() {
         return this.send("default");
     }
 
-    public void receive(@Nullable Player player, String routerID, FriendlyByteBuf buf) {
-        if (this.isClosed() || !this.isCommunicating() || !this.valid.getAsBoolean()) return;
+    public void receive(@Nullable Player player, String routerID, FriendlyByteBuf header, FriendlyByteBuf buf) {
+        this.receivedHeader = new ReceivedHeader(routerID, header);
+        if (this.isClosed() || !this.isCommunicating() || !this.valid.apply(player, buf, routerID)) return;
         Router router = this.ROUTERS.get(routerID);
         if (router == null) {
             Refraction.LOGGER.warn("Received message for unknown router: {}", routerID);
@@ -203,8 +224,19 @@ public class TwoWayChannel {
     }
 
     @FunctionalInterface
+    public interface Header {
+        void message(String router, FriendlyByteBuf buf);
+    }
+
+    @FunctionalInterface
     public interface Extra {
         void message(FriendlyByteBuf buf);
+    }
+
+    public record ReceivedHeader(String router, FriendlyByteBuf header) {
+        public FriendlyByteBuf header() {
+            return new FriendlyByteBuf(this.header.copy());
+        }
     }
 
     public record Router(String id, Listener listener, Sender sender) {
@@ -217,12 +249,17 @@ public class TwoWayChannel {
     }
 
     public enum Rule {
-        ALL((channel, uuid, buf) -> channel.level.getServer().getPlayerList().getPlayers().forEach(p -> RefractionMessages.sendToPlayer(new TwoWayS2CPacket(uuid, buf), p))),
-        OWNER((channel, uuid, buf) -> RefractionMessages.sendToPlayer(new TwoWayS2CPacket(uuid, buf), channel.owner));
-        final TriConsumer<TwoWayChannel, UUID, FriendlyByteBuf> syncer;
+        ALL((channel, uuid, header, buf) -> channel.level.getServer().getPlayerList().getPlayers().forEach(p -> RefractionMessages.sendToPlayer(new TwoWayS2CPacket(uuid, header, buf), p))),
+        OWNER((channel, uuid, header, buf) -> RefractionMessages.sendToPlayer(new TwoWayS2CPacket(uuid, header, buf), channel.owner));
+        final RuleConsumer syncer;
 
-        Rule(TriConsumer<TwoWayChannel, UUID, FriendlyByteBuf> syncer) {
+        Rule(RuleConsumer syncer) {
             this.syncer = syncer;
+        }
+
+        @FunctionalInterface
+        public interface RuleConsumer {
+            void accept(TwoWayChannel channel, UUID uuid, FriendlyByteBuf header, FriendlyByteBuf buf);
         }
     }
 }
