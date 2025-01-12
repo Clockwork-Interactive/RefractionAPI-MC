@@ -10,7 +10,8 @@
     "LivingEntityMixin",
     "PathMixin",
     "PathNavigationMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "ServerPlayerMixin"
   ],
   "client": [
     "CameraMixin",
@@ -22,7 +23,6 @@
     "ScreenMixin"
   ],
   "server": [
-    "ServerPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

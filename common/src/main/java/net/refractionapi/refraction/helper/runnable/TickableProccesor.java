@@ -4,13 +4,14 @@ import net.minecraft.world.level.LevelAccessor;
 import net.refractionapi.refraction.events.RefractionEvents;
 
 import java.util.HashMap;
+import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 
 public class TickableProccesor {
 
     private static final HashMap<TickableProccesor, LevelAccessor> RUNNABLES = new HashMap<>();
     private boolean running = false;
-    private Runnable process = () -> {
+    private BiConsumer<LevelAccessor, Boolean> process = (level, post) -> {
     };
     private Runnable onStop = () -> {
     };
@@ -19,7 +20,7 @@ public class TickableProccesor {
     public TickableProccesor() {
     }
 
-    public TickableProccesor process(Runnable process) {
+    public TickableProccesor process(BiConsumer<LevelAccessor, Boolean> process) {
         this.process = process;
         return this;
     }
@@ -53,7 +54,7 @@ public class TickableProccesor {
                 }
                 return stop;
             });
-            RUNNABLES.entrySet().stream().filter((entry) -> entry.getValue().equals(level)).forEach((processor) -> processor.getKey().process.run());
+            RUNNABLES.entrySet().stream().filter((entry) -> entry.getValue().equals(level)).forEach((processor) -> processor.getKey().process.accept(level, post));
         });
     }
 
