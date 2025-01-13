@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class RDebugRenderer {
-
     protected final Minecraft minecraft;
     protected static final HashMap<String, RDebugRenderer> renderers = new HashMap<>();
     public static final Set<String> enabled = new HashSet<>();
@@ -179,5 +178,4 @@ public abstract class RDebugRenderer {
         raabbRenderer = new RAABBRenderer();
         pathfindingRenderer = new PathfindingRenderer();
     }
-
 }

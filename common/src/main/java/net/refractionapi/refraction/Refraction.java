@@ -2,8 +2,10 @@ package net.refractionapi.refraction;
 
 import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.client.ClientData;
+import net.refractionapi.refraction.config.RConfig;
 import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.events.RefractionEvents;
+import net.refractionapi.refraction.feature.channel.SyncConfig;
 import net.refractionapi.refraction.feature.channel.TwoWayIntermediary;
 import net.refractionapi.refraction.feature.cutscenes.CutsceneHandler;
 import net.refractionapi.refraction.feature.examples.atda.AtdaExampleRegistry;
@@ -23,18 +25,19 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 
 public class Refraction {
-
     public static final String MOD_ID = "refraction";
     public static final String MOD_NAME = "Refraction";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
-    public static boolean debugTools = false;
     public static final Color refractionPrimary = new Color(20, 13, 26);
     public static final Color refractionSecondary = new Color(55, 20, 82);
+    public static final RConfig config = new RConfig();
+    public static final SyncConfig syncConfig = new SyncConfig()
+            .setSyncer(config::sync);
 
     public static void init() {
         RModRegistrar.registerSelf(MOD_ID);
         if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) {
-            debugTools = true;
+            RConfig.debugTools = true;
         }
         Runnabler.init();
         RunnableHandler.init();
@@ -56,5 +59,4 @@ public class Refraction {
     public static ResourceLocation id(String id) {
         return ResourceLocation.tryBuild(MOD_ID, id);
     }
-
 }
