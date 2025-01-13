@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 public class DebugRendererS2CPacket extends Packet {
-
     private final String router;
     private final FriendlyByteBuf buf;
 
@@ -34,5 +33,4 @@ public class DebugRendererS2CPacket extends Packet {
     public void handle(@Nullable Player player, Consumer<Runnable> context) {
         context.accept(() -> RDebugRenderer.route(this.router, this.buf));
     }
-
 }

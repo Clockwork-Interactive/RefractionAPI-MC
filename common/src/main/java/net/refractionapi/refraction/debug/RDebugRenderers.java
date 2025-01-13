@@ -10,7 +10,7 @@ import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.Target;
 import net.minecraft.world.phys.AABB;
-import net.refractionapi.refraction.Refraction;
+import net.refractionapi.refraction.config.RConfig;
 import net.refractionapi.refraction.helper.vec3.RAAB;
 import net.refractionapi.refraction.mixininterfaces.IPath;
 import net.refractionapi.refraction.networking.RefractionMessages;
@@ -19,7 +19,6 @@ import net.refractionapi.refraction.networking.S2C.DebugRendererS2CPacket;
 import java.util.stream.Collectors;
 
 public class RDebugRenderers implements IRDebugRenderers {
-
     private static IRDebugRenderers instance;
     private static final RDebugEmpty empty = new RDebugEmpty();
 
@@ -57,13 +56,13 @@ public class RDebugRenderers implements IRDebugRenderers {
     }
 
     public void send(String id, FriendlyByteBuf buf, ServerLevel level) {
+        if (!RConfig.debugTools) return;
         for (ServerPlayer player : level.getPlayers((player) -> player.isCreative() || player.hasPermissions(2))) {
             RefractionMessages.sendToPlayer(new DebugRendererS2CPacket(id, buf), player);
         }
     }
 
     public static IRDebugRenderers instance() {
-        return Refraction.debugTools ? instance == null ? instance = new RDebugRenderers() : instance : empty;
+        return RConfig.debugTools ? instance == null ? instance = new RDebugRenderers() : instance : empty;
     }
-
 }
