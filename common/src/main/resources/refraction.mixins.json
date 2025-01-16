@@ -19,7 +19,9 @@
     "GameRendererMixin",
     "GuiMixin",
     "KeyboardInputMixin",
+    "LevelRendererMixin",
     "MinecraftMixin",
+    "ParticleEngineMixin",
     "ScreenMixin"
   ],
   "server": [

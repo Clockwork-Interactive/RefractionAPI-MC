@@ -46,16 +46,6 @@ public class Vec3Helper {
         return new Vec3((f3 * f4), (-f5), (f2 * f4));
     }
 
-    public static Vec3 getVec(LivingEntity livingEntity, int distance, int offset) {
-        Vec3 vec3 = livingEntity.getEyePosition();
-        Vec3 vec31F = Vec3Helper.calculateViewVector(livingEntity.getXRot(), livingEntity.getYRot()).scale(distance);
-        Vec3 vec31S = Vec3Helper.calculateViewVector(livingEntity.getXRot(), livingEntity.getYRot() + 90.0F).scale(offset);
-        Vec3 FBVector = vec3.add(vec31F);
-        Vec3 RLVector = vec3.add(vec31S);
-        Vec3 vectorDifference = FBVector.subtract(RLVector);
-        return vec3.add(vectorDifference);
-    }
-
     public static void knockback(LivingEntity toKnockback, LivingEntity from, float strength) {
         toKnockback.knockback(strength, Mth.sin(from.getViewYRot(1) * ((float) Math.PI / 180F)), (-Mth.cos(from.getViewXRot(1) * ((float) Math.PI / 180F))));
     }
@@ -142,6 +132,10 @@ public class Vec3Helper {
                 });
     }
 
+    public static Vec3 getVec(LivingEntity livingEntity, float distance) {
+        return getVec(livingEntity, distance, 0);
+    }
+
     public static Vec3 getVec(LivingEntity livingEntity, float distance, float offset) {
         return getVec(livingEntity, livingEntity.getXRot(), livingEntity.getYRot(), distance, offset);
     }
@@ -159,7 +153,10 @@ public class Vec3Helper {
     }
 
     public static Vec3 getVec(LivingEntity livingEntity, float xRot, float yRot, float distance, float offset, float yOffset) {
-        Vec3 vec3 = livingEntity.getEyePosition();
+        return getVec(livingEntity.getEyePosition(), xRot, yRot, distance, offset, yOffset);
+    }
+
+    public static Vec3 getVec(Vec3 vec3, float xRot, float yRot, float distance, float offset, float yOffset) {
         Vec3 vec31F = Vec3Helper.calculateViewVector(xRot, yRot).scale(distance);
         Vec3 vec31S = Vec3Helper.calculateViewVector(xRot, yRot + 90.0F).scale(offset);
         Vec3 FBVector = vec3.add(vec31F);

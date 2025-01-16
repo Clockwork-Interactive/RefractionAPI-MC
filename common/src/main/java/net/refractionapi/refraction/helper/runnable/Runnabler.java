@@ -9,7 +9,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 public class Runnabler {
-
     private static final CopyOnWriteArrayList<Runnabler> processes = new CopyOnWriteArrayList<>();
     private Consumer<Runnabler> delayRun = (runnabler) -> {
     };
@@ -23,7 +22,10 @@ public class Runnabler {
     };
     private BooleanSupplier test = () -> true;
     private int delayTicks = 0;
+    private int delayTicksStart = 0;
     private int ticksLeft = 1;
+    private int ticksLeftStart = 1;
+    private boolean isClient;
 
     private Runnabler() {
 
@@ -31,11 +33,13 @@ public class Runnabler {
 
     public Runnabler delay(int ticks) {
         this.delayTicks = ticks;
+        this.delayTicksStart = ticks;
         return this;
     }
 
     public Runnabler runtimeTicks(int ticks) {
         this.ticksLeft = ticks;
+        this.ticksLeftStart = ticks;
         return this;
     }
 
@@ -54,6 +58,13 @@ public class Runnabler {
 
     public Runnabler delayRun(Consumer<Runnabler> delayRun) {
         this.delayRun = delayRun;
+        return this;
+    }
+
+    public Runnabler delayRun(int ticks, Consumer<Runnabler> delayRun) {
+        this.delay(ticks);
+        this.onRun = delayRun;
+        this.start();
         return this;
     }
 
@@ -81,11 +92,32 @@ public class Runnabler {
      * set runtimeTicks to -1 to run infinitely
      */
     public Runnabler run(int delayTicks, int runtimeTicks, Consumer<Runnabler> run) {
-        this.delayTicks = delayTicks;
-        this.ticksLeft = runtimeTicks;
+        this.delay(delayTicks);
+        this.runtimeTicks(runtimeTicks);
         this.run = run;
         processes.add(this);
         return this;
+    }
+
+    public Runnabler client() {
+        this.isClient = true;
+        return this;
+    }
+
+    public float delayProgress(int ticks) {
+        return (float) (ticks - this.delayTicks) / ticks;
+    }
+
+    public float runtimeProgress(int ticks) {
+        return (float) (ticks - this.ticksLeft) / ticks;
+    }
+
+    public float delayProgress() {
+        return delayProgress(this.delayTicksStart);
+    }
+
+    public float runtimeProgress() {
+        return runtimeProgress(this.ticksLeftStart);
     }
 
     public Runnabler start() {
@@ -109,11 +141,16 @@ public class Runnabler {
         return new Runnabler();
     }
 
+    public static Runnabler createClient() {
+        return create().client();
+    }
+
     @InternalApi
     public static void init() {
-        RefractionEvents.SERVER_TICK.register(post -> {
+        RefractionEvents.COMMON_TICK.register((server, post) -> {
             if (post) return;
             for (Runnabler process : processes) {
+                if ((process.isClient && server) || (!process.isClient && !server)) continue;
                 if (!process.test.getAsBoolean()) {
                     process.stop(StopCase.TEST);
                     continue;
@@ -143,5 +180,4 @@ public class Runnabler {
         FORCED,
         TEST
     }
-
 }

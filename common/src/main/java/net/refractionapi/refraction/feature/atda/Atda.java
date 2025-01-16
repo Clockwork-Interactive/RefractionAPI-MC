@@ -142,9 +142,10 @@ public class Atda<E, D extends AtdaData<D>> {
     }
 
     public static <O> void deserializeAll(O lookup, CompoundTag tag) {
-        if (!tag.contains("refraction_reserved_atda")) return;
+        if (tag == null || !tag.contains("refraction_reserved_atda")) return;
         CompoundTag serializedData = tag.getCompound("refraction_reserved_atda");
         ListTag listTag = serializedData.getList("refraction_atda", Tag.TAG_COMPOUND);
+        if (listTag == null || listTag.isEmpty()) return;
         for (Tag t : listTag) {
             CompoundTag compoundTag = (CompoundTag) t;
             ResourceLocation location = ResourceLocation.tryParse(compoundTag.getString("refraction_atda_reserved_data_fragment"));

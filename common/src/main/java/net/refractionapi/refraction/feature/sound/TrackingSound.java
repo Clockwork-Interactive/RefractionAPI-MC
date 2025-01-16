@@ -5,7 +5,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 
 public class TrackingSound extends PlayableTickableSound {
-
     private final LivingEntity entity;
     private final int loopingTicks;
     private int ticks;
@@ -17,6 +16,7 @@ public class TrackingSound extends PlayableTickableSound {
         this.loopingTicks = loopingTicks;
         this.volume = 1.0F;
         this.pitch = 1.0F;
+        this.isPlaying = true;
     }
 
     @Override
@@ -32,5 +32,4 @@ public class TrackingSound extends PlayableTickableSound {
             this.z = (float) this.entity.getZ();
         }
     }
-
 }

@@ -2,9 +2,7 @@ package net.refractionapi.refraction.debug.debuggers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.refractionapi.refraction.debug.RDebugRenderer;
@@ -12,7 +10,6 @@ import net.refractionapi.refraction.helper.vec3.RAAB;
 import net.refractionapi.refraction.helper.vec3.Vec3Helper;
 
 public class RAABBRenderer extends RDebugRenderer {
-
     public RAABBRenderer() {
         super("raab");
     }
@@ -48,5 +45,4 @@ public class RAABBRenderer extends RDebugRenderer {
     protected void fromPacket(FriendlyByteBuf buf) {
 
     }
-
 }
