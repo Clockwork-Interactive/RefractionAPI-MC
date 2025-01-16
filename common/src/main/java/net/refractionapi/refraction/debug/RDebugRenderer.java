@@ -3,6 +3,7 @@ package net.refractionapi.refraction.debug;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -17,6 +18,7 @@ import net.refractionapi.refraction.debug.debuggers.AABBRenderer;
 import net.refractionapi.refraction.debug.debuggers.PathfindingRenderer;
 import net.refractionapi.refraction.debug.debuggers.RAABBRenderer;
 import net.refractionapi.refraction.helper.vec3.RAAB;
+import org.joml.Matrix4f;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -104,6 +106,25 @@ public abstract class RDebugRenderer {
         builder.vertex(stack.last().pose(), (float) (end.x), (float) (end.y), (float) (end.z)).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
         RenderSystem.lineWidth(1.0F);
         stack.popPose();
+    }
+
+    protected void renderCircle(Vec3 center, float xRot, float yRot, float radius, float width, int color, PoseStack stack, MultiBufferSource source) {
+        stack.pushPose();
+        stack.translate(center.x, center.y, center.z);
+        stack.mulPose(Axis.XP.rotationDegrees(xRot));
+        stack.mulPose(Axis.ZP.rotationDegrees(yRot));
+        VertexConsumer builder = source.getBuffer(RenderType.debugLineStrip(width));
+        for (int i = 0; i < 20; i++) {
+            renderCircleVertex(i, stack.last().pose(), center.x, center.y, center.z, builder, center, radius, color);
+        }
+        renderCircleVertex(0, stack.last().pose(), center.x, center.y, center.z, builder, center, radius, color);
+        stack.popPose();
+    }
+
+    protected void renderCircleVertex(int index, Matrix4f pose, double xOffset, double yOffset, double zOffset, VertexConsumer consumer, Vec3 circleCenter, float radius, int color) {
+        float f = (float) index * ((float) Math.PI / 10);
+        Vec3 vec3 = circleCenter.add((double) radius * Math.cos(f), 0.0, (double) radius * Math.sin(f));
+        consumer.addVertex(pose, (float) (vec3.x - xOffset), (float) (vec3.y - yOffset), (float) (vec3.z - zOffset)).setColor(color);
     }
 
     protected void renderLine(BlockPos start, BlockPos end, float red, float green, float blue, float alpha, float lineWidth, PoseStack stack, MultiBufferSource source) {

@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.debug;
 
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
@@ -18,6 +19,11 @@ public class RDebugEmpty implements IRDebugRenderers{
 
     @Override
     public void renderPath(int entityId, Path path, float maxDistance, ServerLevel level) {
+
+    }
+
+    @Override
+    public void send(String id, FriendlyByteBuf buf, ServerLevel serverLevel) {
 
     }
 }

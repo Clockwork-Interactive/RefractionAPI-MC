@@ -6,7 +6,6 @@ import net.refractionapi.refraction.platform.RefractionServices;
 import org.jetbrains.annotations.ApiStatus;
 
 public interface Keybindings {
-
     String KEY_CATEGORY_REFRACTION = "key.category.refraction.binds";
 
     Mapping DEBUG_RENDERERS = register("debug_renderers", InputConstants.KEY_F7, KEY_CATEGORY_REFRACTION);
@@ -26,5 +25,4 @@ public interface Keybindings {
     static void init() {
 
     }
-
 }

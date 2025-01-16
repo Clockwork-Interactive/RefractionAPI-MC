@@ -56,7 +56,6 @@ public class RDebugRenderers implements IRDebugRenderers {
     }
 
     public void send(String id, FriendlyByteBuf buf, ServerLevel level) {
-        if (!RConfig.debugTools) return;
         for (ServerPlayer player : level.getPlayers((player) -> player.isCreative() || player.hasPermissions(2))) {
             RefractionMessages.sendToPlayer(new DebugRendererS2CPacket(id, buf), player);
         }

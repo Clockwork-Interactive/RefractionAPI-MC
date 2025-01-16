@@ -18,7 +18,9 @@
     "DebugRendererMixin",
     "GameRendererMixin",
     "KeyboardInputMixin",
+    "LevelRendererMixin",
     "MinecraftMixin",
+    "ParticleEngineMixin",
     "ScreenMixin"
   ],
   "server": [

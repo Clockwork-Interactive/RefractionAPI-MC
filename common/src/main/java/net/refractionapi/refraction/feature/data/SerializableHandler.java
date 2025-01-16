@@ -12,7 +12,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 public class SerializableHandler<C extends Syncable<C>> {
-
     protected final HashMap<C, Integer> HANDLER = new HashMap<>();
     protected BiFunction<C, FriendlyByteBuf, Object[]> deserializer = Syncable::deserialize;
     protected BiConsumer<C, FriendlyByteBuf> serializer = Syncable::serialize;
@@ -25,8 +24,9 @@ public class SerializableHandler<C extends Syncable<C>> {
         return buf == null ? new Object[]{} : this.deserializer.apply(obj, buf);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> SerializableHandler<C> add(T data) {
-        this.HANDLER.put((C) data,  this.HANDLER.size());
+        this.HANDLER.put((C) data, this.HANDLER.size());
         return this;
     }
 
@@ -58,5 +58,4 @@ public class SerializableHandler<C extends Syncable<C>> {
         }
         return classes;
     }
-
 }
