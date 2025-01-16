@@ -2,7 +2,7 @@ package net.refractionapi.refraction.feature.atda;
 
 import net.minecraft.nbt.CompoundTag;
 import net.refractionapi.refraction.helper.misc.GenericBuilder;
-import org.apache.logging.log4j.util.InternalApi;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -27,7 +27,7 @@ public abstract class AtdaProvider<E, D extends AtdaData<D>> implements IAtdaPro
         return readOnly(lookup) ? copyData() : getData();
     }
 
-    @InternalApi
+    @ApiStatus.Internal
     public <O> void tickInternal(O obj) {
         if (getData() == null || this.data == null || this.data.atdaSync == null || this.data.providerSync == null)
             return;

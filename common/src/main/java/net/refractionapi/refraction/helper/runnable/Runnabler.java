@@ -1,7 +1,7 @@
 package net.refractionapi.refraction.helper.runnable;
 
 import net.refractionapi.refraction.events.RefractionEvents;
-import org.apache.logging.log4j.util.InternalApi;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
@@ -145,7 +145,7 @@ public class Runnabler {
         return create().client();
     }
 
-    @InternalApi
+    @ApiStatus.Internal
     public static void init() {
         RefractionEvents.COMMON_TICK.register((server, post) -> {
             if (post) return;

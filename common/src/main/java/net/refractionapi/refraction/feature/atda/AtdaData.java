@@ -37,7 +37,7 @@ public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
     public void read(FriendlyByteBuf buf) {
         String syncID = buf.readUtf();
         String atdaID = buf.readUtf();
-        Atda<?, ?> atda = Atda.fromMap(ResourceLocation.parse(atdaID));
+        Atda<?, ?> atda = Atda.fromMap(ResourceLocation.tryParse(atdaID));
         if (atda == null) return;
         this.load(buf.readNbt());
         atda.clientLookup.put(syncID, this);

@@ -1,9 +1,7 @@
 package net.refractionapi.refraction.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -33,16 +31,11 @@ public class LevelRendererMixin {
             method = "renderLevel",
             at = @At(value = "HEAD")
     )
-    private void prepare(DeltaTracker pDeltaTracker, boolean pRenderBlockOutline, Camera pCamera, GameRenderer pGameRenderer, LightTexture pLightTexture, Matrix4f pFrustumMatrix, Matrix4f pProjectionMatrix, CallbackInfo ci) {
-        context.prepare((LevelRenderer) (Object) this, pDeltaTracker, pCamera, pGameRenderer, pLightTexture, pFrustumMatrix, pProjectionMatrix, renderBuffers.bufferSource(), level);
+    private void prepare(PoseStack pose, float partial, long $$2, boolean outline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projection, CallbackInfo ci) {
+        context.prepare((LevelRenderer) (Object) this, camera, gameRenderer, lightTexture, projection, renderBuffers.bufferSource(), level);
+        context.setPoseStack(pose);
     }
 
-    @ModifyExpressionValue(method = "renderLevel", at = @At(value = "NEW", target = "()Lcom/mojang/blaze3d/vertex/PoseStack;"))
-    private PoseStack setMatrixStack(PoseStack pose) {
-        context.setPoseStack(pose);
-        return pose;
-    }
-    
     @Inject(
             method = "renderLevel",
             at = @At(

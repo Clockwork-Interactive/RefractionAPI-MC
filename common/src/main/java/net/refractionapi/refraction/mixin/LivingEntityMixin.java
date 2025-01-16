@@ -33,7 +33,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     public void hurtInject(DamageSource pSource, float pAmount, CallbackInfoReturnable<Boolean> cir) {
         List<Cutscene> cutscenes = CutsceneHandler.QUEUE.getOrDefault((LivingEntity) (Object) this, new ArrayList<>());
         if (cutscenes.isEmpty()) return;
-        Cutscene current = cutscenes.getFirst();
+        Cutscene current = cutscenes.get(0);
         if (current != null) {
             if (current.invulnerable) cir.setReturnValue(false);
         }

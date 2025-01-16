@@ -1,7 +1,6 @@
 package net.refractionapi.refraction.events;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -101,11 +100,6 @@ public interface RefractionEvents {
     @FunctionalInterface
     interface LoadLevel {
         void onLoad(LevelAccessor accessor);
-    }
-
-    @FunctionalInterface
-    interface RegisterLayers {
-        void register(LayeredDraw layeredDraw);
     }
 
     @FunctionalInterface

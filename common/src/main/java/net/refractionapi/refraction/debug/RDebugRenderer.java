@@ -124,7 +124,7 @@ public abstract class RDebugRenderer {
     protected void renderCircleVertex(int index, Matrix4f pose, double xOffset, double yOffset, double zOffset, VertexConsumer consumer, Vec3 circleCenter, float radius, int color) {
         float f = (float) index * ((float) Math.PI / 10);
         Vec3 vec3 = circleCenter.add((double) radius * Math.cos(f), 0.0, (double) radius * Math.sin(f));
-        consumer.addVertex(pose, (float) (vec3.x - xOffset), (float) (vec3.y - yOffset), (float) (vec3.z - zOffset)).setColor(color);
+        consumer.vertex(pose, (float) (vec3.x - xOffset), (float) (vec3.y - yOffset), (float) (vec3.z - zOffset)).color(color).endVertex();
     }
 
     protected void renderLine(BlockPos start, BlockPos end, float red, float green, float blue, float alpha, float lineWidth, PoseStack stack, MultiBufferSource source) {

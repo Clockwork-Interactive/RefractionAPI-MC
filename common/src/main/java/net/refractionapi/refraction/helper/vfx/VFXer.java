@@ -1,7 +1,5 @@
 package net.refractionapi.refraction.helper.vfx;
 
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
 import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.helper.registry.RRegister;
@@ -13,12 +11,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class VFXer {
     protected static final CopyOnWriteArrayList<VFXWrapper<?>> activeWrappers = new CopyOnWriteArrayList<>();
 
-    public DeltaTracker deltaTracker() {
-        return Minecraft.getInstance().getTimer();
-    }
-
     public Quaternionfc getRotation(LivingEntity entity) {
-        return new Quaternionf().lookAlong(entity.getLookAngle().toVector3f().mul(-1.0F), entity.getUpVector(deltaTracker().getGameTimeDeltaTicks()).toVector3f());
+        return new Quaternionf().lookAlong(entity.getLookAngle().toVector3f().mul(-1.0F), entity.getUpVector(1.0F).toVector3f());
     }
 
     public ParticleWrapper  wrapParticle(RRegister<DynamicParticleType> particleType) {
