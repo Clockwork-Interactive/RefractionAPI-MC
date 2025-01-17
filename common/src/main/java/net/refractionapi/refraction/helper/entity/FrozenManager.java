@@ -21,6 +21,9 @@ public class FrozenManager {
                 return new FrozenData(teleport, new Mutable<>(ticks));
             } else {
                 v.ticks.value = ticks;
+                if (v.ticks.value <= 0) {
+                    unfreeze(entity);
+                }
                 return v;
             }
         });
@@ -30,15 +33,26 @@ public class FrozenManager {
         setFrozenTicks(entity, null, ticks);
     }
 
-    public static void addFrozenTicks(LivingEntity entity, int ticks) {
+    public static void addFrozenTicks(LivingEntity entity, Vec3 teleport, int ticks) {
         computeMap(entity, (k, v) -> {
             if (v == null) {
-                return new FrozenData(null, new Mutable<>(ticks));
+                return new FrozenData(teleport, new Mutable<>(ticks));
             } else {
                 v.ticks.value += ticks;
+                if (v.ticks.value <= 0) {
+                    unfreeze(entity);
+                }
                 return v;
             }
         });
+    }
+
+    public static void addFrozenTicks(LivingEntity entity, boolean teleport, int ticks) {
+        addFrozenTicks(entity, teleport ? entity.position() : null, ticks);
+    }
+
+    public static void addFrozenTicks(LivingEntity entity, int ticks) {
+        addFrozenTicks(entity, false, ticks);
     }
 
     public static void unfreeze(LivingEntity entity) {
@@ -64,6 +78,7 @@ public class FrozenManager {
 
     public static void init() {
         RefractionEvents.SERVER_TICK.register((post) -> {
+            if (post) return;
             frozenData.forEach((entity, data) -> {
                 if (data.ticks.value > 0) {
                     if (data.teleportPos != null) {
@@ -72,7 +87,7 @@ public class FrozenManager {
                     data.ticks.value--;
                     if (data.ticks.value <= 0) {
                         entity.hurtMarked = true;
-                        enableMovement(entity, true);
+                        unfreeze(entity);
                     }
                 }
             });

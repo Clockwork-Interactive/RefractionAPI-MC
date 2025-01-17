@@ -15,6 +15,7 @@ import net.refractionapi.refraction.feature.examples.interaction.ExampleInteract
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 import net.refractionapi.refraction.helper.command.RDebugCommand;
+import net.refractionapi.refraction.helper.entity.FrozenManager;
 import net.refractionapi.refraction.helper.registry.item.RItems;
 import net.refractionapi.refraction.helper.runnable.RunnableCooldownHandler;
 import net.refractionapi.refraction.helper.runnable.RunnableHandler;
@@ -50,6 +51,7 @@ public class Refraction {
         ExampleScreenRegistry.init();
         RItems.init();
         AtdaExampleRegistry.init();
+        FrozenManager.init();
         addClientInitializer(RefractionClient::new);
         RefractionEvents.PLAYER_JOINED.register(RefractionData::get);
         RefractionEvents.REGISTER_COMMANDS.register((RDebugCommand::new));
