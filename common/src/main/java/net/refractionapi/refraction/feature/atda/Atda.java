@@ -41,6 +41,7 @@ public class Atda<E, D extends AtdaData<D>> {
 
     public void add(E obj, IAtdaProvider provider) {
         this.providers.computeIfAbsent(obj, k -> new ArrayList<>()).add(provider);
+        getRaw(obj);
     }
 
     public static <O, D extends AtdaData<D>> Atda<O, D> register(String id) {
