@@ -6,7 +6,6 @@ import net.refractionapi.refraction.feature.atda.Atda;
 import net.refractionapi.refraction.feature.atda.AtdaProvider;
 
 public class AtdaExampleProvider extends AtdaProvider<Player, AtdaExampleData> {
-
     @Override
     protected Atda<Player, AtdaExampleData> getHolder() {
         return AtdaExampleRegistry.EXAMPLE;
@@ -26,5 +25,4 @@ public class AtdaExampleProvider extends AtdaProvider<Player, AtdaExampleData> {
     public <E> boolean readOnly(E obj) {
         return ((Entity) obj).level().isClientSide;
     }
-
 }

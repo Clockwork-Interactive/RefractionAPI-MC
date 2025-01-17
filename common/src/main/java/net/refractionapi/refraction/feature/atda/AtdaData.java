@@ -6,7 +6,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.feature.data.Syncable;
 
 public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
-
     IAtdaProvider providerSync;
     Atda<?, ?> atdaSync;
 
@@ -44,5 +43,4 @@ public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
     }
 
     public abstract void copyFrom(T data);
-
 }

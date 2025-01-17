@@ -29,7 +29,6 @@ import java.util.function.Consumer;
  * {@link AtdaUtils}
  */
 public class Atda<E, D extends AtdaData<D>> {
-
     static final ConcurrentHashMap<ResourceLocation, Atda<?, ?>> data = new ConcurrentHashMap<>();
     final ConcurrentHashMap<E, List<IAtdaProvider>> providers = new ConcurrentHashMap<>();
     final HashMap<String, AtdaData<?>> clientLookup = new HashMap<>();
@@ -41,6 +40,7 @@ public class Atda<E, D extends AtdaData<D>> {
 
     public void add(E obj, IAtdaProvider provider) {
         this.providers.computeIfAbsent(obj, k -> new ArrayList<>()).add(provider);
+        getRaw(obj); // init ticker
     }
 
     public static <O, D extends AtdaData<D>> Atda<O, D> register(String id) {
@@ -159,5 +159,4 @@ public class Atda<E, D extends AtdaData<D>> {
             }
         }
     }
-
 }
