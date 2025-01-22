@@ -13,7 +13,6 @@ import java.util.function.BiConsumer;
  */
 // Zeus' personal note: https://tenor.com/view/breaking-bad-jesse-pinkman-sad-jesse-pinkman-sad-breaking-bad-jesse-pinkman-sad-gif-24555445
 public class RAAB extends AABB {
-
     public final Vec3[][] positions;
 
     private RAAB(Vec3[][] positions, double x1, double y1, double z1, double x2, double y2, double z2) {
@@ -285,5 +284,4 @@ public class RAAB extends AABB {
         }
         return true;
     }
-
 }

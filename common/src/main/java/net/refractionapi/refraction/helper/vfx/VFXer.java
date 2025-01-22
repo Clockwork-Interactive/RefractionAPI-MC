@@ -15,8 +15,8 @@ public class VFXer {
         return new Quaternionf().lookAlong(entity.getLookAngle().toVector3f().mul(-1.0F), entity.getUpVector(1.0F).toVector3f());
     }
 
-    public ParticleWrapper  wrapParticle(RRegister<DynamicParticleType> particleType) {
-        return new ParticleWrapper(this, particleType);
+    public Particler particler(RRegister<ParticlerType> particleType) {
+        return new Particler(this, particleType);
     }
 
     public VFXRenderer createRenderer() {

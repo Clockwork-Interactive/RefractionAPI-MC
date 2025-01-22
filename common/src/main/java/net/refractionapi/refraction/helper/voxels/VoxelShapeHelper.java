@@ -10,7 +10,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * Always store the values created by this class and never constantly call new objects.
  */
 public class VoxelShapeHelper {
-
     public final VoxelShape northShape;
     public VoxelShape modifiedShape;
 

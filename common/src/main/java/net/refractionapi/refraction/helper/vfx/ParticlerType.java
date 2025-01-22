@@ -2,8 +2,8 @@ package net.refractionapi.refraction.helper.vfx;
 
 import net.minecraft.core.particles.SimpleParticleType;
 
-public class DynamicParticleType extends SimpleParticleType {
-    public DynamicParticleType(boolean pOverrideLimiter) {
+public class ParticlerType extends SimpleParticleType {
+    public ParticlerType(boolean pOverrideLimiter) {
         super(pOverrideLimiter);
     }
 }

@@ -2,6 +2,7 @@ package net.refractionapi.refraction.mixin;
 
 import net.minecraft.client.Minecraft;
 import net.refractionapi.refraction.config.RConfig;
+import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.util.Keybindings;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,5 +18,10 @@ public class MinecraftMixin {
         while (Keybindings.DEBUG_RENDERERS.mapping().consumeClick()) {
             ExampleScreenRegistry.DASHBOARD.setScreen();
         }
+    }
+
+    @Inject(method = "disconnect(Lnet/minecraft/client/gui/screens/Screen;Z)V", at = @At("HEAD"))
+    public void disconnect(CallbackInfo ci) {
+        RefractionClientEvents.CLIENT_PLAYER_LEAVE.invoker().onEvent();
     }
 }

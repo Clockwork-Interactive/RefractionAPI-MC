@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Vec3Helper {
-
     private static final RandomSource random = RandomSource.create();
 
     public static Vec3 getLookAtVec3(LivingEntity livingEntity, double range) {
@@ -290,5 +289,4 @@ public class Vec3Helper {
 
         return ret;
     }
-
 }

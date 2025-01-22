@@ -29,7 +29,6 @@ import net.refractionapi.refraction.util.Keybindings;
 import java.util.function.Supplier;
 
 public class ClientData {
-
     public static boolean canMove = true;
     public static boolean canRotateCamera = true;
 
@@ -120,5 +119,4 @@ public class ClientData {
         ClientSyncer.SERIALIZERS.clear();
         TwoWayIntermediary.instance(false).reset();
     }
-
 }

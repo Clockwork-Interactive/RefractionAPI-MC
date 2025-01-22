@@ -32,7 +32,7 @@ public abstract class AtdaProvider<E, D extends AtdaData<D>> implements IAtdaPro
             return;
         tick((E) obj);
     }
-
+    
     public void tick(E obj) {
 
     }

@@ -18,12 +18,23 @@ dependencies {
 ```
 
 ### All big things that Refraction offers: <br>
-- Flood Filler—Highly customizable flood filler
-- Camera shake—Provides a camera shake interface 
-- Cutscenes—Customizable cutscenes through code (future command support) 
-- Interactions—NPC Interaction handler
-- Quests—Quest handler system, doesn't offer quest stacking by default (future change)
-- Server Screens—Full server side control of screens without extra packets including closing, opening and sharing data between client ↔ server
-- Registrable tracking sounds—Ticking sounds that can be registered on the client and called from the server
+- Atda—Persistent data storage system <br>
+- Syncables—Server → Client class syncing capability <br>
+- Channels—Custom data channels between server and client w/ headers <br>
+- Runnabler—Handler for delayed and ticking runnables on client / server <br>
+- RefractionEvents—Event system with multiloader support <br>
+- VoxelUtils—Voxel generation utilities <br>
+- Particler—Particle wrapper with render and tick manipulation <br>
+- RAABB—Allows for non-axis aligner boxes with collision <br>
+- Cutscenes—Customizable cutscenes through code (future command support) <br>
 - Custom debuggers—Similar to Minecraft's system of debugging, Refraction has custom debug support <br>
-And a lot more, just take a look for yourself :D
+- Interactions—NPC Interaction handler <br>
+- Quests—Quest handler system, doesn't offer quest stacking by default (future change) <br>
+- Server Screens—Full server side control of screens without extra packets including closing, opening and sharing data between client ↔ server <br>
+- Registrable tracking sounds—Ticking sounds that can be registered on the client and called from the server <br>
+- Flood Filler—Highly customizable flood filler <br>
+- Camera shake—Provides a camera shake interface <br>
+- SyncConfig—Automatic syncing for player joins <br>
+- Vec3Helper—A lot of vec3 util <br>
+- RScanner—File scanner given a package <br>
+And a lot more, just take a look for yourself, mainly in @helper and @feature dirs :D
