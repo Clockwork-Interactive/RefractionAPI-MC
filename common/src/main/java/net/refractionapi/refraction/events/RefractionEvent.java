@@ -4,7 +4,6 @@ package net.refractionapi.refraction.events;
  * Was made for multiloader simplicity :P --Zeus
  */
 public abstract class RefractionEvent<T> {
-
     protected T event;
 
     protected RefractionEvent() {
@@ -16,5 +15,4 @@ public abstract class RefractionEvent<T> {
     public T invoker() {
         return event;
     }
-
 }

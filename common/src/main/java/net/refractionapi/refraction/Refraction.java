@@ -2,8 +2,6 @@ package net.refractionapi.refraction;
 
 import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.client.ClientData;
-import net.refractionapi.refraction.client.ClientInit;
-import net.refractionapi.refraction.client.RefractionClient;
 import net.refractionapi.refraction.config.RConfig;
 import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.events.RefractionEvents;
@@ -38,7 +36,7 @@ public class Refraction {
             .setSyncer(config::sync);
 
     public static void init() {
-        RModRegistrar.registerSelf(MOD_ID);
+        register(MOD_ID);
         if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) {
             RConfig.debugTools = true;
         }
@@ -52,7 +50,6 @@ public class Refraction {
         RItems.init();
         AtdaExampleRegistry.init();
         FrozenManager.init();
-        addClientInitializer(RefractionClient::new);
         RefractionEvents.PLAYER_JOINED.register(RefractionData::get);
         RefractionEvents.REGISTER_COMMANDS.register((RDebugCommand::new));
         RefractionEvents.SERVER_STARTED.register(TwoWayIntermediary::init);
@@ -61,9 +58,8 @@ public class Refraction {
         }
     }
 
-    public static void addClientInitializer(ClientInit initializer) {
-        if (RefractionServices.PLATFORM.isClient())
-            initializer.create();
+    public static void register(String modID) {
+        RModRegistrar.registerSelf(modID);
     }
 
     public static ResourceLocation id(String id) {

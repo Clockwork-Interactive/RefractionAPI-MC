@@ -6,7 +6,6 @@ import java.lang.reflect.Array;
 import java.util.function.Function;
 
 public class RefractionEventCaller<T> extends RefractionEvent<T> {
-
     private final Function<T[], T> invoker;
     private volatile T[] listeners;
     private final Class<T> type;
@@ -34,5 +33,4 @@ public class RefractionEventCaller<T> extends RefractionEvent<T> {
     public void update() {
         this.event = invoker.apply(listeners);
     }
-
 }

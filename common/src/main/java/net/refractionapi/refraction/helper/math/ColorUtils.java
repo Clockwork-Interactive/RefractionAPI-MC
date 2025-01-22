@@ -5,7 +5,6 @@ package net.refractionapi.refraction.helper.math;
  * (taken from Hexed)
  */
 public class ColorUtils {
-
     public static int getCurrentColorRendering(int colorStart, int colorEnd, long currentTick) {
         float position = (currentTick % 100f) / 100f;
 
@@ -16,7 +15,7 @@ public class ColorUtils {
         }
     }
 
-    public  static int interpolateColor(int color1, int color2, float ratio) {
+    public static int interpolateColor(int color1, int color2, float ratio) {
         int r = interpolateComponent((color1 >> 16) & 0xFF, (color2 >> 16) & 0xFF, ratio);
         int g = interpolateComponent((color1 >> 8) & 0xFF, (color2 >> 8) & 0xFF, ratio);
         int b = interpolateComponent(color1 & 0xFF, color2 & 0xFF, ratio);
@@ -27,5 +26,4 @@ public class ColorUtils {
     private static int interpolateComponent(int c1, int c2, float ratio) {
         return Math.round(c1 + (c2 - c1) * ratio);
     }
-
 }

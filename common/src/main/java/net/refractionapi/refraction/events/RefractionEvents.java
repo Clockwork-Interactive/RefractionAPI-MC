@@ -9,7 +9,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.refractionapi.refraction.feature.atda.IAtdaProvider;
 
 public interface RefractionEvents {
-
     RefractionEvent<LoadLevel> LOAD_LEVEL = new RefractionEventCaller<>(LoadLevel.class, listeners -> world -> {
         for (LoadLevel listener : listeners) {
             listener.onLoad(world);
@@ -129,5 +128,4 @@ public interface RefractionEvents {
     interface PlayerClone {
         void clone(ServerPlayer current, ServerPlayer old);
     }
-
 }

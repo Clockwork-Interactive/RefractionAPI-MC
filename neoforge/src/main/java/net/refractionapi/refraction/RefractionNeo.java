@@ -10,7 +10,6 @@ import net.refractionapi.refraction.platform.RefractionServices;
 
 @Mod(Refraction.MOD_ID)
 public class RefractionNeo {
-
     public RefractionNeo(IEventBus eventBus) {
         Refraction.init();
         RefractionMessagesNeo.init(eventBus);
@@ -21,5 +20,4 @@ public class RefractionNeo {
         RRegistryNeo.ITEMS.register(eventBus);
         NeoForge.EVENT_BUS.register(RefractionEventsNeo.class);
     }
-
 }

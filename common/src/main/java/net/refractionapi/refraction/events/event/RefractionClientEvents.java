@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RefractionClientEvents {
-
     public static final List<ResourceLocation> overlays = new ArrayList<>();
 
     public static void onRemove(Screen screen) {
@@ -77,5 +76,4 @@ public class RefractionClientEvents {
     public static boolean onAttack() {
         return ClientCutsceneData.cameraID != -1;
     }
-
 }

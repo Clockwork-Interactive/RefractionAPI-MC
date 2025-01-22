@@ -13,6 +13,16 @@ public class RefractionClientEvents {
             listener.onRegister(engine);
         }
     });
+    public static final RefractionEvent<Generic> CLIENT_PLAYER_LEAVE = new RefractionEventCaller<>(Generic.class, listeners -> () -> {
+        for (Generic listener : listeners) {
+            listener.onEvent();
+        }
+    });
+
+    @FunctionalInterface
+    public interface Generic {
+        void onEvent();
+    }
 
     @FunctionalInterface
     public interface RegisterParticles {

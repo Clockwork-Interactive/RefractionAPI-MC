@@ -21,7 +21,7 @@ public class FrozenManager {
                 return new FrozenData(teleport, new Mutable<>(ticks));
             } else {
                 v.ticks.value = ticks;
-                if (v.ticks.value <= 0) {
+                if (v.ticks.value <= 0 && ticks != -1) {
                     unfreeze(entity);
                 }
                 return v;
@@ -31,6 +31,14 @@ public class FrozenManager {
 
     public static void setFrozenTicks(LivingEntity entity, int ticks) {
         setFrozenTicks(entity, null, ticks);
+    }
+
+    public static void setFrozen(LivingEntity entity, Vec3 teleport) {
+        setFrozenTicks(entity, teleport, -1);
+    }
+
+    public static void setFrozen(LivingEntity entity) {
+        setFrozenTicks(entity, null, -1);
     }
 
     public static void addFrozenTicks(LivingEntity entity, Vec3 teleport, int ticks) {
@@ -87,7 +95,7 @@ public class FrozenManager {
                     data.ticks.value--;
                     if (data.ticks.value <= 0) {
                         entity.hurtMarked = true;
-                        unfreeze(entity);
+                        enableMovement(entity, true);
                     }
                 }
             });

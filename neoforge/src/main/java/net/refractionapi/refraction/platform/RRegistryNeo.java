@@ -10,7 +10,6 @@ import net.refractionapi.refraction.helper.registry.RRegistry;
 import java.util.function.Supplier;
 
 public class RRegistryNeo implements RRegistry {
-
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Refraction.MOD_ID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Refraction.MOD_ID);
 
@@ -23,5 +22,4 @@ public class RRegistryNeo implements RRegistry {
     public RRegister<Item> registerItem(String id, Supplier<Item> item) {
         return new RRegister<>(id, ITEMS.register(id, item));
     }
-
 }

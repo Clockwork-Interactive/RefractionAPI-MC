@@ -15,7 +15,6 @@ import net.refractionapi.refraction.Refraction;
 import java.util.function.Consumer;
 
 public class RefractionMessagesNeo implements RefractionMessages {
-
     private static PayloadRegistrar registrar = null;
 
     @Override
@@ -56,5 +55,4 @@ public class RefractionMessagesNeo implements RefractionMessages {
             registrar = null;
         });
     }
-
 }

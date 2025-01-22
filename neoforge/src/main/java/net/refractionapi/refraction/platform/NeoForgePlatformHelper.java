@@ -5,7 +5,6 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.refractionapi.refraction.platform.services.IPlatformHelper;
 
 public class NeoForgePlatformHelper implements IPlatformHelper {
-
     @Override
     public String getPlatformName() {
 
@@ -28,5 +27,4 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
     public boolean isClient() {
         return FMLLoader.getDist().isClient();
     }
-
 }

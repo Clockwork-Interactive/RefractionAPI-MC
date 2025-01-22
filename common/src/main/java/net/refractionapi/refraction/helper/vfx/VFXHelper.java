@@ -14,7 +14,6 @@ import static net.refractionapi.refraction.helper.vec3.Vec3Helper.calculateViewV
 import static net.refractionapi.refraction.helper.vec3.Vec3Helper.getDegreesBetweenPoints;
 
 public class VFXHelper {
-
     static Random random = new Random();
 
 
@@ -75,5 +74,4 @@ public class VFXHelper {
             }
         }
     }
-
 }

@@ -1,5 +1,7 @@
 package net.refractionapi.refraction.helper.math;
 
+import net.minecraft.util.Mth;
+
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -7,7 +9,6 @@ import static net.refractionapi.refraction.helper.math.ColorUtils.interpolateCol
 
 // I originally made this for Hexed, but thought this could be great util --Zeus
 public class ColorInterpolator {
-
     private HashMap<Float, Section> sections = new HashMap<>();
     private int previousColor = -1;
 
@@ -21,7 +22,7 @@ public class ColorInterpolator {
         this.previousColor = toColor;
         this.sections.put(atPosition, new Section(fromColor, toColor, ratio));
         this.sections = this.sections.entrySet().stream()
-                .sorted((o1, o2) -> Float.compare(o1.getKey(), o2.getKey()))
+                .sorted((o1, o2) -> Float.compare(o2.getKey(), o1.getKey()))
                 .collect(Collectors.toMap(HashMap.Entry::getKey, HashMap.Entry::getValue, (a, b) -> a, HashMap::new));
         return this;
     }
@@ -31,12 +32,13 @@ public class ColorInterpolator {
     }
 
     public int getColor(float delta) {
-        if (delta < 0 || delta > 1)
-            throw new IllegalArgumentException("Can't have delta be smaller than 0 or bigger than 1!");
+        delta = Mth.clamp(delta, 0, 1);
+        int index = 0;
         for (Float key : this.sections.keySet()) {
-            if (delta > key) {
+            index++;
+            if (delta < key || index == this.sections.size()) {
                 Section section = this.sections.get(key);
-                return interpolateColor(section.fromColor, section.toColor, section.ratio);
+                return interpolateColor(section.fromColor, section.toColor, (delta - key) / section.ratio);
             }
         }
         return -1;
@@ -49,5 +51,4 @@ public class ColorInterpolator {
 
     private record Section(int fromColor, int toColor, float ratio) {
     }
-
 }

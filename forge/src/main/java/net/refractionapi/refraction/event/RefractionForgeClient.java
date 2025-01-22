@@ -12,7 +12,6 @@ import net.refractionapi.refraction.feature.screen.RefractionScreen;
 
 @Mod.EventBusSubscriber(modid = Refraction.MOD_ID, value = Dist.CLIENT)
 public class RefractionForgeClient {
-
     @SubscribeEvent
     public static void closeScreen(ScreenEvent.Closing event) {
         if (event.getScreen() instanceof RefractionScreen) {
@@ -31,5 +30,4 @@ public class RefractionForgeClient {
             event.setCanceled(RefractionClientEvents.onAttack());
         }
     }
-
 }

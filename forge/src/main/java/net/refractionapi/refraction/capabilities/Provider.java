@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class Provider<E extends Data<E>> implements ICapabilityProvider, INBTSerializable<CompoundTag>, GenericBuilder<E> {
-
     protected abstract Capability<E> getData();
 
     private E data = null;

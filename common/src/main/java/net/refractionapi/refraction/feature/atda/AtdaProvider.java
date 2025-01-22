@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 public abstract class AtdaProvider<E, D extends AtdaData<D>> implements IAtdaProvider, GenericBuilder<D> {
-
     private D data;
 
     protected abstract Atda<E, D> getHolder();
@@ -33,7 +32,7 @@ public abstract class AtdaProvider<E, D extends AtdaData<D>> implements IAtdaPro
             return;
         tick((E) obj);
     }
-
+    
     public void tick(E obj) {
 
     }
@@ -57,5 +56,4 @@ public abstract class AtdaProvider<E, D extends AtdaData<D>> implements IAtdaPro
     public void deserialize(CompoundTag tag) {
         getData().load(tag);
     }
-
 }

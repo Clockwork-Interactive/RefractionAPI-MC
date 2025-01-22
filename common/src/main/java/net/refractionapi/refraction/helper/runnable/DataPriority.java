@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class DataPriority<T> {
-
     private final HashMap<Integer, Pair<Predicate<?>, T>> data = new HashMap<>();
 
     public DataPriority() {
@@ -51,5 +50,4 @@ public class DataPriority<T> {
                 .max(Comparator.comparingInt(Map.Entry::getKey))
                 .map(entry -> entry.getValue().getSecond()).or(() -> Optional.ofNullable(this.data.get(-1)).map(Pair::getSecond));
     }
-
 }

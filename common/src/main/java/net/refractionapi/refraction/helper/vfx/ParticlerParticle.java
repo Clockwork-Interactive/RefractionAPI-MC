@@ -12,15 +12,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
 
-public class DynamicParticle extends TextureSheetParticle {
+public class ParticlerParticle extends TextureSheetParticle {
     protected ParticleRenderType renderType = ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     protected SpriteSet set;
     protected Vec3 movement = Vec3.ZERO;
-    protected BiConsumer<Runnabler, DynamicParticle> onTick = (runnabler, particle) -> {
+    protected BiConsumer<Runnabler, ParticlerParticle> onTick = (runnabler, particle) -> {
     };
     protected Runnabler runnabler = null;
 
-    protected DynamicParticle(ClientLevel pLevel, double pX, double pY, double pZ, SpriteSet set) {
+    protected ParticlerParticle(ClientLevel pLevel, double pX, double pY, double pZ, SpriteSet set) {
         super(pLevel, pX, pY, pZ);
         this.setSprite(set);
         this.setSpriteFromAge(set);
@@ -39,29 +39,29 @@ public class DynamicParticle extends TextureSheetParticle {
         this.gravity = gravity;
     }
 
-    public DynamicParticle setSprite(SpriteSet set) {
+    public ParticlerParticle setSprite(SpriteSet set) {
         this.set = set;
         return this;
     }
 
-    public DynamicParticle setMovement(Vec3 movement) {
+    public ParticlerParticle setMovement(Vec3 movement) {
         this.movement = movement;
         return this;
     }
 
-    public DynamicParticle setMovement(double x, double y, double z) {
+    public ParticlerParticle setMovement(double x, double y, double z) {
         this.movement = new Vec3(x, y, z);
         return this;
     }
 
-    public DynamicParticle setPos(Vec3 vec3) {
+    public ParticlerParticle setPos(Vec3 vec3) {
         this.x = vec3.x;
         this.y = vec3.y;
         this.z = vec3.z;
         return this;
     }
 
-    public DynamicParticle onTick(BiConsumer<Runnabler, DynamicParticle> tickConsumer) {
+    public ParticlerParticle onTick(BiConsumer<Runnabler, ParticlerParticle> tickConsumer) {
         this.onTick = tickConsumer;
         return this;
     }
@@ -108,13 +108,13 @@ public class DynamicParticle extends TextureSheetParticle {
             this.set = set;
         }
 
-        public DynamicParticle create(ClientLevel pLevel, double pX, double pY, double pZ) {
-            return new DynamicParticle(pLevel, pX, pY, pZ, this.set);
+        public ParticlerParticle create(ClientLevel pLevel, double pX, double pY, double pZ) {
+            return new ParticlerParticle(pLevel, pX, pY, pZ, this.set);
         }
 
         @Override
         public @Nullable Particle createParticle(SimpleParticleType pType, ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
-            return new DynamicParticle(pLevel, pX, pY, pZ, this.set);
+            return new ParticlerParticle(pLevel, pX, pY, pZ, this.set);
         }
     }
 }

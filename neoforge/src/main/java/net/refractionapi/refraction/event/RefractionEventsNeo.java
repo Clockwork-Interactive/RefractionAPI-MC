@@ -19,7 +19,6 @@ import net.refractionapi.refraction.events.event.RefractionCommonData;
 
 @EventBusSubscriber(modid = Refraction.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class RefractionEventsNeo implements RefractionEvents {
-
     @SubscribeEvent
     public static void playerTick(PlayerTickEvent.Pre event) {
         RefractionCommonData.playerTick(event.getEntity());
@@ -80,5 +79,4 @@ public class RefractionEventsNeo implements RefractionEvents {
     public static void registerCommands(RegisterCommandsEvent event) {
         RefractionEvents.REGISTER_COMMANDS.invoker().register(event.getDispatcher());
     }
-
 }

@@ -7,7 +7,6 @@ import javax.annotation.Nonnull;
 import java.util.Optional;
 
 public interface IAtdaProvider {
-
     @Nonnull
     <O, D extends AtdaData<D>> Optional<D> getAtda(Atda<O, D> holder);
 
@@ -26,5 +25,4 @@ public interface IAtdaProvider {
     default Level getLevel() {
         return null;
     }
-
 }

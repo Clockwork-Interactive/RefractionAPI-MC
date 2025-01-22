@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KeybindingsNeo implements Keybindings {
-
     private static final List<Mapping> mappings = new ArrayList<>();
 
     @Override
@@ -20,14 +19,11 @@ public class KeybindingsNeo implements Keybindings {
 
     @EventBusSubscriber(modid = Refraction.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
     public static class Registrar {
-
         @SubscribeEvent
         public static void registerKeybinds(RegisterKeyMappingsEvent event) {
             for (Mapping mapping : mappings) {
                 event.register(mapping.mapping());
             }
         }
-
     }
-
 }
