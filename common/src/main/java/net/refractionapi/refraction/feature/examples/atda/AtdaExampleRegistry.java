@@ -6,7 +6,7 @@ import net.refractionapi.refraction.feature.atda.Atda;
 import net.refractionapi.refraction.feature.atda.AtdaUtils;
 
 public class AtdaExampleRegistry {
-    public static Atda<Player, AtdaExampleData> EXAMPLE = Atda.register("example");
+    public static Atda<Player, AtdaExampleData> EXAMPLE = Atda.register(Player.class, "example");
 
     public static void init() {
         Atda.registerProvider(Player.class, (player) -> {

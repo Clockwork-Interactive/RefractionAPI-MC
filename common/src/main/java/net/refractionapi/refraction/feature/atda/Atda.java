@@ -33,29 +33,34 @@ public class Atda<E, D extends AtdaData<D>> {
     final ConcurrentHashMap<E, List<IAtdaProvider>> providers = new ConcurrentHashMap<>();
     final HashMap<String, AtdaData<?>> clientLookup = new HashMap<>();
     final ResourceLocation id;
+    final Class<E> clazz;
 
-    private Atda(ResourceLocation identifier) {
+    private Atda(Class<E> clazz, ResourceLocation identifier) {
+        this.clazz = clazz;
         this.id = identifier;
     }
 
     public void add(E obj, IAtdaProvider provider) {
+        if (!this.clazz.isInstance(obj)) return;
+        if (provider instanceof AtdaProvider<?, ?> atdaProvider)
+            atdaProvider.setType(this.clazz);
         this.providers.computeIfAbsent(obj, k -> new ArrayList<>()).add(provider);
         getRaw(obj); // init ticker
     }
 
-    public static <O, D extends AtdaData<D>> Atda<O, D> register(String id) {
-        return register(RModRegistrar.getCallerModID(2), id);
+    public static <O, D extends AtdaData<D>> Atda<O, D> register(Class<O> clazz, String id) {
+        return register(clazz, RModRegistrar.getCallerModID(2), id);
     }
 
-    public static <O, D extends AtdaData<D>> Atda<O, D> register(String modId, String id) {
-        return register(ResourceLocation.tryBuild(modId, id));
+    public static <O, D extends AtdaData<D>> Atda<O, D> register(Class<O> clazz, String modId, String id) {
+        return register(clazz, ResourceLocation.fromNamespaceAndPath(modId, id));
     }
 
     @SuppressWarnings("unchecked")
-    public static <O, D extends AtdaData<D>> Atda<O, D> register(ResourceLocation location) {
+    public static <O, D extends AtdaData<D>> Atda<O, D> register(Class<O> clazz, ResourceLocation location) {
         if (data.containsKey(location))
             throw new RuntimeException("Atda already registered %s".formatted(location));
-        return (Atda<O, D>) data.computeIfAbsent(location, Atda::new);
+        return (Atda<O, D>) data.computeIfAbsent(location, (rl) -> new Atda<>(clazz, rl));
     }
 
     public static <T> void registerProvider(Class<T> clazz, Consumer<T> consumer) {
@@ -87,7 +92,7 @@ public class Atda<E, D extends AtdaData<D>> {
     @SuppressWarnings("unchecked")
     private <O> D internalGet(O lookup) {
         if (!(lookup instanceof IAtdaProvider lookupProvider))
-            throw new RuntimeException("Invalid lookup called for non-IAdtaProvider class %s".formatted(lookup.getClass().toString()));
+            throw new RuntimeException("Invalid lookup called for non-IAtdaProvider class %s".formatted(lookup.getClass().toString()));
         if (lookupProvider.getLevel().isClientSide) {
             AtomicReference<D> dAtomicReference = new AtomicReference<>();
             this.clientLookup.forEach((id, data) -> {
@@ -112,11 +117,18 @@ public class Atda<E, D extends AtdaData<D>> {
     }
 
     public static <O> void tickProviders(O lookup) {
-        safeGet(lookup).stream().filter((provider -> provider instanceof AtdaProvider<?, ?>)).forEach((provider -> ((AtdaProvider<?, ?>) provider).tickInternal(lookup)));
+        safeGet(lookup).stream().filter((provider -> provider instanceof AtdaProvider<?, ?>)).forEach((provider -> {
+            if (((AtdaProvider<?, ?>) provider).isValid(lookup))
+                ((AtdaProvider<?, ?>) provider).tickInternal(lookup);
+        }));
     }
 
     public static <O> List<IAtdaProvider> safeGet(O lookup) {
-        return data.values().stream().map(atda -> atda.providers.getOrDefault(lookup, new ArrayList<>())).reduce(new ArrayList<>(), (a, b) -> {
+        return data.values().stream().map(atda ->
+                atda.clazz.isInstance(lookup) ? // weird crash fix
+                        atda.providers.getOrDefault(lookup, new ArrayList<>()) :
+                        new ArrayList<IAtdaProvider>()
+        ).reduce(new ArrayList<>(), (a, b) -> {
             a.addAll(b);
             return a;
         });

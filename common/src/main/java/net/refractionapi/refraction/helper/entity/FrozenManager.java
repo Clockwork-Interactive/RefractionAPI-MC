@@ -21,9 +21,7 @@ public class FrozenManager {
                 return new FrozenData(teleport, new Mutable<>(ticks));
             } else {
                 v.ticks.value = ticks;
-                if (v.ticks.value <= 0 && ticks != -1) {
-                    unfreeze(entity);
-                }
+                if (v.ticks.value <= 0 && ticks != -1) unfreeze(entity);
                 return v;
             }
         });
@@ -47,12 +45,14 @@ public class FrozenManager {
                 return new FrozenData(null, new Mutable<>(ticks));
             } else {
                 v.ticks.value += ticks;
+                if (v.ticks.value <= 0) unfreeze(entity);
                 return v;
             }
         });
     }
 
     public static void unfreeze(LivingEntity entity) {
+        entity.hurtMarked = true;
         frozenData.remove(entity);
         enableMovement(entity, true);
     }
@@ -76,15 +76,12 @@ public class FrozenManager {
     public static void init() {
         RefractionEvents.SERVER_TICK.register((post) -> {
             frozenData.forEach((entity, data) -> {
-                if (data.ticks.value > 0) {
+                if (data.ticks.value > 0 || data.ticks.value == -1) {
                     if (data.teleportPos != null) {
                         entity.teleportTo(data.teleportPos.x(), data.teleportPos.y(), data.teleportPos.z());
                     }
-                    data.ticks.value--;
-                    if (data.ticks.value <= 0) {
-                        entity.hurtMarked = true;
-                        enableMovement(entity, true);
-                    }
+                    data.ticks.value = data.ticks.value == -1 ? -1 : Math.max(0, data.ticks.value - 1);
+                    if (data.ticks.value <= 0 && data.ticks.value != -1) unfreeze(entity);
                 }
             });
         });

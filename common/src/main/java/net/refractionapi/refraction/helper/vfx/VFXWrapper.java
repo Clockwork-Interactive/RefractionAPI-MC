@@ -14,7 +14,7 @@ public abstract class VFXWrapper<T extends VFXWrapper<T>> {
     }
 
     @SuppressWarnings("unchecked")
-    public T onRender(BiConsumer<T, LevelRenderContext> updater) {
+    public T onLevelRender(BiConsumer<T, LevelRenderContext> updater) {
         this.updater = updater;
         return (T) this;
     }
