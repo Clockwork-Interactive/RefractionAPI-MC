@@ -5,6 +5,7 @@ import net.refractionapi.refraction.platform.RefractionServices;
 import net.refractionapi.refraction.util.ClientInitializers;
 
 import java.util.HashMap;
+import java.util.List;
 
 // TODO Auto register mods
 public class RModRegistrar {
@@ -16,7 +17,10 @@ public class RModRegistrar {
     }
 
     public static String getCallerModID(int depth) {
-        return modIDMap.get(getSignature(walker.walk(frames -> frames.skip(depth).findFirst().get().getDeclaringClass())));
+        return modIDMap.get(getSignature(walker.walk(frames -> {
+            List<StackWalker.StackFrame> frameList = frames.toList();
+            return frameList.stream().skip(Math.min(frameList.size(), depth)).findFirst().get().getDeclaringClass();
+        })));
     }
 
     public static void registerSelf(String modID) {
@@ -48,6 +52,7 @@ public class RModRegistrar {
 
     private static String getSignature(Class<?> clazz) {
         String[] id = clazz.getPackageName().split("[.]");
+        assert id.length >= 3;
         return "%s.%s.%s".formatted(id[0], id[1], id[2]);
     }
 }

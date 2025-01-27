@@ -9,11 +9,20 @@ import java.util.Optional;
 
 public abstract class AtdaProvider<E, D extends AtdaData<D>> implements IAtdaProvider, GenericBuilder<D> {
     private D data;
+    private Class<E> clazz;
 
     protected abstract Atda<E, D> getHolder();
 
     private D getData() {
         return this.data == null ? this.data = build() : this.data;
+    }
+
+    public void setType(Class<?> clazz) {
+        this.clazz = (Class<E>) clazz;
+    }
+
+    public boolean isValid(Object o) {
+        return this.clazz != null && this.clazz.isInstance(o);
     }
 
     public D copyData() {
@@ -32,7 +41,7 @@ public abstract class AtdaProvider<E, D extends AtdaData<D>> implements IAtdaPro
             return;
         tick((E) obj);
     }
-    
+
     public void tick(E obj) {
 
     }

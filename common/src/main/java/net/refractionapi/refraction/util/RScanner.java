@@ -49,7 +49,7 @@ public class RScanner {
             }
             return classes.stream() // TODO add more options for scanning
                     .filter((clazz) -> {
-                       return this.withType == null || clazz.isAnnotationPresent((Class<? extends Annotation>) this.withType);
+                        return this.withType == null || clazz.isAnnotationPresent((Class<? extends Annotation>) this.withType);
                     }).collect(Collectors.toSet());
         } catch (Exception e) {
             Refraction.LOGGER.error("Failed to scan package {}", this.packageName, e);
@@ -59,9 +59,7 @@ public class RScanner {
 
     private static HashSet<Class<?>> getClasses(File directory, String packageName) {
         HashSet<Class<?>> classes = new HashSet<>();
-        if (!directory.exists()) {
-            return classes;
-        }
+        if (!directory.exists()) return classes;
         File[] files = directory.listFiles();
         assert files != null;
         classes.addAll(Arrays.stream(files)

@@ -36,7 +36,7 @@ public class Refraction {
             .setSyncer(config::sync);
 
     public static void init() {
-        register(MOD_ID);
+        register();
         if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) {
             RConfig.debugTools = true;
         }
@@ -58,8 +58,8 @@ public class Refraction {
         }
     }
 
-    public static void register(String modID) {
-        RModRegistrar.registerSelf(modID);
+    private static void register() {
+        RModRegistrar.registerSelf(MOD_ID);
     }
 
     public static ResourceLocation id(String id) {

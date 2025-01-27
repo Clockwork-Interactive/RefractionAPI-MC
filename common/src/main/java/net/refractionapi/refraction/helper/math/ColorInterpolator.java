@@ -3,7 +3,6 @@ package net.refractionapi.refraction.helper.math;
 import net.minecraft.util.Mth;
 
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 import static net.refractionapi.refraction.helper.math.ColorUtils.interpolateColor;
 
@@ -22,8 +21,8 @@ public class ColorInterpolator {
         this.previousColor = toColor;
         this.sections.put(atPosition, new Section(fromColor, toColor, ratio));
         this.sections = this.sections.entrySet().stream()
-                .sorted((o1, o2) -> Float.compare(o2.getKey(), o1.getKey()))
-                .collect(Collectors.toMap(HashMap.Entry::getKey, HashMap.Entry::getValue, (a, b) -> a, HashMap::new));
+                .sorted((o1, o2) -> Float.compare(o1.getKey(), o2.getKey()))
+                .collect(HashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), HashMap::putAll);
         return this;
     }
 
@@ -36,7 +35,7 @@ public class ColorInterpolator {
         int index = 0;
         for (Float key : this.sections.keySet()) {
             index++;
-            if (delta < key || index == this.sections.size()) {
+            if (delta > key || index == this.sections.size()) {
                 Section section = this.sections.get(key);
                 return interpolateColor(section.fromColor, section.toColor, (delta - key) / section.ratio);
             }

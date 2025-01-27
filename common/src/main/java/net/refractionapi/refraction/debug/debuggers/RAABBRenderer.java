@@ -14,13 +14,6 @@ import net.refractionapi.refraction.helper.vec3.Vec3Helper;
 import java.awt.*;
 
 public class RAABBRenderer extends RDebugRenderer {
-    private static final int colorStart = new Color(138, 27, 41).getRGB();
-    private static final int colorMid = new Color(96, 37, 54).getRGB();
-    private static final int colorEnd = new Color(53, 5, 21).getRGB();
-    private static final ColorInterpolator color = new ColorInterpolator()
-            .addPoint(colorEnd, 0.5F, 0.7F)
-            .addPoint(colorStart, colorMid, 0.5F, 0.4F);
-
     public RAABBRenderer() {
         super("raab");
     }
@@ -44,6 +37,12 @@ public class RAABBRenderer extends RDebugRenderer {
                 renderText("%.1f | [%.1f ; %.1f]".formatted(start.distanceTo(end), angles[0], angles[1]), (start.add(end)), poseStack, multiBufferSource);
             });
         }
+        final int colorStart = new Color(138, 27, 41).getRGB();
+        final int colorMid = new Color(96, 37, 54).getRGB();
+        final int colorEnd = new Color(53, 5, 21).getRGB();
+        ColorInterpolator color = new ColorInterpolator()
+                .addPoint(0xa3160b, 0xdb1e0f, 1.0F, 0.3F)
+                .addPoint(0x360805, 1.0F, 0.8F);
         Color color1 = new Color(color.getColor(Minecraft.getInstance().player.tickCount % 100 / 100.0F));
         poseStack.popPose();
         renderBox(Minecraft.getInstance().player.getBoundingBox().move(3, 0, 0), (float) color1.getRed() / 255, (float) color1.getGreen() / 255, (float) color1.getBlue() / 255, 1.0F, poseStack, multiBufferSource);
