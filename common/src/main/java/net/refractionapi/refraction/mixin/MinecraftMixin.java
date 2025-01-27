@@ -20,7 +20,7 @@ public class MinecraftMixin {
         }
     }
 
-    @Inject(method = "disconnect(Lnet/minecraft/client/gui/screens/Screen;Z)V", at = @At("HEAD"))
+    @Inject(method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At("HEAD"))
     public void disconnect(CallbackInfo ci) {
         RefractionClientEvents.CLIENT_PLAYER_LEAVE.invoker().onEvent();
     }

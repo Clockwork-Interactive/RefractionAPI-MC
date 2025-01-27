@@ -122,34 +122,34 @@ public class ParticlerParticle extends TextureSheetParticle {
         super.render(pBuffer, pRenderInfo, pPartialTicks);
     }
 
-    @Override
-    protected void renderRotatedQuad(VertexConsumer pBuffer, Quaternionf pQuaternion, float pX, float pY, float pZ, float pPartialTicks) {
-        float f = this.getQuadSize(pPartialTicks);
-        float f1 = this.getU0();
-        float f2 = this.getU1();
-        float f3 = this.getV0();
-        float f4 = this.getV1();
-        int i = this.getLightColor(pPartialTicks);
-        // since the particle can be rotated, we're rendering both faces --Zeus
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, 1.0F, -1.0F, f, f2, f4, i, pPartialTicks);
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, 1.0F, 1.0F, f, f2, f3, i, pPartialTicks);
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -1.0F, 1.0F, f, f1, f3, i, pPartialTicks);
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -1.0F, -1.0F, f, f1, f4, i, pPartialTicks);
-
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -1.0F, -1.0F, f, f1, f4, i, pPartialTicks);
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -1.0F, 1.0F, f, f1, f3, i, pPartialTicks);
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, 1.0F, 1.0F, f, f2, f3, i, pPartialTicks);
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, 1.0F, -1.0F, f, f2, f4, i, pPartialTicks);
-    }
-
-    private void renderVertex(VertexConsumer pBuffer, Quaternionf pQuaternion, float pX, float pY, float pZ, float pXOffset, float pYOffset, float pQuadSize, float pU, float pV, int pPackedLight, float partial) {
-        Vector3f vector3f = (new Vector3f(pXOffset, pYOffset, 0.0F));
-        for (Particler.RotationSetting rotation : this.rotations) {
-            vector3f.rotate(rotation.getAxis().rotationDegrees(rotation.get(this.getDelta(partial))));
-        }
-        vector3f.rotate(pQuaternion).mul(pQuadSize).add(pX, pY, pZ);
-        pBuffer.addVertex(vector3f.x(), vector3f.y(), vector3f.z()).setUv(pU, pV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(pPackedLight);
-    }
+    //@Override
+    //protected void renderRotatedQuad(VertexConsumer pBuffer, Quaternionf pQuaternion, float pX, float pY, float pZ, float pPartialTicks) {
+    //    float f = this.getQuadSize(pPartialTicks);
+    //    float f1 = this.getU0();
+    //    float f2 = this.getU1();
+    //    float f3 = this.getV0();
+    //    float f4 = this.getV1();
+    //    int i = this.getLightColor(pPartialTicks);
+    //    // since the particle can be rotated, we're rendering both faces --Zeus
+    //    this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, 1.0F, -1.0F, f, f2, f4, i, pPartialTicks);
+    //    this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, 1.0F, 1.0F, f, f2, f3, i, pPartialTicks);
+    //    this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -1.0F, 1.0F, f, f1, f3, i, pPartialTicks);
+    //    this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -1.0F, -1.0F, f, f1, f4, i, pPartialTicks);
+//
+    //    this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -1.0F, -1.0F, f, f1, f4, i, pPartialTicks);
+    //    this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -1.0F, 1.0F, f, f1, f3, i, pPartialTicks);
+    //    this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, 1.0F, 1.0F, f, f2, f3, i, pPartialTicks);
+    //    this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, 1.0F, -1.0F, f, f2, f4, i, pPartialTicks);
+    //}
+//
+    //private void renderVertex(VertexConsumer pBuffer, Quaternionf pQuaternion, float pX, float pY, float pZ, float pXOffset, float pYOffset, float pQuadSize, float pU, float pV, int pPackedLight, float partial) {
+    //    Vector3f vector3f = (new Vector3f(pXOffset, pYOffset, 0.0F));
+    //    for (Particler.RotationSetting rotation : this.rotations) {
+    //        vector3f.rotate(rotation.getAxis().rotationDegrees(rotation.get(this.getDelta(partial))));
+    //    }
+    //    vector3f.rotate(pQuaternion).mul(pQuadSize).add(pX, pY, pZ);
+    //    pBuffer.addVertex(vector3f.x(), vector3f.y(), vector3f.z()).setUv(pU, pV).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(pPackedLight);
+    //}
 
     @Override
     public ParticleRenderType getRenderType() {

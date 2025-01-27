@@ -53,7 +53,7 @@ public class Atda<E, D extends AtdaData<D>> {
     }
 
     public static <O, D extends AtdaData<D>> Atda<O, D> register(Class<O> clazz, String modId, String id) {
-        return register(clazz, ResourceLocation.fromNamespaceAndPath(modId, id));
+        return register(clazz, ResourceLocation.tryBuild(modId, id));
     }
 
     @SuppressWarnings("unchecked")

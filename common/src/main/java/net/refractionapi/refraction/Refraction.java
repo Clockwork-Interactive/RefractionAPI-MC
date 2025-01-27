@@ -13,6 +13,7 @@ import net.refractionapi.refraction.feature.examples.interaction.ExampleInteract
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 import net.refractionapi.refraction.helper.command.RDebugCommand;
+import net.refractionapi.refraction.helper.entity.FrozenManager;
 import net.refractionapi.refraction.helper.registry.item.RItems;
 import net.refractionapi.refraction.helper.runnable.RunnableCooldownHandler;
 import net.refractionapi.refraction.helper.runnable.RunnableHandler;
