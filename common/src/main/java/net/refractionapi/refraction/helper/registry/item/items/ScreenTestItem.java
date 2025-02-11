@@ -9,7 +9,6 @@ import net.minecraft.world.level.Level;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 
 public class ScreenTestItem extends Item {
-
     public ScreenTestItem(Properties $$0) {
         super($$0);
     }
@@ -25,5 +24,4 @@ public class ScreenTestItem extends Item {
             ExampleScreenRegistry.EXAMPLE_SCREEN.setScreen(player, "fortnite");
         return super.use(level, player, hand);
     }
-
 }

@@ -1,7 +1,6 @@
 package net.refractionapi.refraction.platform.services;
 
 public interface IPlatformHelper {
-
     /**
      * Gets the name of the current platform
      *
@@ -37,5 +36,4 @@ public interface IPlatformHelper {
     default String getEnvironmentName() {
         return isDevelopmentEnvironment() ? "development" : "production";
     }
-
 }

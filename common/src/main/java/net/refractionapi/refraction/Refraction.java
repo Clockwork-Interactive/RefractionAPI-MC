@@ -10,7 +10,9 @@ import net.refractionapi.refraction.feature.channel.TwoWayIntermediary;
 import net.refractionapi.refraction.feature.cutscenes.CutsceneHandler;
 import net.refractionapi.refraction.feature.examples.atda.AtdaExampleRegistry;
 import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionRegistry;
+import net.refractionapi.refraction.feature.examples.reconfig.ReConfigExample;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
+import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
 import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 import net.refractionapi.refraction.helper.command.RDebugCommand;
 import net.refractionapi.refraction.helper.entity.FrozenManager;
@@ -36,10 +38,10 @@ public class Refraction {
             .setSyncer(config::sync);
 
     public static void init() {
-        register();
         if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) {
             RConfig.debugTools = true;
         }
+        register();
         Runnabler.init();
         RunnableHandler.init();
         RunnableCooldownHandler.init();
@@ -56,6 +58,7 @@ public class Refraction {
         if (RefractionServices.PLATFORM.isClient()) {
             ClientData.load();
         }
+        ReConfigurer.registerCommon("refraction-common", ReConfigExample.builder);
     }
 
     private static void register() {

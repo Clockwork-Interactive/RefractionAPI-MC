@@ -8,6 +8,7 @@
     "DebugPacketsMixin",
     "EntityMixin",
     "LivingEntityMixin",
+    "MinecraftServerMixin",
     "PathMixin",
     "PathNavigationMixin",
     "PlayerMixin",
@@ -15,6 +16,7 @@
   ],
   "client": [
     "CameraMixin",
+    "ClientPacketMixin",
     "DebugRendererMixin",
     "GameRendererMixin",
     "GuiMixin",

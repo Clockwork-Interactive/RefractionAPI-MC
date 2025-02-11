@@ -11,7 +11,6 @@ import net.refractionapi.refraction.platform.RefractionServices;
 import java.util.function.Supplier;
 
 public class RItems {
-
     public static final RRegister<Item> RANDOM = register("random", () -> new RandomItem(new Item.Properties()));
     public static final RRegister<Item> FLOOD_DEBUGGER = register("flood_debug", () -> new FloodDebugger(new Item.Properties()));
     public static final RRegister<Item> SCREEN_TEST = register("screen_test", () -> new ScreenTestItem(new Item.Properties()));
@@ -25,5 +24,4 @@ public class RItems {
     public static void init() {
 
     }
-
 }
