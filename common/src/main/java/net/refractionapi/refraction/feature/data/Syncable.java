@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * See {@link SyncedDataExample}
  */
 public interface Syncable<C extends Syncable<C>> {
-
     ConcurrentHashMap<Class<? extends Syncable<?>>, SerializableHandler<?>> serializers = new ConcurrentHashMap<>();
 
     default void sync(Entity sync) {
@@ -65,5 +64,4 @@ public interface Syncable<C extends Syncable<C>> {
     default void onSync(FriendlyByteBuf buf, int id) {
         this.read(buf);
     }
-
 }

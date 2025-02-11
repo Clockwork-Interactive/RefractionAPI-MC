@@ -125,7 +125,7 @@ public class Atda<E, D extends AtdaData<D>> {
 
     public static <O> List<IAtdaProvider> safeGet(O lookup) {
         return data.values().stream().map(atda ->
-                atda.clazz.isInstance(lookup) ? // weird crash fix
+                lookup.getClass().isInstance(atda.clazz) ? // weird crash fix
                         atda.providers.getOrDefault(lookup, new ArrayList<>()) :
                         new ArrayList<IAtdaProvider>()
         ).reduce(new ArrayList<>(), (a, b) -> {

@@ -8,7 +8,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 
 public class TickableProccesor {
-
     private static final HashMap<TickableProccesor, LevelAccessor> RUNNABLES = new HashMap<>();
     private boolean running = false;
     private BiConsumer<LevelAccessor, Boolean> process = (level, post) -> {
@@ -57,5 +56,4 @@ public class TickableProccesor {
             RUNNABLES.entrySet().stream().filter((entry) -> entry.getValue().equals(level)).forEach((processor) -> processor.getKey().process.accept(level, post));
         });
     }
-
 }

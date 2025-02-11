@@ -5,7 +5,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.refractionapi.refraction.platform.services.IPlatformHelper;
 
 public class FabricPlatformHelper implements IPlatformHelper {
-
     @Override
     public String getPlatformName() {
         return "Fabric";
@@ -25,5 +24,4 @@ public class FabricPlatformHelper implements IPlatformHelper {
     public boolean isClient() {
         return FabricLoader.getInstance().getEnvironmentType().equals(EnvType.CLIENT);
     }
-
 }

@@ -1,6 +1,9 @@
 package net.refractionapi.refraction.events;
 
+import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.mixininterfaces.IParticleEngine;
+
+import java.util.UUID;
 
 public class RefractionClientEvents {
     public static final RefractionEvent<RenderContext> BEFORE_ENTITIES = new RefractionEventCaller<>(RenderContext.class, listeners -> context -> {
@@ -18,6 +21,21 @@ public class RefractionClientEvents {
             listener.onEvent();
         }
     });
+    public static final RefractionEvent<Generic> CLIENT_PLAYER_JOIN = new RefractionEventCaller<>(Generic.class, listeners -> () -> {
+        for (Generic listener : listeners) {
+            listener.onEvent();
+        }
+    });
+    public static final RefractionEvent<NamedChannelOpen> NAMED_CHANNEL_OPEN = new RefractionEventCaller<>(NamedChannelOpen.class, listeners -> (id, uuid) -> {
+        for (NamedChannelOpen listener : listeners) {
+            listener.onOpen(id, uuid);
+        }
+    });
+
+    @FunctionalInterface
+    public interface NamedChannelOpen {
+        void onOpen(ResourceLocation id, UUID uuid);
+    }
 
     @FunctionalInterface
     public interface Generic {

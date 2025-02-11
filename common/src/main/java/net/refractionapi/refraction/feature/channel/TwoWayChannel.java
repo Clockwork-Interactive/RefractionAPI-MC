@@ -32,6 +32,8 @@ public class TwoWayChannel {
     protected Rule rule = Rule.ALL;
     protected Header HEADER = (router, buf) -> {
     };
+    protected OnRecieve onRecieve = (player, routerID, header, buf) -> {
+    };
     protected ConcurrentHashMap<String, Router> ROUTERS = new ConcurrentHashMap<>();
     protected ServerPlayer owner = null;
     protected TriFunction<Player, FriendlyByteBuf, String, Boolean> valid = (player, buf, router) -> true;
@@ -107,6 +109,11 @@ public class TwoWayChannel {
         return this;
     }
 
+    public TwoWayChannel onRecieve(OnRecieve onRecieve) {
+        this.onRecieve = onRecieve;
+        return this;
+    }
+
     public ReceivedHeader header() {
         return this.receivedHeader;
     }
@@ -173,7 +180,7 @@ public class TwoWayChannel {
 
     public boolean send(String routerID, TwoWayChannel.Extra extra, TwoWayChannel.Header header) {
         if (this.isClosed()) return false;
-        this.instance().sendTo(!this.level.isClientSide, routerID, extra, header, this.listenerID);
+        this.instance().sendTo(!this.level.isClientSide, routerID, this.listenerID, extra, header);
         return true;
     }
 
@@ -195,13 +202,14 @@ public class TwoWayChannel {
 
     public void receive(@Nullable Player player, String routerID, FriendlyByteBuf header, FriendlyByteBuf buf) {
         this.receivedHeader = new ReceivedHeader(routerID, header);
-        if (this.isClosed() || !this.isCommunicating() || !this.valid.apply(player, buf, routerID)) return;
+        if (this.isClosed() || !this.isCommunicating() || !this.valid.apply(player, new FriendlyByteBuf(buf.copy()), routerID)) return;
         Router router = this.ROUTERS.get(routerID);
         if (router == null) {
             Refraction.LOGGER.warn("Received message for unknown router: {}", routerID);
             return;
         }
         if (router.listener == null) return;
+        this.onRecieve.message(player, routerID, this.receivedHeader, new FriendlyByteBuf(buf.copy()));
         router.listener.handle(player, buf);
     }
 
@@ -231,6 +239,11 @@ public class TwoWayChannel {
     @FunctionalInterface
     public interface Extra {
         void message(FriendlyByteBuf buf);
+    }
+
+    @FunctionalInterface
+    public interface OnRecieve {
+        void message(Player player, String routerID, ReceivedHeader header, FriendlyByteBuf buf);
     }
 
     public record ReceivedHeader(String router, FriendlyByteBuf header) {

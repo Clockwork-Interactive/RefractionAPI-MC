@@ -40,8 +40,13 @@ public interface RefractionEvents {
             listener.onStop();
         }
     });
-    RefractionEvent<ServerStarted> SERVER_STARTED = new RefractionEventCaller<>(ServerStarted.class, listeners -> server -> {
-        for (ServerStarted listener : listeners) {
+    RefractionEvent<ServerEvent> SERVER_STARTING = new RefractionEventCaller<>(ServerEvent.class, listeners -> server -> {
+        for (ServerEvent listener : listeners) {
+            listener.onStart(server);
+        }
+    });
+    RefractionEvent<ServerEvent> SERVER_STARTED = new RefractionEventCaller<>(ServerEvent.class, listeners -> server -> {
+        for (ServerEvent listener : listeners) {
             listener.onStart(server);
         }
     });
@@ -87,7 +92,7 @@ public interface RefractionEvents {
     }
 
     @FunctionalInterface
-    interface ServerStarted {
+    interface ServerEvent {
         void onStart(MinecraftServer server);
     }
 

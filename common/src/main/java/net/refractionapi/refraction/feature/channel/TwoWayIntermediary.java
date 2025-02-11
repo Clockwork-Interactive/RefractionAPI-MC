@@ -60,7 +60,7 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
         });
     }
 
-    public void sendTo(boolean isServer, String router, TwoWayChannel.Extra extra, TwoWayChannel.Header header, UUID uuid) {
+    public void sendTo(boolean isServer, String router, UUID uuid, TwoWayChannel.Extra extra, TwoWayChannel.Header header) {
         sendTo(isServer, router, uuid, extra, header, false);
     }
 

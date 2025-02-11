@@ -18,6 +18,7 @@ dependencies {
 ```
 
 ### All big things that Refraction offers: <br>
+- ReConfig—Config system with auto syncing support <br>
 - Atda—Persistent data storage system <br>
 - Syncables—Server → Client class syncing capability <br>
 - Channels—Custom data channels between server and client w/ headers <br>
