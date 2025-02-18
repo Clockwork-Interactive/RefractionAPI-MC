@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.refractionapi.refraction.feature.examples.data.SyncedDataExample;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +28,13 @@ public interface Syncable<C extends Syncable<C>> {
     default void syncAll(Level level) {
         if (!(level instanceof ServerLevel serverLevel)) return;
         for (ServerPlayer player : serverLevel.players()) {
+            this.sync(player);
+        }
+    }
+
+    default void syncAllServer(LevelAccessor accessor) {
+        if (!(accessor instanceof ServerLevel serverLevel)) return;
+        for (ServerPlayer player : serverLevel.getServer().getPlayerList().getPlayers()) {
             this.sync(player);
         }
     }

@@ -7,6 +7,13 @@ import java.util.UUID;
 
 public class RefractionClientEvents {
     public static final RefractionEvent<RenderContext> BEFORE_ENTITIES = new RefractionEventCaller<>(RenderContext.class, listeners -> context -> {
+        if (context == null) return;
+        for (RenderContext listener : listeners) {
+            listener.onRender(context);
+        }
+    });
+    public static final RefractionEvent<RenderContext> POST_ALL = new RefractionEventCaller<>(RenderContext.class, listeners -> context -> {
+        if (context == null) return;
         for (RenderContext listener : listeners) {
             listener.onRender(context);
         }

@@ -14,7 +14,6 @@ import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistr
 import net.refractionapi.refraction.feature.screen.ServerScreen;
 
 public class RDashboardServer extends ServerScreen {
-
     public RDashboardServer(ServerPlayer player) {
         super(ExampleScreenRegistry.DASHBOARD, player);
     }
@@ -60,5 +59,4 @@ public class RDashboardServer extends ServerScreen {
         Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse(name));
         return block == null ? Blocks.AIR : block;
     }
-
 }

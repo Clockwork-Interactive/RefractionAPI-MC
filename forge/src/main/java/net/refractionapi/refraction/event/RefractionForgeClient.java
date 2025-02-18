@@ -12,6 +12,7 @@ import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.events.event.RefractionClientEvents;
 import net.refractionapi.refraction.feature.cutscenes.client.CinematicBars;
 import net.refractionapi.refraction.feature.quest.client.QuestRenderer;
+import net.refractionapi.refraction.events.event.RefractionClientMEvents;
 import net.refractionapi.refraction.feature.screen.RefractionScreen;
 
 @Mod.EventBusSubscriber(modid = Refraction.MOD_ID, value = Dist.CLIENT)
@@ -19,19 +20,19 @@ public class RefractionForgeClient {
     @SubscribeEvent
     public static void closeScreen(ScreenEvent.Closing event) {
         if (event.getScreen() instanceof RefractionScreen) {
-            RefractionClientEvents.onRemove(event.getScreen());
+            RefractionClientMEvents.onRemove(event.getScreen());
         }
     }
 
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event) {
-        RefractionClientEvents.clientTick(event.phase.equals(TickEvent.Phase.END));
+        RefractionClientMEvents.clientTick(event.phase.equals(TickEvent.Phase.END));
     }
 
     @SubscribeEvent
     public static void attackEvent(InputEvent.InteractionKeyMappingTriggered event) {
         if (event.isAttack()) {
-            event.setCanceled(RefractionClientEvents.onAttack());
+            event.setCanceled(RefractionClientMEvents.onAttack());
         }
     }
 

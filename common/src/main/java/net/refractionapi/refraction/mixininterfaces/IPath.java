@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface IPath {
-
     void debug(Node[] pOpenSet, Node[] pClosedSet, Set<Target> pTargetNodes);
 
     List<Node> getNodes();
-
 }

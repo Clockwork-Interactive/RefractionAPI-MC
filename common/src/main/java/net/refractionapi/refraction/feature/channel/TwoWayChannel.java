@@ -137,15 +137,6 @@ public class TwoWayChannel {
         return this;
     }
 
-    public TwoWayIntermediary instance() {
-        return TwoWayIntermediary.instance(!level.isClientSide);
-    }
-
-    public void terminate() {
-        if (this.level.isClientSide) throw new UnsupportedOperationException("Cannot terminate channel on client side");
-        this.instance().terminate(this.listenerID);
-    }
-
     public TwoWayChannel close() {
         if (this.isClosed()) throw new IllegalStateException("Channel is already closed");
         this.status = Status.CLOSED;
@@ -153,6 +144,15 @@ public class TwoWayChannel {
         instance.terminate(this.listenerID);
         instance.CHANNELS.remove(this.listenerID);
         return this;
+    }
+
+    public TwoWayIntermediary instance() {
+        return TwoWayIntermediary.instance(!level.isClientSide);
+    }
+
+    public void terminate() {
+        if (this.level.isClientSide) throw new UnsupportedOperationException("Cannot terminate channel on client side");
+        this.instance().terminate(this.listenerID);
     }
 
     public TwoWayChannel closeOnTerminate() {

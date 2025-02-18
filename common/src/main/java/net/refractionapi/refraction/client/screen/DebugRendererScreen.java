@@ -12,7 +12,6 @@ import java.util.Locale;
 import java.util.Set;
 
 public class DebugRendererScreen extends Screen {
-
     private final Set<Checkbox> renderers = new HashSet<>();
 
     public DebugRendererScreen() {
@@ -38,5 +37,4 @@ public class DebugRendererScreen extends Screen {
             checkbox.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         }
     }
-
 }

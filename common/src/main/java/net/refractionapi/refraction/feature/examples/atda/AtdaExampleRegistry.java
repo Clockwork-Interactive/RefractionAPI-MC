@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.feature.examples.atda;
 
 import net.minecraft.world.entity.player.Player;
+import net.refractionapi.refraction.config.RConfig;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.atda.Atda;
 import net.refractionapi.refraction.feature.atda.AtdaUtils;
@@ -9,6 +10,7 @@ public class AtdaExampleRegistry {
     public static Atda<Player, AtdaExampleData> EXAMPLE = Atda.register(Player.class, "example");
 
     public static void init() {
+        if (!RConfig.debugTools) return;
         Atda.registerProvider(Player.class, (player) -> {
             AtdaUtils.attachAtda(player, AtdaExampleRegistry.EXAMPLE, new AtdaExampleProvider());
         });

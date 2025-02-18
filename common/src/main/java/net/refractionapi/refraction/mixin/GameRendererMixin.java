@@ -10,12 +10,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
-
     @Inject(method = "getFov", at = @At("HEAD"), cancellable = true)
     public void getFov(Camera $$0, float $$1, boolean $$2, CallbackInfoReturnable<Double> cir) {
         if (ClientData.currentFOV != -1) {
             cir.setReturnValue(ClientData.currentFOV);
         }
     }
-
 }

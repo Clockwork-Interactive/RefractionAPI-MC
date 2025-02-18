@@ -3,7 +3,6 @@ package net.refractionapi.refraction.feature.screen.tab;
 import net.minecraft.client.gui.components.AbstractWidget;
 
 public class TabWidget<T extends AbstractWidget> {
-
     protected final T widget;
     private final Tab tab;
     private final int[] padding = new int[]{0, 0, 0, 0}; // left, right, bottom, top
@@ -52,6 +51,4 @@ public class TabWidget<T extends AbstractWidget> {
     public int getTopPadding() {
         return this.padding[3];
     }
-
-
 }

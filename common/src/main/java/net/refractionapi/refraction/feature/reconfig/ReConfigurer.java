@@ -41,7 +41,7 @@ public class ReConfigurer {
             });
 
     public static void registerServer(String name, RCBuilder builder) {
-        put(Side.SERVER, name, builder);
+        put(Side.SERVER, name, builder.with(Side.SERVER, name, ""));
     }
 
     public static void registerCommon(String name, RCBuilder builder) {

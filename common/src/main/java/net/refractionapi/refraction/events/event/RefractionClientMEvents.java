@@ -13,7 +13,7 @@ import net.refractionapi.refraction.feature.screen.RefractionScreen;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RefractionClientEvents {
+public class RefractionClientMEvents {
     public static final List<ResourceLocation> overlays = new ArrayList<>();
 
     public static void onRemove(Screen screen) {

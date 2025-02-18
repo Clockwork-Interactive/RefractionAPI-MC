@@ -9,10 +9,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
 public class ServerPlayerMixin {
-
     @Inject(at = @At("RETURN"), method = "restoreFrom")
     public void restore(ServerPlayer pThat, boolean pKeepEverything, CallbackInfo ci) {
         RefractionEvents.PLAYER_CLONE.invoker().clone((ServerPlayer) (Object) this, pThat);
     }
 
+    @Inject(at = @At("RETURN"), method = "tick")
+    public void tick(CallbackInfo ci) {
+
+    }
 }

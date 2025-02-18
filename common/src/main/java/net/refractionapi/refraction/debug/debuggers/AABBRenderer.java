@@ -5,19 +5,14 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.refractionapi.refraction.debug.RDebugRenderer;
 import net.refractionapi.refraction.helper.data.DoubleMap;
-import net.refractionapi.refraction.helper.vec3.RAAB;
-import net.refractionapi.refraction.helper.vec3.Vec3Helper;
 
 import java.awt.*;
 
 public class AABBRenderer extends RDebugRenderer {
-
     private final DoubleMap<AABB, Color, Pair<Long, Integer>> boxes = new DoubleMap<>();
 
     public AABBRenderer() {
@@ -45,5 +40,4 @@ public class AABBRenderer extends RDebugRenderer {
         AABB box = new AABB(corner1.getCenter(), corner2.getCenter());
         this.boxes.put(box, new Color(red, green, blue), Pair.of(Util.getMillis(), time));
     }
-
 }

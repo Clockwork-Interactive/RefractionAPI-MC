@@ -8,11 +8,13 @@ import net.refractionapi.refraction.feature.data.Syncable;
 import org.apache.logging.log4j.util.InternalApi;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public class NamedAPI implements Syncable<NamedAPI> {
-    private static final HashMap<ResourceLocation, UUID>[] channels = new HashMap[]{new HashMap<>(), new HashMap<>()};
+    private static final ThreadLocal<HashMap<ResourceLocation, UUID>> channels = ThreadLocal.withInitial(HashMap::new);
     private final SyncConfig syncConfig;
     private final ResourceLocation api;
     private Consumer<TwoWayChannel> configurer = (channel) -> {
@@ -39,9 +41,9 @@ public class NamedAPI implements Syncable<NamedAPI> {
     public NamedAPI open(Level level) {
         this.channel = new TwoWayChannel(level);
         this.configurer.accept(this.channel);
-        this.syncAll(level);
+        this.syncAllServer(level);
         this.channel.open();
-        channels[0].put(this.api, this.channel.id());
+        channels.get().put(this.api, this.channel.id());
         return this;
     }
 
@@ -53,7 +55,7 @@ public class NamedAPI implements Syncable<NamedAPI> {
         this.configurer.accept(this.channel);
         this.syncAll(level);
         this.channel.open();
-        channels[1].put(this.api, this.channel.id());
+        channels.get().put(this.api, this.channel.id());
         return this;
     }
 
@@ -72,11 +74,15 @@ public class NamedAPI implements Syncable<NamedAPI> {
     }
 
     public static UUID getChannel(ResourceLocation id) {
-        return channels[1].get(id);
+        return channels.get().get(id);
+    }
+
+    public static Optional<ResourceLocation> getChannel(UUID id) {
+        return channels.get().entrySet().stream().filter((entry) -> entry.getValue().equals(id)).findFirst().map(Map.Entry::getKey);
     }
 
     public static void sendToServer(ResourceLocation id, String router, TwoWayChannel.Extra extra, TwoWayChannel.Header header) {
-        HashMap<ResourceLocation, UUID> map = channels[1];
+        HashMap<ResourceLocation, UUID> map = channels.get();
         UUID channel = map.get(id);
         if (channel != null) {
             TwoWayIntermediary.instance(false).sendTo(false, router, channel, extra, header);
@@ -101,8 +107,9 @@ public class NamedAPI implements Syncable<NamedAPI> {
 
     @Override
     public void write(FriendlyByteBuf buf) {
-        HashMap<ResourceLocation, UUID> map = channels[0];
+        HashMap<ResourceLocation, UUID> map = channels.get();
         buf.writeInt(map.size());
+        map.entrySet().removeIf((entry) -> entry.getKey() == null || entry.getValue() == null);
         map.forEach((key, value) -> {
             buf.writeResourceLocation(key);
             buf.writeUUID(value);
@@ -111,8 +118,8 @@ public class NamedAPI implements Syncable<NamedAPI> {
 
     @Override
     public void read(FriendlyByteBuf buf) {
-        HashMap<ResourceLocation, UUID> map = channels[1];
-        HashMap<ResourceLocation, UUID> mapOld = new HashMap<>(channels[1]);
+        HashMap<ResourceLocation, UUID> map = channels.get();
+        HashMap<ResourceLocation, UUID> mapOld = new HashMap<>(channels.get());
         map.clear();
         int size = buf.readInt();
         for (int i = 0; i < size; i++) {
@@ -123,7 +130,7 @@ public class NamedAPI implements Syncable<NamedAPI> {
 
     static {
         RefractionClientEvents.CLIENT_PLAYER_LEAVE.register(() -> {
-            channels[1].clear();
+            channels.get().clear();
         });
     }
 }

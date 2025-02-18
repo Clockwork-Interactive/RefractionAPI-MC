@@ -19,9 +19,12 @@
     "ClientPacketMixin",
     "DebugRendererMixin",
     "GameRendererMixin",
+    "GuiMixin",
+    "KeyboardHandlerMixin",
     "KeyboardInputMixin",
     "LevelRendererMixin",
     "MinecraftMixin",
+    "MouseHandlerMixin",
     "ParticleEngineMixin",
     "ScreenMixin"
   ],
