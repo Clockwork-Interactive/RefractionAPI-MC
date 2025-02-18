@@ -1,3 +1,8 @@
 accessWidener v1 named
+
 accessible class net/minecraft/client/particle/ParticleEngine$SpriteParticleRegistration
+
 accessible class net/minecraft/world/level/storage/LevelResource
+
+accessible class net/minecraft/client/renderer/RenderType$CompositeRenderType
+accessible class net/minecraft/client/renderer/RenderType$CompositeState

@@ -1,0 +1,25 @@
+package net.refractionapi.refraction.gui;
+
+import imgui.type.ImBoolean;
+import net.refractionapi.refraction.feature.channel.NamedAPI;
+
+public abstract class RIMTool {
+    protected ImBoolean open = new ImBoolean(false);
+    protected ImBoolean visible = new ImBoolean(false);
+
+    public abstract void init();
+
+    public abstract void render();
+
+    public abstract String name();
+
+    public abstract String group();
+
+    public NamedAPI api() {
+        return RIMGuiInternal.gui.channel;
+    }
+
+    public void toggle() {
+        this.open.set(!this.open.get());
+    }
+}

@@ -7,7 +7,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.refractionapi.refraction.Refraction;
-import net.refractionapi.refraction.events.event.RefractionClientEvents;
+import net.refractionapi.refraction.events.event.RefractionClientMEvents;
 import net.refractionapi.refraction.feature.screen.RefractionScreen;
 
 @EventBusSubscriber(modid = Refraction.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
@@ -15,24 +15,24 @@ public class RefractionNeoClient {
     @SubscribeEvent
     public static void closeScreen(ScreenEvent.Closing event) {
         if (event.getScreen() instanceof RefractionScreen) {
-            RefractionClientEvents.onRemove(event.getScreen());
+            RefractionClientMEvents.onRemove(event.getScreen());
         }
     }
 
     @SubscribeEvent
     public static void clientTick(ClientTickEvent.Pre event) {
-        RefractionClientEvents.clientTick(false);
+        RefractionClientMEvents.clientTick(false);
     }
 
     @SubscribeEvent
     public static void clientTickPost(ClientTickEvent.Post event) {
-        RefractionClientEvents.clientTick(true);
+        RefractionClientMEvents.clientTick(true);
     }
 
     @SubscribeEvent
     public static void attackEvent(InputEvent.InteractionKeyMappingTriggered event) {
         if (event.isAttack()) {
-            event.setCanceled(RefractionClientEvents.onAttack());
+            event.setCanceled(RefractionClientMEvents.onAttack());
         }
     }
 }

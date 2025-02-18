@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.refractionapi.refraction.events.LevelRenderContext;
 import net.refractionapi.refraction.events.RefractionClientEvents;
+import net.refractionapi.refraction.mixininterfaces.IAccessor;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,11 +24,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import javax.annotation.Nullable;
 
 @Mixin(LevelRenderer.class)
-public class LevelRendererMixin {
+public class LevelRendererMixin implements IAccessor {
     @Shadow @Final private RenderBuffers renderBuffers;
     @Shadow @Nullable private ClientLevel level;
     @Unique
-    private LevelRenderContext context = new LevelRenderContext();
+    public LevelRenderContext context = new LevelRenderContext();
     
     @Inject(
             method = "renderLevel",
@@ -53,5 +54,22 @@ public class LevelRendererMixin {
     )
     private void beforeEntities(CallbackInfo ci) {
         RefractionClientEvents.BEFORE_ENTITIES.invoker().onRender(context);
+    }
+
+    @Inject(
+            method = "renderLevel",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;endLastBatch()V",
+                    ordinal = 2
+            )
+    )
+    private void postAll(DeltaTracker pDeltaTracker, boolean pRenderBlockOutline, Camera pCamera, GameRenderer pGameRenderer, LightTexture pLightTexture, Matrix4f pFrustumMatrix, Matrix4f pProjectionMatrix, CallbackInfo ci) {
+        RefractionClientEvents.POST_ALL.invoker().onRender(context);
+    }
+
+    @Override
+    public LevelRenderContext getLevelRenderContext() {
+        return context;
     }
 }

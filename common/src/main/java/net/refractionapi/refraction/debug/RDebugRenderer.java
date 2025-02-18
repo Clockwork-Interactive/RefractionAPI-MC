@@ -17,6 +17,7 @@ import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.debug.debuggers.AABBRenderer;
 import net.refractionapi.refraction.debug.debuggers.PathfindingRenderer;
 import net.refractionapi.refraction.debug.debuggers.RAABBRenderer;
+import net.refractionapi.refraction.debug.debuggers.TraceEntitiesRenderer;
 import net.refractionapi.refraction.helper.vec3.RAAB;
 import org.joml.Matrix4f;
 
@@ -30,13 +31,13 @@ public abstract class RDebugRenderer {
     public static final Set<String> enabled = new HashSet<>();
     protected final String id;
     public static boolean advancedView = true; // TODO
-
     /**
      * Start of registries
      */
     public static AABBRenderer aabbRenderer;
     public static RAABBRenderer raabbRenderer;
     public static PathfindingRenderer pathfindingRenderer;
+    public static TraceEntitiesRenderer traceEntitiesRenderer;
 
     public RDebugRenderer(String id) {
         this.minecraft = Minecraft.getInstance();
@@ -49,7 +50,13 @@ public abstract class RDebugRenderer {
 
     protected abstract void render(PoseStack poseStack, MultiBufferSource multiBufferSource);
 
-    protected abstract void tick(boolean post);
+    public void renderGUI() {
+
+    }
+
+    protected void tick(boolean post) {
+
+    }
 
     protected abstract void fromPacket(FriendlyByteBuf buf);
 
@@ -185,6 +192,10 @@ public abstract class RDebugRenderer {
         return renderers.keySet();
     }
 
+    public static RDebugRenderer getRenderer(String id) {
+        return renderers.get(id);
+    }
+
     public static void route(String id, FriendlyByteBuf buf) {
         RDebugRenderer renderer = renderers.get(id);
         if (renderer != null) {
@@ -198,5 +209,6 @@ public abstract class RDebugRenderer {
         aabbRenderer = new AABBRenderer();
         raabbRenderer = new RAABBRenderer();
         pathfindingRenderer = new PathfindingRenderer();
+        traceEntitiesRenderer = new TraceEntitiesRenderer();
     }
 }

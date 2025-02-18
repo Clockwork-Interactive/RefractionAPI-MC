@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Gui.class)
 public class GuiMixin {
-
     @Final
     @Shadow
     private LayeredDraw layers;
@@ -22,5 +21,4 @@ public class GuiMixin {
     public void init(Minecraft pMinecraft, CallbackInfo ci) {
         //RefractionEvents.REGISTER_LAYERS.invoker().register(layers);
     }
-
 }

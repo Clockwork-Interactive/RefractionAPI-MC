@@ -10,7 +10,6 @@ import java.awt.*;
 import java.util.Locale;
 
 public class RDashboard extends TabbedScreen {
-
     public RDashboard() {
         super(Component.literal("Dashboard"));
     }
@@ -78,5 +77,4 @@ public class RDashboard extends TabbedScreen {
         //    mazeGenerator.getWidgets()[i].setPadding(3, 0, 0, i * 4 + 3);
         //}
     }
-
 }

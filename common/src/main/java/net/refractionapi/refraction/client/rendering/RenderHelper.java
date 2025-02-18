@@ -1,7 +1,6 @@
 package net.refractionapi.refraction.client.rendering;
 
 public class RenderHelper {
-
     // public static void renderLine(double startX, double startY, double endX, double endY, double width, Color color) {
     //     RenderSystem.setShader(GameRenderer::getPositionColorShader);
     //     Tesselator tessellator = Tesselator.getInstance();
@@ -59,5 +58,4 @@ public class RenderHelper {
     //     BufferUploader.drawWithShader(bufferbuilder.end());
     //     RenderSystem.disableBlend();
     // }
-
 }

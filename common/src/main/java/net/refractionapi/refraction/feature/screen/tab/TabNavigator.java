@@ -1,7 +1,6 @@
 package net.refractionapi.refraction.feature.screen.tab;
 
 public class TabNavigator {
-
     private Tab[] tabs = new Tab[0];
 
     protected TabNavigator() {
@@ -18,5 +17,4 @@ public class TabNavigator {
     public Tab getTab(int index) {
         return this.tabs[index];
     }
-
 }

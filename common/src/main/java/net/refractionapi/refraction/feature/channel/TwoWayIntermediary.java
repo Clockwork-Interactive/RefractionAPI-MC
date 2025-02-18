@@ -9,7 +9,9 @@ import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.feature.data.Syncable;
 import net.refractionapi.refraction.networking.C2S.TwoWayC2SPacket;
 import net.refractionapi.refraction.networking.RefractionMessages;
+import net.refractionapi.refraction.util.Pair;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -106,6 +108,10 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
 
     public void reset() {
         CHANNELS.clear();
+    }
+
+    public List<Pair<UUID, Optional<TwoWayChannel>>> channels() {
+        return List.copyOf(CHANNELS.entrySet().stream().map(entry -> new Pair<>(entry.getKey(), entry.getValue())).toList());
     }
 
     public static TwoWayIntermediary instance(boolean isServer) {

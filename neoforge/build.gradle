@@ -36,6 +36,25 @@ neoForge {
     }
 }
 
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs '../libs'
+    }
+}
+
+dependencies {
+    jarJar(api(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-binding:$imgui_version")))
+    jarJar(api(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-lwjgl3:$imgui_version")))
+
+    jarJar(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-natives-windows:$imgui_version"))
+}
+
+def additionalImplementation(String dependency) {
+    configurations.implementation.dependencies.add(dependencies.create(dependency))
+    return dependency
+}
+
 jar {
     destinationDirectory = file("../builds/")
 }

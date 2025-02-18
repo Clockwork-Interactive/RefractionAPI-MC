@@ -5,9 +5,9 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.world.level.storage.LevelResource;
 import net.refractionapi.refraction.Refraction;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 import java.nio.file.Path;
 
 public class FileUtil {
@@ -32,21 +32,25 @@ public class FileUtil {
         return i > 0 ? path.substring(0, i) : "";
     }
 
+    public static String wrapDirectory(String path) {
+        return "./%s".formatted(path);
+    }
+
     public static String[] getFiles(String path) {
-        return Path.of(URI.create(path)).toFile().list();
+        return Path.of(new File(path).getAbsolutePath()).toFile().list();
     }
 
     public static boolean createPath(String path) {
-        Path p = Path.of(URI.create(path));
+        Path p = Path.of(new File(path).getAbsolutePath());
         return p.toFile().exists() || p.toFile().mkdirs();
     }
 
     public static boolean deleteFile(String path) {
-        return Path.of(URI.create(path)).toFile().delete();
+        return Path.of(new File(path).getAbsolutePath()).toFile().delete();
     }
 
     public static boolean exists(String path) {
-        return Path.of(URI.create(path)).toFile().exists();
+        return Path.of(new File(path).getAbsolutePath()).toFile().exists();
     }
 
     public static LevelResource createResource(String name) {
@@ -59,12 +63,12 @@ public class FileUtil {
     }
 
     public static boolean saveCompound(String path, CompoundTag tag) {
-        if (!createPath(getDirectory(path))) {
+        if (!createPath(getDirectory(wrapDirectory(path)))) {
             Refraction.LOGGER.error("Failed to create path {}", getDirectory(path));
             return false;
         }
         try {
-            NbtIo.write(tag, Path.of(URI.create(path)));
+            NbtIo.write(tag, Path.of(new File(wrapDirectory(path)).getPath()));
             return true;
         } catch (IOException e) {
             Refraction.LOGGER.error("Failed to save compound to {}", path, e);
@@ -73,12 +77,12 @@ public class FileUtil {
     }
 
     public static CompoundTag loadCompound(String path) {
-        if (!createPath(getDirectory(path))) {
+        if (!createPath(getDirectory(wrapDirectory(path)))) {
             Refraction.LOGGER.error("Failed to load path {}", getDirectory(path));
             return null;
         }
         try {
-            return NbtIo.read(Path.of(URI.create(path)));
+            return NbtIo.read(Path.of(new File(wrapDirectory(path)).getPath()));
         } catch (IOException e) {
             Refraction.LOGGER.error("Failed to load compound from {}", path, e);
             return null;

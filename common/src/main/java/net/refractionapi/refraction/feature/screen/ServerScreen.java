@@ -8,7 +8,6 @@ import net.refractionapi.refraction.networking.S2C.SetScreenS2CPacket;
 import org.jetbrains.annotations.ApiStatus;
 
 public abstract class ServerScreen {
-
     private final ScreenBuilder<?> builder;
     private final ServerPlayer player;
 
@@ -64,5 +63,4 @@ public abstract class ServerScreen {
     public ScreenBuilder<?> getBuilder() {
         return this.builder;
     }
-
 }

@@ -65,7 +65,7 @@ public class RScanner {
         classes.addAll(Arrays.stream(files)
                 .flatMap(file -> {
                     try {
-                        if (file.isDirectory() && !file.getPath().contains("mixin")) { // loading mixin classes causes a crash --Zeus
+                        if (file.isDirectory() && !file.getPath().contains("mixin") && !file.getPath().contains("mixins")) { // loading mixin classes causes a crash --Zeus
                             assert !file.getName().contains(".");
                             return getClasses(file, "%s.%s".formatted(packageName, file.getName())).stream();
                         } else if (file.getName().endsWith(".class")) {

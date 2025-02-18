@@ -13,6 +13,7 @@ import net.refractionapi.refraction.feature.examples.interaction.ExampleInteract
 import net.refractionapi.refraction.feature.examples.reconfig.ReConfigExample;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
+import net.refractionapi.refraction.gui.*;
 import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 import net.refractionapi.refraction.helper.command.RDebugCommand;
 import net.refractionapi.refraction.helper.entity.FrozenManager;
@@ -22,6 +23,8 @@ import net.refractionapi.refraction.helper.runnable.RunnableHandler;
 import net.refractionapi.refraction.helper.runnable.Runnabler;
 import net.refractionapi.refraction.helper.runnable.TickableProccesor;
 import net.refractionapi.refraction.platform.RefractionServices;
+import net.refractionapi.refraction.util.TestHooks;
+import net.refractionapi.refraction.util.TestHooksClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +43,13 @@ public class Refraction {
     public static void init() {
         if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) {
             RConfig.debugTools = true;
+            new TestHooks();
+            if (RefractionServices.PLATFORM.isClient()) {
+                new TestHooksClient();
+            }
         }
         register();
+        RIMServer.init();
         Runnabler.init();
         RunnableHandler.init();
         RunnableCooldownHandler.init();
@@ -59,6 +67,17 @@ public class Refraction {
             ClientData.load();
         }
         ReConfigurer.registerCommon("refraction-common", ReConfigExample.builder);
+    }
+
+    public static void startGui(long ptr) {
+        if (RefractionServices.PLATFORM.isClient()) {
+            RIMGuiInternal.gui = new RIMGuiInternal(
+                    ptr,
+                    new RIMDebuggers(),
+                    new RIMChannelAnalyzer(),
+                    new RIMCommandExec()
+            );
+        }
     }
 
     private static void register() {
