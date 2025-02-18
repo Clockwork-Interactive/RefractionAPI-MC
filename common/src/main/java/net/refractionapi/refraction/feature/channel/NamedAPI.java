@@ -5,7 +5,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.feature.data.Syncable;
-import org.apache.logging.log4j.util.InternalApi;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +26,6 @@ public class NamedAPI implements Syncable<NamedAPI> {
         this.syncConfig = new SyncConfig().setSyncer(this::sync);
     }
 
-    @InternalApi
     public NamedAPI() {
         this.api = null;
         this.syncConfig = null;

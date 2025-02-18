@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MinecraftServerMixin {
     @Inject(
         method = "runServer",
-        at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/Util;getNanos()J", ordinal = 0)
+        at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/Util;getMillis()J", ordinal = 0)
     )
     public void init(CallbackInfo ci) {
         RefractionEvents.SERVER_STARTING.invoker().onStart((MinecraftServer) (Object) this);

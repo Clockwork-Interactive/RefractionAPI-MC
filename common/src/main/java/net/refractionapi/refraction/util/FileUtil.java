@@ -68,7 +68,7 @@ public class FileUtil {
             return false;
         }
         try {
-            NbtIo.write(tag, Path.of(new File(wrapDirectory(path)).getPath()));
+            NbtIo.write(tag, new File(wrapDirectory(path)));
             return true;
         } catch (IOException e) {
             Refraction.LOGGER.error("Failed to save compound to {}", path, e);
@@ -82,7 +82,7 @@ public class FileUtil {
             return null;
         }
         try {
-            return NbtIo.read(Path.of(new File(wrapDirectory(path)).getPath()));
+            return NbtIo.read(new File(wrapDirectory(path)));
         } catch (IOException e) {
             Refraction.LOGGER.error("Failed to load compound from {}", path, e);
             return null;

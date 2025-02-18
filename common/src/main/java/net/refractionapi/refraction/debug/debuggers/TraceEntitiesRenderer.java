@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -41,17 +42,18 @@ public class TraceEntitiesRenderer extends RDebugRenderer {
         Vec3 cameraPos = cameraPosition();
         Tesselator tesselator = Tesselator.getInstance();
 
-        BufferBuilder consumer = tesselator.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder consumer = tesselator.getBuilder();
+        consumer.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.lineWidth(2.0F);
         RenderSystem.disableDepthTest();
         RenderSystem.disableCull();
         poseStack.pushPose();
         poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
-        consumer.addVertex(poseStack.last().pose(), (float) pos.x, (float) pos.y, (float) pos.z).setColor(1.0F, 0.0F, 0.0F, 1.0F);
-        consumer.addVertex(poseStack.last().pose(), (float) cameraPos.x, (float) cameraPos.y - 0.5F, (float) cameraPos.z).setColor(1.0F, 0.0F, 0.0F, 1.0F);
+        consumer.vertex(poseStack.last().pose(), (float) pos.x, (float) pos.y, (float) pos.z).color(1.0F, 0.0F, 0.0F, 1.0F);
+        consumer.vertex(poseStack.last().pose(), (float) cameraPos.x, (float) cameraPos.y - 0.5F, (float) cameraPos.z).color(1.0F, 0.0F, 0.0F, 1.0F);
         poseStack.popPose();
-        BufferUploader.drawWithShader(consumer.buildOrThrow());
+        BufferUploader.drawWithShader(consumer.end());
         RenderSystem.enableDepthTest();
         RenderSystem.enableCull();
 
@@ -65,7 +67,7 @@ public class TraceEntitiesRenderer extends RDebugRenderer {
     public void renderGUI() {
         float[] newValue = {this.maxDistance};
         ImGui.sliderFloat("Max Distance", newValue, 0.0F, 1000.0F);
-        this.maxDistance = Math.clamp(newValue[0], 0.0F, 1000.0F);
+        this.maxDistance = Mth.clamp(newValue[0], 0.0F, 1000.0F);
         String previousState = String.join(";", this.match);
         ImString matchString = new ImString();
         matchString.set(previousState);

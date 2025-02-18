@@ -57,7 +57,7 @@ public class LevelRendererMixin implements IAccessor {
                     ordinal = 2
             )
     )
-    private void postAll(DeltaTracker pDeltaTracker, boolean pRenderBlockOutline, Camera pCamera, GameRenderer pGameRenderer, LightTexture pLightTexture, Matrix4f pFrustumMatrix, Matrix4f pProjectionMatrix, CallbackInfo ci) {
+    private void postAll(PoseStack $$0, float $$1, long $$2, boolean $$3, Camera $$4, GameRenderer $$5, LightTexture $$6, Matrix4f $$7, CallbackInfo ci) {
         RefractionClientEvents.POST_ALL.invoker().onRender(context);
     }
 

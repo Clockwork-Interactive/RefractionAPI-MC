@@ -19,7 +19,6 @@
     "ClientPacketMixin",
     "DebugRendererMixin",
     "GameRendererMixin",
-    "GuiMixin",
     "KeyboardHandlerMixin",
     "KeyboardInputMixin",
     "LevelRendererMixin",

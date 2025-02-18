@@ -9,7 +9,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.refractionapi.refraction.Refraction;
-import net.refractionapi.refraction.events.event.RefractionClientEvents;
 import net.refractionapi.refraction.feature.cutscenes.client.CinematicBars;
 import net.refractionapi.refraction.feature.quest.client.QuestRenderer;
 import net.refractionapi.refraction.events.event.RefractionClientMEvents;
@@ -41,5 +40,4 @@ public class RefractionForgeClient {
         event.registerAboveAll("quest", (gui, guiGraphics, partialTicks, x, y) -> QuestRenderer.quest(guiGraphics, partialTicks));
         event.registerAboveAll("cinematic", (gui, guiGraphics, partialTicks, x, y) -> CinematicBars.bars(guiGraphics, partialTicks));
     }
-
 }

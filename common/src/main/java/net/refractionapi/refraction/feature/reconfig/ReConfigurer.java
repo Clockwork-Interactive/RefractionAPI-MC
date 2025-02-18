@@ -117,7 +117,7 @@ public class ReConfigurer {
     }
 
     static void save(String file, RCBuilder builder) {
-        File location = new File("%s.json".formatted(file));
+        File location = new File("./%s.json".formatted(file));
         JsonObject object = new JsonObject();
         try {
             builder.values().forEach((value) -> value.value().serialize(value.name().get(), object));
