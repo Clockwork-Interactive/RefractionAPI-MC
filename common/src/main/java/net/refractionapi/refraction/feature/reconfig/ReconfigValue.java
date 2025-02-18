@@ -17,7 +17,7 @@ public abstract class ReconfigValue<T> {
         this.value = null;
     }
 
-    protected T getValue() {
+    public T getValue() {
         return value;
     }
 

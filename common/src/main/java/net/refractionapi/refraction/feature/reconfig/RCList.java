@@ -16,6 +16,7 @@ public class RCList<T extends ReconfigValue<?>> extends ReconfigValue<List<T>> {
 
     public void add(T value) {
         this.value.add(value);
+        this.builder.save();
     }
 
     @SuppressWarnings("unchecked")
@@ -40,6 +41,7 @@ public class RCList<T extends ReconfigValue<?>> extends ReconfigValue<List<T>> {
         JsonElement primitive = object.get(name);
         if (!primitive.isJsonArray()) return;
         JsonArray array = primitive.getAsJsonArray();
+        this.value.clear();
         for (int i = 0; i < array.size(); i++) {
             JsonObject elementObject = array.get(i).getAsJsonObject();
             T element = this.value.size() > i ? this.value.get(i) : this.create(tClass);

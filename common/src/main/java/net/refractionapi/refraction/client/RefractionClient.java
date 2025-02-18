@@ -15,7 +15,6 @@ public class RefractionClient {
     public RefractionClient() {
         INSTANCE = this;
         VFXer.init();
-        ReConfigurer.registerClient("refraction", ReConfigExample.builder);
     }
 
     public File minecraftDir() {
