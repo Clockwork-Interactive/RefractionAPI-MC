@@ -94,7 +94,10 @@ dependencies {
     // Forge's hack fix
     implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
     shade("io.github.spair:imgui-java-binding:$imgui_version")
-    shade("io.github.spair:imgui-java-lwjgl3:$imgui_version")
+    shade("io.github.spair:imgui-java-lwjgl3:$imgui_version") {
+        exclude group: 'org.lwjgl'
+        exclude group: 'org.lwjgl.lwjgl'
+    }
 
     shade("io.github.spair:imgui-java-natives-windows:$imgui_version")
 }
@@ -122,17 +125,19 @@ jar {
 shadowJar {
     archiveClassifier = ''
     configurations = [project.configurations.shade]
+    destinationDirectory = file("../builds/")
+    relocate "io.github.spair.imgui", "${project.group}.lib.imgui"
     relocate "io.github.spair:imgui-java-binding:$imgui_version", "${project.group}.lib.imgui-java-binding"
     relocate "io.github.spair:imgui-java-lwjgl3:$imgui_version", "${project.group}.lib.imgui-java-lwjgl3"
     relocate "io.github.spair:imgui-java-natives-windows:$imgui_version", "${project.group}.lib.imgui-java-natives-windows"
     finalizedBy 'reobfShadowJar'
 }
 
-assemble.dependsOn shadowJar
-
 reobf {
     shadowJar {}
 }
+
+assemble.dependsOn shadowJar
 
 publishing {
     publications {
