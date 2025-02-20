@@ -22,6 +22,7 @@ dependencies {
 - Atda—Persistent data storage system <br>
 - Syncables—Server → Client class syncing capability <br>
 - Channels—Custom data channels between server and client w/ headers <br>
+- NamedAPI—Extension of Channels for named API channel schemes <br>
 - Runnabler—Handler for delayed and ticking runnables on client / server <br>
 - RefractionEvents—Event system with multiloader support <br>
 - VoxelUtils—Voxel generation utilities <br>

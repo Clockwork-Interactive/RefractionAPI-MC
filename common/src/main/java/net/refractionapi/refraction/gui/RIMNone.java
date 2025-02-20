@@ -47,4 +47,9 @@ public class RIMNone implements IRIMGui {
     public void assignChannel(UUID uuid) {
 
     }
+
+    @Override
+    public <T extends RIMTool> T byNameAndGroup(String name, String grouo) {
+        return null;
+    }
 }

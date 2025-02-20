@@ -9,6 +9,10 @@ public abstract class RIMTool {
 
     public abstract void init();
 
+    public void tick() {
+
+    }
+
     public abstract void render();
 
     public abstract String name();

@@ -23,5 +23,4 @@ public abstract class Packet {
     public abstract void write(FriendlyByteBuf buf);
 
     public abstract void handle(@Nullable Player player, Consumer<Runnable> context);
-
 }
