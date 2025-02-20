@@ -13,7 +13,6 @@ import net.minecraft.world.level.Level;
 import net.refractionapi.refraction.platform.RefractionServices;
 
 public class RefractionMessagesFabric implements RefractionMessages {
-
     @Override
     public <P extends Packet> void register(Class<P> msgClass, RNetworkDirection direction) {
         if (direction == RNetworkDirection.PLAY_TO_SERVER) {
@@ -52,5 +51,4 @@ public class RefractionMessagesFabric implements RefractionMessages {
             sendPlayer(message, player);
         }
     }
-
 }

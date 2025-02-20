@@ -2,19 +2,20 @@ package net.refractionapi.refraction.gui;
 
 import imgui.ImFont;
 import imgui.ImGui;
+import imgui.extension.implot.ImPlot;
+import imgui.extension.implot.ImPlotContext;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.internal.ImGuiContext;
-import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.events.RefractionClientEvents;
+import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.system.NativeResource;
 
-import java.awt.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
@@ -29,6 +30,7 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private ImGuiContext context;
+    private ImPlotContext contextPlot;
     private HashSet<RIMTool> tools;
     private boolean active;
     protected NamedAPI channel;
@@ -37,10 +39,12 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
         this.tools = new HashSet<>();
         Arrays.asList(tools).forEach(RIMGuiInternal.this::addWidget);
         this.context = new ImGuiContext(ImGui.createContext().ptr);
+        this.contextPlot = new ImPlotContext(ImPlot.createContext().ptr);
         this.imGuiGlfw.init(ptr, true);
         this.imGuiGl3.init("#version 410 core");
         RIMStyle.init();
         ImGui.setCurrentContext(this.context);
+        ImPlot.setCurrentContext(this.contextPlot);
     }
 
     public void beginFrame() {
@@ -82,6 +86,15 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
         ImGui.endMainMenuBar();
     }
 
+    public void tickAll() {
+        this.tools.forEach(RIMTool::tick);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends RIMTool> T byNameAndGroup(String name, String grouo) {
+        return (T) this.tools.stream().filter(tool -> tool.name().equals(name) && tool.group().equals(grouo)).findFirst().orElse(null);
+    }
+
     public void toggle() {
         this.active = !this.active;
     }
@@ -121,6 +134,7 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
         this.imGuiGl3.dispose();
         this.imGuiGlfw.dispose();
         ImGui.destroyContext();
+        ImPlot.destroyContext(this.contextPlot);
     }
 
     public void addWidget(RIMTool widget) {
@@ -136,6 +150,11 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
         RefractionClientEvents.NAMED_CHANNEL_OPEN.register((channel, ptr) -> {
             if (channel.equals(RIMServer.CHANNEL_NAME)) {
                 get().assignChannel(ptr);
+            }
+        });
+        RefractionEvents.CLIENT_TICK.register((post) -> {
+            if (gui != null && post) {
+                gui.tickAll();
             }
         });
     }

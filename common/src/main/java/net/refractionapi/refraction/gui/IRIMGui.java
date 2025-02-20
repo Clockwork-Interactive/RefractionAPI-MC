@@ -20,4 +20,6 @@ public interface IRIMGui {
     void toggle();
 
     void assignChannel(UUID uuid);
+
+    public <T extends RIMTool> T byNameAndGroup(String name, String grouo);
 }

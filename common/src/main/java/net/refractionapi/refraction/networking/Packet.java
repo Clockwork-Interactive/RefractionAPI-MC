@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public abstract class Packet implements CustomPacketPayload {
-
     private static final HashMap<Class<? extends Packet>, Type<Packet>> types = new HashMap<>();
     private static final HashMap<Class<? extends Packet>, StreamCodec<FriendlyByteBuf, ? extends Packet>> codecs = new HashMap<>();
 
@@ -52,5 +51,4 @@ public abstract class Packet implements CustomPacketPayload {
     public abstract void write(FriendlyByteBuf buf);
 
     public abstract void handle(@Nullable Player player, Consumer<Runnable> context);
-
 }

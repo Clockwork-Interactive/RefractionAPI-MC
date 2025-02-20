@@ -10,7 +10,6 @@ import net.refractionapi.refraction.util.Keybindings;
 import java.util.ServiceLoader;
 
 public class RefractionServices {
-
     public static final IPlatformHelper PLATFORM = load(IPlatformHelper.class);
     public static final RefractionMessages MESSAGES = load(RefractionMessages.class);
     public static final RefractionEvents EVENTS = load(RefractionEvents.class);
@@ -24,5 +23,4 @@ public class RefractionServices {
         Refraction.LOGGER.debug("Loaded {} for service {}", loadedService, clazz);
         return loadedService;
     }
-
 }

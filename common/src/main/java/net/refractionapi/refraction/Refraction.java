@@ -75,6 +75,7 @@ public class Refraction {
                     ptr,
                     new RIMDebuggers(),
                     new RIMChannelAnalyzer(),
+                    new RIMNetworkActivity(),
                     new RIMCommandExec()
             );
         }

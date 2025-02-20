@@ -16,6 +16,7 @@ public class RCList<T extends ReconfigValue<?>> extends ReconfigValue<List<T>> {
 
     public void add(T value) {
         this.value.add(value);
+        this.builder.save();
     }
 
     @SuppressWarnings("unchecked")

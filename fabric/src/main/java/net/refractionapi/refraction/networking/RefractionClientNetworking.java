@@ -10,12 +10,10 @@ import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.client.ClientData;
 
 public class RefractionClientNetworking {
-
     public static <P extends Packet> void registerPacket(Class<P> msgClass) {
         CustomPacketPayload.Type<P> type = Packet.getPacketType(msgClass);
         StreamCodec<FriendlyByteBuf, P> codec = Packet.getCodec(msgClass);
         PayloadTypeRegistry.playS2C().register(type, codec);
         ClientPlayNetworking.registerGlobalReceiver(type, (packet, context) -> packet.handle(context.player(), context.client()::execute));
     }
-
 }
