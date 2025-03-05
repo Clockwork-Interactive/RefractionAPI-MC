@@ -38,5 +38,4 @@ dependencies {
 - Camera shake—Provides a camera shake interface <br>
 - SyncConfig—Automatic syncing for player joins <br>
 - Vec3Helper—A lot of vec3 util <br>
-- RScanner—File scanner given a package <br>
 And a lot more, just take a look for yourself, mainly in @helper and @feature dirs :D

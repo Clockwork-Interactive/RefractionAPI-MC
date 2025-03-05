@@ -58,7 +58,7 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
             if (!isServer)
                 RefractionMessages.sendToServer(new TwoWayC2SPacket(uuid, headerBuf, buf));
             else
-                c.rule.syncer.accept(c, uuid, headerBuf, buf);
+                c.rule.syncer.accept(c, uuid, headerBuf, buf, c.canSendTo);
         });
     }
 
@@ -108,6 +108,7 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
 
     public void reset() {
         CHANNELS.clear();
+        NamedAPI.clear();
     }
 
     public List<Pair<UUID, Optional<TwoWayChannel>>> channels() {

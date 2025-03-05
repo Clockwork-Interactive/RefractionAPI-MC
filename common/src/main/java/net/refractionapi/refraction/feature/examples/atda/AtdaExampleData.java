@@ -4,7 +4,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.refractionapi.refraction.feature.atda.AtdaData;
 
 public class AtdaExampleData extends AtdaData<AtdaExampleData> {
-
     public int exampleData = 0;
 
     @Override
@@ -21,5 +20,4 @@ public class AtdaExampleData extends AtdaData<AtdaExampleData> {
     public void copyFrom(AtdaExampleData data) {
         this.exampleData = data.exampleData;
     }
-
 }

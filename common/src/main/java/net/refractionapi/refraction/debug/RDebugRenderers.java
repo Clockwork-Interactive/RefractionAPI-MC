@@ -4,29 +4,32 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.Target;
 import net.minecraft.world.phys.AABB;
-import net.refractionapi.refraction.config.RConfig;
+import net.refractionapi.refraction.Refraction;
+import net.refractionapi.refraction.config.RRuntimeConfig;
+import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.helper.vec3.RAAB;
 import net.refractionapi.refraction.mixininterfaces.IPath;
-import net.refractionapi.refraction.networking.RefractionMessages;
-import net.refractionapi.refraction.networking.S2C.DebugRendererS2CPacket;
 
 import java.util.stream.Collectors;
 
 public class RDebugRenderers implements IRDebugRenderers {
     private static IRDebugRenderers instance;
     private static final RDebugEmpty empty = new RDebugEmpty();
+    public static final ResourceLocation API_ID = Refraction.id("debug");
+    private static final NamedAPI api = NamedAPI.create(API_ID).configure((channel) -> {
+        channel.canSendTo((player) -> player.isCreative() || player.hasPermissions(2));
+    }).initOnServerStart();
 
     private RDebugRenderers() {
 
     }
 
-    public void renderAABB(AABB aabb, int r, int g, int b, int time, ServerLevel level) {
+    public void renderAABB(AABB aabb, int r, int g, int b, int time) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         BlockPos corner1 = BlockPos.containing(aabb.minX, aabb.minY, aabb.minZ);
         BlockPos corner2 = BlockPos.containing(aabb.maxX, aabb.maxY, aabb.maxZ);
@@ -36,15 +39,15 @@ public class RDebugRenderers implements IRDebugRenderers {
         buf.writeInt(g);
         buf.writeInt(b);
         buf.writeInt(time);
-        send("aabb", buf, level);
+        send("aabb", buf);
     }
 
-    public void renderRAAB(RAAB aabb, int r, int g, int b, int time, ServerLevel level) {
+    public void renderRAAB(RAAB aabb, int r, int g, int b, int time) {
         CompoundTag tag = new CompoundTag();
     }
 
     @Override
-    public void renderPath(int entityId, Path path, float maxDistance, ServerLevel level) {
+    public void renderPath(int entityId, Path path, float maxDistance) {
         if (path == null) return;
         if (path instanceof IPath iPath)
             iPath.debug(iPath.getNodes().toArray(new Node[0]), iPath.getNodes().toArray(new Node[0]), iPath.getNodes().stream().map((node -> new Target(node.x, node.y, node.z))).collect(Collectors.toSet()));
@@ -52,16 +55,21 @@ public class RDebugRenderers implements IRDebugRenderers {
         buf.writeInt(entityId);
         buf.writeFloat(maxDistance);
         path.writeToStream(buf);
-        send("pathfinding", buf, level);
+        send("pathfinding", buf);
     }
 
-    public void send(String id, FriendlyByteBuf buf, ServerLevel level) {
-        for (ServerPlayer player : level.getPlayers((player) -> player.isCreative() || player.hasPermissions(2))) {
-            RefractionMessages.sendToPlayer(new DebugRendererS2CPacket(id, buf), player);
-        }
+    public void send(String id, FriendlyByteBuf buf) {
+        if (api.channel() == null || api.channel().isClosed()) return; // should never be the case --Zeus
+        api.channel().send("route", (send) -> {
+            send.writeUtf(id);
+            send.writeBytes(buf);
+        });
     }
 
     public static IRDebugRenderers instance() {
-        return RConfig.debugTools ? instance == null ? instance = new RDebugRenderers() : instance : empty;
+        return RRuntimeConfig.debugTools ? instance == null ? instance = new RDebugRenderers() : instance : empty;
+    }
+
+    public static void init() {
     }
 }

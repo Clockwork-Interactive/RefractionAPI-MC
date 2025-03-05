@@ -1,6 +1,5 @@
 package net.refractionapi.refraction.feature.channel;
 
-import jdk.jfr.Experimental;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -15,16 +14,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * A two-way channel that allows for communication between the server and client. <br>
  * Example usage: <br>
  * - {@link net.refractionapi.refraction.feature.examples.channel.ServerObject} <br>
  * - {@link net.refractionapi.refraction.feature.examples.channel.ClientObject} <br>
- * I haven't fully tested this for vulnerabilities, so marked as experimental. <br>
- * + I wrote most of this at 2am, so it might be a bit messy :P <br>
  */
-@Experimental
 public class TwoWayChannel {
     private static final String DEFAULT = "default";
     protected final UUID listenerID;
@@ -32,7 +29,7 @@ public class TwoWayChannel {
     protected Rule rule = Rule.ALL;
     protected Header HEADER = (router, buf) -> {
     };
-    protected OnRecieve onRecieve = (player, routerID, header, buf) -> {
+    protected OnReceive onReceive = (player, routerID, header, buf) -> {
     };
     protected ConcurrentHashMap<String, Router> ROUTERS = new ConcurrentHashMap<>();
     protected ServerPlayer owner = null;
@@ -42,6 +39,7 @@ public class TwoWayChannel {
     protected final Level level;
     @Nullable
     protected TwoWayChannel.ReceivedHeader receivedHeader;
+    protected Predicate<ServerPlayer> canSendTo = (player) -> true;
 
     public TwoWayChannel(Level level) {
         this(level, UUID.randomUUID());
@@ -99,6 +97,11 @@ public class TwoWayChannel {
         return this;
     }
 
+    public TwoWayChannel canSendTo(Predicate<ServerPlayer> canSendTo) {
+        this.canSendTo = canSendTo;
+        return this;
+    }
+
     public TwoWayChannel canCommunicate(Function<ServerPlayer, Boolean> canCommunicate) {
         this.canCommunicate = canCommunicate;
         return this;
@@ -109,8 +112,8 @@ public class TwoWayChannel {
         return this;
     }
 
-    public TwoWayChannel onRecieve(OnRecieve onRecieve) {
-        this.onRecieve = onRecieve;
+    public TwoWayChannel onRecieve(OnReceive onReceive) {
+        this.onReceive = onReceive;
         return this;
     }
 
@@ -178,6 +181,10 @@ public class TwoWayChannel {
         return this.status == Status.CLOSED;
     }
 
+    public boolean isServer() {
+        return !this.level.isClientSide;
+    }
+
     public boolean send(String routerID, TwoWayChannel.Extra extra, TwoWayChannel.Header header) {
         if (this.isClosed()) return false;
         this.instance().sendTo(!this.level.isClientSide, routerID, this.listenerID, extra, header);
@@ -209,7 +216,7 @@ public class TwoWayChannel {
             return;
         }
         if (router.listener == null) return;
-        this.onRecieve.message(player, routerID, this.receivedHeader, new FriendlyByteBuf(buf.copy()));
+        this.onReceive.message(player, routerID, this.receivedHeader, new FriendlyByteBuf(buf.copy()));
         router.listener.handle(player, buf);
     }
 
@@ -242,7 +249,7 @@ public class TwoWayChannel {
     }
 
     @FunctionalInterface
-    public interface OnRecieve {
+    public interface OnReceive {
         void message(Player player, String routerID, ReceivedHeader header, FriendlyByteBuf buf);
     }
 
@@ -262,8 +269,8 @@ public class TwoWayChannel {
     }
 
     public enum Rule {
-        ALL((channel, uuid, header, buf) -> channel.level.getServer().getPlayerList().getPlayers().forEach(p -> RefractionMessages.sendToPlayer(new TwoWayS2CPacket(uuid, header, buf), p))),
-        OWNER((channel, uuid, header, buf) -> RefractionMessages.sendToPlayer(new TwoWayS2CPacket(uuid, header, buf), channel.owner));
+        ALL((channel, uuid, header, buf, predicate) -> channel.level.getServer().getPlayerList().getPlayers().stream().filter(predicate).forEach(p -> RefractionMessages.sendToPlayer(new TwoWayS2CPacket(uuid, header, buf), p))),
+        OWNER((channel, uuid, header, buf, predicate) -> RefractionMessages.sendToPlayer(new TwoWayS2CPacket(uuid, header, buf), predicate.test(channel.owner) ? channel.owner : null));
         final RuleConsumer syncer;
 
         Rule(RuleConsumer syncer) {
@@ -272,7 +279,7 @@ public class TwoWayChannel {
 
         @FunctionalInterface
         public interface RuleConsumer {
-            void accept(TwoWayChannel channel, UUID uuid, FriendlyByteBuf header, FriendlyByteBuf buf);
+            void accept(TwoWayChannel channel, UUID uuid, FriendlyByteBuf header, FriendlyByteBuf buf, Predicate<ServerPlayer> canSendTo);
         }
     }
 }

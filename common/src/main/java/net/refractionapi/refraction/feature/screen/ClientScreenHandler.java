@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 
 public class ClientScreenHandler {
-
     private RefractionScreen screen;
     private ScreenBuilder<?> builder;
     private Screen previousScreen = null;
@@ -98,5 +97,4 @@ public class ClientScreenHandler {
         registerScreen(ExampleScreenRegistry.EXAMPLE_SCREEN, ExampleScreen.class);
         registerScreen(ExampleScreenRegistry.DASHBOARD, RDashboard.class);
     }
-
 }

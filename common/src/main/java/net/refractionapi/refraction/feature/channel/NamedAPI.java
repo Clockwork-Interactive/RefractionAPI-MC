@@ -3,22 +3,20 @@ package net.refractionapi.refraction.feature.channel;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.events.RefractionClientEvents;
+import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.data.Syncable;
 import org.apache.logging.log4j.util.InternalApi;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class NamedAPI implements Syncable<NamedAPI> {
     private static final ThreadLocal<HashMap<ResourceLocation, UUID>> channels = ThreadLocal.withInitial(HashMap::new);
     private final SyncConfig syncConfig;
     private final ResourceLocation api;
-    private Consumer<TwoWayChannel> configurer = (channel) -> {
-    };
+    private final List<Consumer<TwoWayChannel>> configurer = new ArrayList<>();
     private TwoWayChannel channel;
 
     private NamedAPI(ResourceLocation apiID) {
@@ -34,13 +32,32 @@ public class NamedAPI implements Syncable<NamedAPI> {
     }
 
     public NamedAPI configure(Consumer<TwoWayChannel> consumer) {
-        this.configurer = consumer;
+        this.configurer.add(consumer);
         return this;
+    }
+
+    public NamedAPI initOnServerStart() {
+        RefractionEvents.SERVER_STARTING.register((server) -> {
+            this.open(server.overworld());
+        });
+        return this;
+    }
+
+    public NamedAPI initOnOpen() {
+        RefractionClientEvents.NAMED_CHANNEL_OPEN.register((api, id) -> {
+            if (api.equals(this.api)) this.open(ClientData.getPlayer().level(), id);
+        });
+        return this;
+    }
+
+    public NamedAPI initCommon() {
+        this.initOnOpen();
+        return this.initOnServerStart();
     }
 
     public NamedAPI open(Level level) {
         this.channel = new TwoWayChannel(level);
-        this.configurer.accept(this.channel);
+        this.configurer.forEach((consumer) -> consumer.accept(this.channel));
         this.syncAllServer(level);
         this.channel.open();
         channels.get().put(this.api, this.channel.id());
@@ -52,7 +69,7 @@ public class NamedAPI implements Syncable<NamedAPI> {
             throw new IllegalArgumentException("UUID cannot be null");
         }
         this.channel = new TwoWayChannel(level, uuid);
-        this.configurer.accept(this.channel);
+        this.configurer.forEach((consumer) -> consumer.accept(this.channel));
         this.syncAll(level);
         this.channel.open();
         channels.get().put(this.api, this.channel.id());
@@ -103,6 +120,10 @@ public class NamedAPI implements Syncable<NamedAPI> {
 
     public static NamedAPI create(ResourceLocation id) {
         return new NamedAPI(id);
+    }
+
+    public static void clear() {
+        channels.get().clear();
     }
 
     @Override

@@ -16,6 +16,15 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    api(include("io.github.spair:imgui-java-binding:$imgui_version"))
+    api(include(("io.github.spair:imgui-java-lwjgl3:$imgui_version"))) {
+        exclude group: 'org.lwjgl'
+        exclude group: 'org.lwjgl.lwjgl'
+    }
+    api(include("io.github.classgraph:classgraph:$classgraph_version"))
+    api(include("io.github.toolfactory:narcissus:$narcissus_version"))
+
+    runtimeOnly(include("io.github.spair:imgui-java-natives-windows:$imgui_version"))
 }
 
 loom {

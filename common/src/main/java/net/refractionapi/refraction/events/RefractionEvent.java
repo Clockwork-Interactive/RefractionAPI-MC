@@ -10,7 +10,9 @@ public abstract class RefractionEvent<T> {
         
     }
 
-    public abstract void register(T listener);
+    public abstract T register(T listener);
+
+    public abstract void unregister(T listener);
 
     public T invoker() {
         return event;

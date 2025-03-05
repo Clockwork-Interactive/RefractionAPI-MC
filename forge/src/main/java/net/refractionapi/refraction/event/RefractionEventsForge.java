@@ -68,5 +68,4 @@ public class RefractionEventsForge implements RefractionEvents {
     public static void registerCommands(RegisterCommandsEvent event) {
         RefractionEvents.REGISTER_COMMANDS.invoker().register(event.getDispatcher());
     }
-
 }

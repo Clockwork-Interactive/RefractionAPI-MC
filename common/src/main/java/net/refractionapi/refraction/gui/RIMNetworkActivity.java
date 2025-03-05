@@ -8,12 +8,12 @@ import net.minecraft.network.protocol.PacketType;
 import java.util.function.BooleanSupplier;
 import java.util.stream.IntStream;
 
+@SuppressWarnings("rawtypes")
 public class RIMNetworkActivity extends RIMTool {
     private int ticks = 0;
-    @SuppressWarnings("rawtypes")
-    private PacketType[][] packetsRec = new PacketType[200][0];
-    private PacketType[][] packetsSent = new PacketType[200][0];
-    private BooleanSupplier paused = () -> Minecraft.getInstance().isPaused();
+    private final PacketType[][] packetsRec = new PacketType[200][0];
+    private final PacketType[][] packetsSent = new PacketType[200][0];
+    private final BooleanSupplier paused = () -> Minecraft.getInstance().isPaused();
 
     @Override
     public void init() {

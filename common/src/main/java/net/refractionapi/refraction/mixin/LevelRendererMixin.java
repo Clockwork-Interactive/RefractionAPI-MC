@@ -39,21 +39,10 @@ public class LevelRendererMixin implements IAccessor {
     }
 
     @ModifyExpressionValue(method = "renderLevel", at = @At(value = "NEW", target = "()Lcom/mojang/blaze3d/vertex/PoseStack;"))
-    private PoseStack setMatrixStack(PoseStack pose) {
+    private PoseStack setPoseAndDispatch(PoseStack pose) {
         context.setPoseStack(pose);
-        return pose;
-    }
-    
-    @Inject(
-            method = "renderLevel",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V",
-                    ordinal =10
-            )
-    )
-    private void beforeEntities(CallbackInfo ci) {
         RefractionClientEvents.BEFORE_ENTITIES.invoker().onRender(context);
+        return pose;
     }
 
     @Inject(

@@ -9,8 +9,6 @@ import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.internal.ImGuiContext;
-import net.refractionapi.refraction.client.ClientData;
-import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import org.jetbrains.annotations.ApiStatus;
@@ -18,7 +16,6 @@ import org.lwjgl.system.NativeResource;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.UUID;
 
 import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
@@ -33,9 +30,10 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
     private ImPlotContext contextPlot;
     private HashSet<RIMTool> tools;
     private boolean active;
-    protected NamedAPI channel;
+    protected NamedAPI channel = NamedAPI.create(RIMServer.CHANNEL_NAME).initOnOpen();
 
     public RIMGuiInternal(long ptr, RIMTool... tools) {
+        gui = this;
         this.tools = new HashSet<>();
         Arrays.asList(tools).forEach(RIMGuiInternal.this::addWidget);
         this.context = new ImGuiContext(ImGui.createContext().ptr);
@@ -53,9 +51,7 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
     }
 
     public void endFrame() {
-        if (this.active) {
-            render();
-        }
+        if (this.active) render();
         ImGui.render();
         this.imGuiGl3.renderDrawData(ImGui.getDrawData());
         if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
@@ -97,11 +93,6 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
 
     public void toggle() {
         this.active = !this.active;
-    }
-
-    @Override
-    public void assignChannel(UUID uuid) {
-        this.channel = NamedAPI.create(RIMServer.CHANNEL_NAME).open(ClientData.getPlayer().level(), uuid);
     }
 
     @Override
@@ -147,15 +138,8 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
     }
 
     static {
-        RefractionClientEvents.NAMED_CHANNEL_OPEN.register((channel, ptr) -> {
-            if (channel.equals(RIMServer.CHANNEL_NAME)) {
-                get().assignChannel(ptr);
-            }
-        });
         RefractionEvents.CLIENT_TICK.register((post) -> {
-            if (gui != null && post) {
-                gui.tickAll();
-            }
+            if (gui != null && post) gui.tickAll();
         });
     }
 }

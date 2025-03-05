@@ -26,6 +26,8 @@ dependencies {
         exclude group: 'org.lwjgl'
         exclude group: 'org.lwjgl.lwjgl'
     }
+    implementation "io.github.classgraph:classgraph:$classgraph_version"
+    implementation "io.github.toolfactory:narcissus:$narcissus_version"
 }
 
 jar {
