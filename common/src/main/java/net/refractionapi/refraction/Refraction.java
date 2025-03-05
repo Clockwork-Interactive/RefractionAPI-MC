@@ -2,8 +2,9 @@ package net.refractionapi.refraction;
 
 import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.client.ClientData;
-import net.refractionapi.refraction.config.RConfig;
+import net.refractionapi.refraction.config.RRuntimeConfig;
 import net.refractionapi.refraction.data.RefractionData;
+import net.refractionapi.refraction.debug.RDebugRenderers;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.channel.SyncConfig;
 import net.refractionapi.refraction.feature.channel.TwoWayIntermediary;
@@ -36,13 +37,13 @@ public class Refraction {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
     public static final Color refractionPrimary = new Color(20, 13, 26);
     public static final Color refractionSecondary = new Color(55, 20, 82);
-    public static final RConfig config = new RConfig();
+    public static final RRuntimeConfig config = new RRuntimeConfig();
     public static final SyncConfig syncConfig = new SyncConfig()
             .setSyncer(config::sync);
 
     public static void init() {
         if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) {
-            RConfig.debugTools = true;
+            RRuntimeConfig.debugTools = true;
             new TestHooks();
             if (RefractionServices.PLATFORM.isClient()) {
                 new TestHooksClient();
@@ -50,6 +51,7 @@ public class Refraction {
         }
         register();
         RIMServer.init();
+        RDebugRenderers.init();
         Runnabler.init();
         RunnableHandler.init();
         RunnableCooldownHandler.init();
@@ -76,7 +78,8 @@ public class Refraction {
                     new RIMDebuggers(),
                     new RIMChannelAnalyzer(),
                     new RIMNetworkActivity(),
-                    new RIMCommandExec()
+                    new RIMCommandExec(),
+                    new RIMHealth()
             );
         }
     }

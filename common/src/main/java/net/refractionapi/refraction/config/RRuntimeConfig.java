@@ -3,10 +3,10 @@ package net.refractionapi.refraction.config;
 import net.minecraft.network.FriendlyByteBuf;
 import net.refractionapi.refraction.feature.data.Syncable;
 
-public class RConfig implements Syncable<RConfig> {
+public class RRuntimeConfig implements Syncable<RRuntimeConfig> {
     public static boolean debugTools = false;
 
-    public RConfig() {
+    public RRuntimeConfig() {
         this.setSynced();
     }
 

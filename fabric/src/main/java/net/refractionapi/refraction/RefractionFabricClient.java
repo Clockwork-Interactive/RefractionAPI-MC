@@ -21,10 +21,8 @@ public class RefractionFabricClient implements ClientModInitializer, ScreenEvent
         HudRenderCallback.EVENT.register(QuestRenderer::quest);
         ClientTickEvents.START_CLIENT_TICK.register((minecraft) -> RefractionClientMEvents.clientTick(false));
         ClientTickEvents.END_CLIENT_TICK.register((minecraft) -> RefractionClientMEvents.clientTick(true));
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> RefractionClientMEvents.loggedOut());
         AttackEntityCallback.EVENT.register((player, world, hand, entity, entityHitResult) -> InteractionResult.sidedSuccess(RefractionClientMEvents.onAttack()));
         ScreenEvents.BEFORE_INIT.register((client, screen, width, height) -> ScreenEvents.remove(screen).register(this));
-        ClientData.load();
     }
 
     @Override

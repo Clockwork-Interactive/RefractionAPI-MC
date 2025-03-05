@@ -10,7 +10,6 @@ import net.refractionapi.refraction.networking.S2C.*;
 import net.refractionapi.refraction.platform.RefractionServices;
 
 public interface RefractionMessages {
-
     static void register() {
         registerPacket(InvokeCutsceneS2CPacket.class, RNetworkDirection.PLAY_TO_CLIENT);
         registerPacket(InvokeCameraShakeS2CPacket.class, RNetworkDirection.PLAY_TO_CLIENT);
@@ -40,6 +39,7 @@ public interface RefractionMessages {
     }
 
     static <MSG extends Packet> void sendToPlayer(MSG message, ServerPlayer player) {
+        if (player == null) return;
         RefractionServices.MESSAGES.sendPlayer(message, player);
     }
 
@@ -69,5 +69,4 @@ public interface RefractionMessages {
         PLAY_TO_CLIENT,
         PLAY_TO_SERVER
     }
-
 }

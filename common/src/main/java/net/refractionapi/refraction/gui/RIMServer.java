@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.gui;
 
+import com.google.common.collect.Iterators;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -12,7 +13,9 @@ import net.refractionapi.refraction.events.RefractionEventCaller;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.feature.channel.TwoWayChannel;
+import net.refractionapi.refraction.util.Mutable;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 public class RIMServer {
@@ -25,14 +28,40 @@ public class RIMServer {
     private static RIMServer instance = null;
     private final NamedAPI channel;
     private final MinecraftServer server;
+    long last = 0L;
+    long ticks = 0L;
 
     private RIMServer(MinecraftServer server) {
         this.server = server;
         this.channel = NamedAPI.create(CHANNEL_NAME).configure((channel -> {
             channel.valid((plr, buf, router) -> plr.hasPermissions(2));
+            channel.canSendTo((plr) -> plr.hasPermissions(2));
             channel.registerListener("command", this::command);
         })).open(server.overworld());
         REGISTER_CHANNEL.invoker().register(this.channel.channel());
+        RefractionEvents.SERVER_TICK.register((post) -> {
+            if (!post) return;
+            this.serverHealth();
+        });
+    }
+
+    public void serverHealth() {
+        long time = System.currentTimeMillis();
+        ticks++;
+        if (time - last < 1000) return;
+        this.channel.channel().send("health", (buf) -> {
+            double tps = ticks;
+            last = time;
+            ticks = 0;
+            int players = this.server.getPlayerCount();
+            // iterate over all levels, and count the entities --Zeus
+            int entities = Arrays.stream(Iterators.toArray(this.server.getAllLevels().iterator(), ServerLevel.class)).mapToInt(level -> Iterators.size(level.getAllEntities().iterator())).sum();
+            int chunks = Arrays.stream(Iterators.toArray(this.server.getAllLevels().iterator(), ServerLevel.class)).mapToInt(level -> level.getChunkSource().getLoadedChunksCount()).sum();
+            buf.writeDouble(tps);
+            buf.writeInt(players);
+            buf.writeInt(entities);
+            buf.writeInt(chunks);
+        });
     }
 
     public int command(Player player, FriendlyByteBuf buf) {

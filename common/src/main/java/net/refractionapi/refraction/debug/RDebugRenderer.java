@@ -18,6 +18,7 @@ import net.refractionapi.refraction.debug.debuggers.AABBRenderer;
 import net.refractionapi.refraction.debug.debuggers.PathfindingRenderer;
 import net.refractionapi.refraction.debug.debuggers.RAABBRenderer;
 import net.refractionapi.refraction.debug.debuggers.TraceEntitiesRenderer;
+import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.helper.vec3.RAAB;
 import org.joml.Matrix4f;
 
@@ -30,7 +31,13 @@ public abstract class RDebugRenderer {
     protected static final HashMap<String, RDebugRenderer> renderers = new HashMap<>();
     public static final Set<String> enabled = new HashSet<>();
     protected final String id;
-    public static boolean advancedView = true; // TODO
+    public static final NamedAPI api = NamedAPI.create(RDebugRenderers.API_ID).configure((channel -> {
+        channel.registerListener("route", (plr, buf) -> {
+            String id1 = buf.readUtf();
+            route(id1, buf);
+            return 1;
+        });
+    })).initOnOpen();
     /**
      * Start of registries
      */

@@ -23,7 +23,7 @@ public class FloodDebugger extends Item {
         floodFiller.setMaxSpread(10);
         floodFiller.setDirections(FloodFiller.horizontal());
         AABB aabb = floodFiller.floodFill().createBoundingBox();
-        RDebugRenderers.instance().renderAABB(aabb, 255, 0, 0, 5, serverLevel);
+        RDebugRenderers.instance().renderAABB(aabb, 255, 0, 0, 5);
         return super.useOn(pContext);
     }
 

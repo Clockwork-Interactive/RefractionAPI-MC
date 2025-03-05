@@ -1,7 +1,7 @@
 package net.refractionapi.refraction.helper.registry.item;
 
 import net.minecraft.world.item.Item;
-import net.refractionapi.refraction.config.RConfig;
+import net.refractionapi.refraction.config.RRuntimeConfig;
 import net.refractionapi.refraction.helper.registry.RRegister;
 import net.refractionapi.refraction.helper.registry.item.items.FloodDebugger;
 import net.refractionapi.refraction.helper.registry.item.items.RandomItem;
@@ -17,7 +17,7 @@ public class RItems {
 
 
     public static RRegister<Item> register(String id, Supplier<Item> item) {
-        if (!RConfig.debugTools) return null;
+        if (!RRuntimeConfig.debugTools) return null;
         return RefractionServices.REGISTRY.registerItem(id, item);
     }
 

@@ -7,11 +7,11 @@ import net.minecraft.world.phys.AABB;
 import net.refractionapi.refraction.helper.vec3.RAAB;
 
 public interface IRDebugRenderers{
-    void renderAABB(AABB aabb, int r, int g, int b, int time, ServerLevel level);
+    void renderAABB(AABB aabb, int r, int g, int b, int time);
 
-    void renderRAAB(RAAB aabb, int r, int g, int b, int time, ServerLevel level);
+    void renderRAAB(RAAB aabb, int r, int g, int b, int time);
 
-    void renderPath(int entityId, Path path, float maxDistance, ServerLevel level);
+    void renderPath(int entityId, Path path, float maxDistance);
 
-    void send(String id, FriendlyByteBuf buf, ServerLevel serverLevel);
+    void send(String id, FriendlyByteBuf buf);
 }

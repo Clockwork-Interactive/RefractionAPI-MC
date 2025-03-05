@@ -70,7 +70,6 @@ public class RefractionClientMEvents {
             }
 
         }
-
     }
 
     public static boolean onAttack() {

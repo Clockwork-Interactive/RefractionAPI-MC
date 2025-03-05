@@ -13,11 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DebugPackets.class)
 public class DebugPacketsMixin {
-
     @Inject(method = "sendPathFindingPacket", at = @At("HEAD"))
     private static void send(Level pLevel, Mob pMob, Path pPath, float pMaxDistanceToWaypoint, CallbackInfo ci) {
-        if (pMob.level() instanceof ServerLevel serverLevel)
-            RDebugRenderers.instance().renderPath(pMob.getId(), pPath, pMaxDistanceToWaypoint, serverLevel);
+        if (pMob.level() instanceof ServerLevel)
+            RDebugRenderers.instance().renderPath(pMob.getId(), pPath, pMaxDistanceToWaypoint);
     }
-
 }

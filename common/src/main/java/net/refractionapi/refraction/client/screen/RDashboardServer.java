@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.refractionapi.refraction.config.RConfig;
+import net.refractionapi.refraction.config.RRuntimeConfig;
 import net.refractionapi.refraction.feature.algorithm.MazeGenerator;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.feature.screen.ServerScreen;
@@ -20,7 +20,7 @@ public class RDashboardServer extends ServerScreen {
 
     @Override
     public boolean stillValid() {
-        return RConfig.debugTools && getPlayer().hasPermissions(2);
+        return RRuntimeConfig.debugTools && getPlayer().hasPermissions(2);
     }
 
     @Override

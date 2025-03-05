@@ -32,5 +32,4 @@ public class InvokeCutsceneS2CPacket extends Packet {
     public void handle(@Nullable Player player, Consumer<Runnable> context) {
         context.accept(() -> ClientCutsceneData.startCutscene(this.cameraID, this.start));
     }
-
 }

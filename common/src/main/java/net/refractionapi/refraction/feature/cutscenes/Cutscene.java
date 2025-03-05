@@ -21,7 +21,6 @@ import java.util.function.Consumer;
 import static net.refractionapi.refraction.feature.cutscenes.CutsceneHandler.QUEUE;
 
 public class Cutscene {
-
     public final LivingEntity livingEntity;
     public Vec3 playerTPPos;
     protected final List<PointHandler> points = new ArrayList<>();
@@ -153,7 +152,7 @@ public class Cutscene {
     }
 
     public Cutscene hideName(boolean hide) {
-        //this.livingEntity.getAttribute(ForgeMod.NAMETAG_DISTANCE.get()).setBaseValue(hide ? 0.0D : 64.0D); //TODO fix multiloader
+        this.livingEntity.setCustomNameVisible(hide);
         return this;
     }
 
@@ -223,5 +222,4 @@ public class Cutscene {
         Vec3 vectorDifference = FBVector.subtract(RLVector);
         return vec3.add(vectorDifference);
     }
-
 }

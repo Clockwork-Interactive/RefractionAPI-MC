@@ -3,30 +3,37 @@ package net.refractionapi.refraction.events;
 import net.refractionapi.refraction.Refraction;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
 public class RefractionEventCaller<T> extends RefractionEvent<T> {
-    private final Function<T[], T> invoker;
-    private volatile T[] listeners;
+    private final Function<List<T>, T> invoker;
+    private final CopyOnWriteArrayList<T> listeners;
     private final Class<T> type;
 
-    public RefractionEventCaller(Class<T> type, Function<T[], T> invoker) {
+    public RefractionEventCaller(Class<T> type, Function<List<T>, T> invoker) {
         this.type = type;
         this.invoker = invoker;
-        this.listeners = (T[]) Array.newInstance(type, 0);
+        this.listeners = new CopyOnWriteArrayList<>();
         this.update();
     }
 
     @Override
-    public void register(T listener) {
-        T[] newListeners = (T[]) Array.newInstance(type, listeners.length + 1);
-        System.arraycopy(listeners, 0, newListeners, 0, listeners.length);
-        if (newListeners.length < listeners.length) { // failed to copy
-            Refraction.LOGGER.error("Failed to register listener: {}", listener);
-            return;
+    public T register(T listener) {
+        if (!this.type.isInstance(listener)) {
+            Refraction.LOGGER.error("Tried to register listener of type {} to event of type {}", listener.getClass(), this.type);
+            return null;
         }
-        newListeners[listeners.length] = listener;
-        listeners = newListeners;
+        this.listeners.add(listener);
+        this.update();
+        return listener;
+    }
+
+    @Override
+    public void unregister(T listener) {
+        this.listeners.remove(listener);
         this.update();
     }
 

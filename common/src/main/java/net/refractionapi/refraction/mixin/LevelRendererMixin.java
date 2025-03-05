@@ -47,6 +47,7 @@ public class LevelRendererMixin implements IAccessor {
     )
     private void beforeEntities(CallbackInfo ci) {
         RefractionClientEvents.BEFORE_ENTITIES.invoker().onRender(context);
+        return pose;
     }
 
     @Inject(

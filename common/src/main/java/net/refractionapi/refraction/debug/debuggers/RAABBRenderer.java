@@ -30,7 +30,7 @@ public class RAABBRenderer extends RDebugRenderer {
         renderLineBox(raab, 0.0F, 0.0F, 1.0F, 1.0F, poseStack, multiBufferSource);
         Vec3 start = this.minecraft.player.position();
         AABB box = this.minecraft.player.getBoundingBox();
-        if (advancedView && raab.intersects(box)) {
+        if (raab.intersects(box)) {
             raab.forCorners((i, end) -> {
                 renderLine(start, end, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, poseStack, multiBufferSource);
                 float[] angles = Vec3Helper.getDegreesBetweenPoints(start, end);

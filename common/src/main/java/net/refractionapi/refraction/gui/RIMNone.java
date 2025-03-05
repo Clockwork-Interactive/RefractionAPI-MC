@@ -1,7 +1,5 @@
 package net.refractionapi.refraction.gui;
 
-import java.util.UUID;
-
 public class RIMNone implements IRIMGui {
     @Override
     public void beginFrame() {
@@ -40,11 +38,6 @@ public class RIMNone implements IRIMGui {
 
     @Override
     public void toggle() {
-
-    }
-
-    @Override
-    public void assignChannel(UUID uuid) {
 
     }
 

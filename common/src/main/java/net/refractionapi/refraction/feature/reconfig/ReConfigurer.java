@@ -11,8 +11,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.storage.LevelResource;
 import net.refractionapi.refraction.Refraction;
-import net.refractionapi.refraction.client.ClientData;
-import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.feature.channel.SyncConfig;
@@ -30,10 +28,11 @@ public class ReConfigurer {
     public static final ResourceLocation CONFIG = Refraction.id("reconfig");
     protected static NamedAPI configurer = NamedAPI.create(CONFIG)
             .configure((channel) -> {
+                channel.valid((plr, buf, route) -> !channel.isServer()); // only the server can send reconfig files --Zeus
                 channel.registerListener(ReConfigurer::fromServer);
                 channel.registerListener("single", ReConfigurer::fromServer);
                 channel.registerSender(ReConfigurer::toClient);
-            });
+            }).initCommon();
     protected static SyncConfig syncConfig = new SyncConfig()
             .setSyncer((entity) -> {
                 configurer.sync(entity);
@@ -181,6 +180,7 @@ public class ReConfigurer {
     }
 
     static int fromServer(Player player, FriendlyByteBuf buf) {
+        if (player != null) return 0; // should be impossible --Zeus
         String name = buf.readUtf();
         String json = buf.readUtf();
         JsonReader reader = new JsonReader(new StringReader(json));
@@ -189,7 +189,7 @@ public class ReConfigurer {
         saveObject(new File("./reconfig/%s.json".formatted(name)), object);
         load("./reconfig/%s".formatted(name), builders.get(Side.COMMON).get(name));
         TwoWayChannel.ReceivedHeader header = configurer.channel().header();
-        if (header != null && header .header().readUtf().equals("reconfig")) // first time loading the client configs --Zeus
+        if (header != null && header.header().readUtf().equals("reconfig")) // first time loading the client configs --Zeus
             Refraction.LOGGER.info("Received reconfig file %s from server".formatted(name));
         return 1;
     }
@@ -202,7 +202,6 @@ public class ReConfigurer {
             throw new RuntimeException("Failed to create LevelResource directory!", e);
         }
         RefractionEvents.SERVER_STARTING.register((server) -> {
-            configurer.open(server.overworld());
             prepareServerConfigs(server);
             prepareCommonConfigs(server);
             loadAll(Side.SERVER);
@@ -211,10 +210,6 @@ public class ReConfigurer {
             saveAll(Side.SERVER);
             saveAll(Side.COMMON);
             clearSide(Side.SERVER);
-        });
-        RefractionClientEvents.NAMED_CHANNEL_OPEN.register((name, id) -> {
-            if (name.equals(CONFIG))
-                configurer.open(ClientData.getPlayer().level(), CONFIG);
         });
     }
 
