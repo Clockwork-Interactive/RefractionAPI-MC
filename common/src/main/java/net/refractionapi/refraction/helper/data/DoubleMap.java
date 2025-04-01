@@ -7,7 +7,6 @@ import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 public class DoubleMap<K, X, Y> {
-
     private final HashMap<K, Entry> map = new HashMap<>();
 
     public DoubleMap() {
@@ -87,5 +86,4 @@ public class DoubleMap<K, X, Y> {
             this.y = y;
         }
     }
-
 }

@@ -4,13 +4,20 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RCList<T extends ReconfigValue<?>> extends ReconfigValue<List<T>> {
     private final Class<T> tClass;
 
-    public RCList(Class<T> clazz, List<T> defaultValue) {
-        super(defaultValue);
+    public RCList(Class<T> clazz, List<?> defaultValue) {
+        super(new ArrayList<>());
+        this.value.addAll(defaultValue.stream().map((obj) -> {
+            if (obj instanceof ReconfigValue<?> reconfigValue) return (T) reconfigValue;
+            T sub = create(clazz);
+            sub.setUnchecked(obj);
+            return sub;
+        }).toList());
         this.tClass = clazz;
     }
 
@@ -21,7 +28,7 @@ public class RCList<T extends ReconfigValue<?>> extends ReconfigValue<List<T>> {
 
     @SuppressWarnings("unchecked")
     public <O> List<O> asList() {
-        return (List<O>) this.loadAndGet().stream().map((r) -> r.value).toList();
+        return (List<O>) this.get().stream().map((r) -> r.value).toList();
     }
 
     @Override
@@ -45,6 +52,7 @@ public class RCList<T extends ReconfigValue<?>> extends ReconfigValue<List<T>> {
         for (int i = 0; i < array.size(); i++) {
             JsonObject elementObject = array.get(i).getAsJsonObject();
             T element = this.value.size() > i ? this.value.get(i) : this.create(tClass);
+            if (!this.value.contains(element)) this.value.add(element);
             element.deserialize(element.type(), elementObject);
         }
     }

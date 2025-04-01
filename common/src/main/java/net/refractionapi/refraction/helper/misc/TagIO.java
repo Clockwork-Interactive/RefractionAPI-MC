@@ -13,6 +13,10 @@ public class TagIO {
         this.directoryPath = directoryPath;
     }
 
+    public void createIfNotPresent(String fileName) {
+        FileUtil.createIfNotPresent("%s/%s.nbt".formatted(directoryPath, fileName));
+    }
+
     public void save(String fileName, CompoundTag tag) {
         FileUtil.saveCompound("%s/%s.nbt".formatted(directoryPath, fileName), tag);
     }

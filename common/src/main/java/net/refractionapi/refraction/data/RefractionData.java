@@ -8,7 +8,6 @@ import net.refractionapi.refraction.feature.screen.ServerScreen;
 import java.util.Optional;
 
 public class RefractionData {
-
     public final Player player;
     public ServerScreen screen;
     public ScreenBuilder<?> builder;
@@ -24,5 +23,4 @@ public class RefractionData {
     public static RefractionData get(Player player) {
         return RefractionCommonData.runtimeData.computeIfAbsent(player, RefractionData::new);
     }
-
 }

@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 public class SerializerS2CPacket extends Packet {
-
     private final Class<? extends Syncable<?>> clazz;
     private final int id;
     private final FriendlyByteBuf buf;
@@ -44,5 +43,4 @@ public class SerializerS2CPacket extends Packet {
     public void handle(@Nullable Player player, Consumer<Runnable> context) {
         context.accept(() -> ClientSyncer.handle(this.clazz, this.id, this.buf, this.constArgs));
     }
-
 }

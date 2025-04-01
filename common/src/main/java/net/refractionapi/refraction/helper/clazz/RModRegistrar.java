@@ -23,11 +23,15 @@ public class RModRegistrar {
         })));
     }
 
-    public static void registerSelf(String modID) {
+    public static void registerSelf(String modID, boolean scan) {
         String sig = getSignature(walker.getCallerClass());
         modIDMap.put(sig, modID);
-        if (RefractionServices.PLATFORM.isClient())
+        if (RefractionServices.PLATFORM.isClient() && scan)
             ClientInitializers.init(sig);
+    }
+
+    public static void registerSelf(String modID) {
+        registerSelf(modID, false);
     }
 
     public static void registerMod(String signature, String modID) {
@@ -52,7 +56,7 @@ public class RModRegistrar {
 
     private static String getSignature(Class<?> clazz) {
         String[] id = clazz.getPackageName().split("[.]");
-        assert id.length >= 3;
+        assert id.length >= 3 : "Class package id is not a length of 3 %s".formatted(clazz.toString());
         return "%s.%s.%s".formatted(id[0], id[1], id[2]);
     }
 }

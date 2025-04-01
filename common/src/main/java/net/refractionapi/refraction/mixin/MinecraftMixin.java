@@ -2,6 +2,7 @@ package net.refractionapi.refraction.mixin;
 
 import net.minecraft.client.Minecraft;
 import net.refractionapi.refraction.Refraction;
+import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.config.RRuntimeConfig;
 import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.gui.RIMGuiInternal;
@@ -34,9 +35,10 @@ public class MinecraftMixin {
 
     @Inject(method = "handleKeybinds", at = @At("HEAD"))
     private void handleKeybinds(CallbackInfo ci) {
-        if (!RRuntimeConfig.debugTools || !(Minecraft.getInstance().player != null && Minecraft.getInstance().player.hasPermissions(2))) return;
-        while (Keybindings.DEBUG_RENDERERS.mapping().consumeClick()) {
-            RIMGuiInternal.get().toggle();
+        if (!RRuntimeConfig.debugTools) return;
+        while (Keybindings.DEBUG_RENDERERS.mapping().consumeClick() && RIMGuiInternal.get() instanceof RIMGuiInternal gui) {
+            // request auth from the server
+            gui.channel.channel().post("auth", (i, ig) -> {}, ( i) -> {}, (plr, router, header,data) -> gui.toggle());
         }
     }
 

@@ -36,6 +36,10 @@ public abstract class ReconfigValue<T> {
         }
     }
 
+    protected void setUnchecked(Object object) {
+        this.value = (T) object;
+    }
+
     /**
      * Expensively loads the value from the config file
      */

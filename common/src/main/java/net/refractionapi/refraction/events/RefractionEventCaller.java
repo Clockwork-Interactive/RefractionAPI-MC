@@ -2,8 +2,6 @@ package net.refractionapi.refraction.events;
 
 import net.refractionapi.refraction.Refraction;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;

@@ -30,7 +30,7 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
     private ImPlotContext contextPlot;
     private HashSet<RIMTool> tools;
     private boolean active;
-    protected NamedAPI channel = NamedAPI.create(RIMServer.CHANNEL_NAME).initOnOpen();
+    public final NamedAPI channel = NamedAPI.create(RIMServer.CHANNEL_NAME).initOnOpen();
 
     public RIMGuiInternal(long ptr, RIMTool... tools) {
         gui = this;
@@ -87,8 +87,8 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends RIMTool> T byNameAndGroup(String name, String grouo) {
-        return (T) this.tools.stream().filter(tool -> tool.name().equals(name) && tool.group().equals(grouo)).findFirst().orElse(null);
+    public <T extends RIMTool> T byNameAndGroup(String name, String group) {
+        return (T) this.tools.stream().filter(tool -> tool.name().equals(name) && tool.group().equals(group)).findFirst().orElse(null);
     }
 
     public void toggle() {

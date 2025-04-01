@@ -9,7 +9,7 @@ import net.refractionapi.refraction.config.RRuntimeConfig;
 
 public class RDebugCommand {
     public RDebugCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("RDebug").requires(context ->
+        dispatcher.register(Commands.literal("rdebug").requires(context ->
                         context.hasPermission(2)
                 ).then(Commands.literal("set")
                         .then(Commands.argument("enabled", BoolArgumentType.bool())

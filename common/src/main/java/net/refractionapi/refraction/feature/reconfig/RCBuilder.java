@@ -51,11 +51,11 @@ public class RCBuilder {
         return define(name, description, new RCString(defaultValue));
     }
 
-    public <T extends ReconfigValue<?>> RCBuilder set(String name, Class<T> clazz, List<T> defaultValue) {
+    public <T extends ReconfigValue<?>> RCBuilder set(String name, Class<T> clazz, List<?> defaultValue) {
         return define(name, "", new RCList<>(clazz, defaultValue));
     }
 
-    public <T extends ReconfigValue<?>> RCBuilder set(String name, String description, Class<T> clazz, List<T> defaultValue) {
+    public <T extends ReconfigValue<?>> RCBuilder set(String name, String description, Class<T> clazz, List<?> defaultValue) {
         return define(name, description, new RCList<>(clazz, defaultValue));
     }
 
@@ -121,7 +121,7 @@ public class RCBuilder {
     }
 
     protected boolean valueExists(String key) {
-        return values().stream().anyMatch(value -> value.name().get().equals(key));
+        return values().stream().anyMatch(value -> value.name().get().equals(key) || key.equals("comment-%s".formatted(value.name.get())));
     }
 
     public RCBuilder copy() {
