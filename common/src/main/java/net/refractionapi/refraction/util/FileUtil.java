@@ -93,7 +93,7 @@ public class FileUtil {
             if (!createIfNotPresent(path)) {
                 throw new IOException("invalid directory");
             }
-            return NbtIo.read(Path.of(new File(wrapDirectory(path)).getPath()));
+            return NbtIo.read(new File(wrapDirectory(path)));
         } catch (IOException e) {
             Refraction.LOGGER.error("Failed to load compound from {}", path, e);
             return null;
