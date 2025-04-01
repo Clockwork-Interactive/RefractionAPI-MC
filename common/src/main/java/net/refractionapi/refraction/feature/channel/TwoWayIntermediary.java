@@ -1,14 +1,17 @@
 package net.refractionapi.refraction.feature.channel;
 
 import io.netty.buffer.Unpooled;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.feature.data.Syncable;
 import net.refractionapi.refraction.networking.C2S.TwoWayC2SPacket;
 import net.refractionapi.refraction.networking.RefractionMessages;
+import net.refractionapi.refraction.util.Mutable;
 import net.refractionapi.refraction.util.Pair;
 
 import java.util.List;
@@ -42,36 +45,27 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
             this.syncConfig.syncAll((ServerLevel) channel.level);
     }
 
-    public void sendTo(boolean isServer, String routerID, UUID uuid, TwoWayChannel.Extra extra, TwoWayChannel.Header header, boolean terminated) {
+    public void sendTo(boolean isServer, String routerID, UUID uuid, TwoWayChannel.Data data, TwoWayChannel.Header header, TwoWayChannel.Rule.RuleConsumer rule, boolean terminated) {
         Optional<TwoWayChannel> channel = CHANNELS.get(uuid);
         if (channel == null) return;
         channel.ifPresent(c -> {
             FriendlyByteBuf headerBuf = new FriendlyByteBuf(Unpooled.buffer());
-            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-            buf.writeBoolean(terminated);
-            buf.writeUtf(routerID);
-            boolean msg = c.message(routerID, buf) || extra != null;
-            if (extra != null) extra.message(buf);
+            CompoundTag headerTag = new CompoundTag();
+            FriendlyByteBuf msgBuf = new FriendlyByteBuf(Unpooled.buffer());
+            msgBuf.writeBoolean(terminated);
+            msgBuf.writeUtf(routerID);
+            boolean msg = c.message(routerID, msgBuf) || data != null;
+            if (data != null) data.message(msgBuf);
             if (!msg) return;
-            if (header != null) header.message(routerID, headerBuf);
-            else c.HEADER.message(routerID, headerBuf);
+            if (header != null) header.message(routerID, headerTag);
+            else c.HEADER.message(routerID, headerTag);
+            headerBuf.writeNbt(headerTag);
+            c.messages.put(c.id, new TwoWayChannel.Message(c.id, routerID, new FriendlyByteBuf(msgBuf.copy()), new FriendlyByteBuf(headerBuf.copy()), new Mutable<>(Optional.empty())));
             if (!isServer)
-                RefractionMessages.sendToServer(new TwoWayC2SPacket(uuid, headerBuf, buf));
-            else
-                c.rule.syncer.accept(c, uuid, headerBuf, buf, c.canSendTo);
+                RefractionMessages.sendToServer(new TwoWayC2SPacket(uuid, headerBuf, msgBuf));
+            else if (rule == null) c.rule.syncer.accept(c, uuid, headerBuf, msgBuf, c.canSendTo);
+            else rule.accept(c, uuid, headerBuf, msgBuf, c.canSendTo);
         });
-    }
-
-    public void sendTo(boolean isServer, String router, UUID uuid, TwoWayChannel.Extra extra, TwoWayChannel.Header header) {
-        sendTo(isServer, router, uuid, extra, header, false);
-    }
-
-    public void sendTo(boolean isServer, String router, UUID uuid) {
-        sendTo(isServer, router, uuid, null, null, false);
-    }
-
-    protected void terminate(UUID uuid) {
-        sendTo(true, "", uuid, null, null, true);
     }
 
     public void read(Player player, UUID uuid, FriendlyByteBuf header, FriendlyByteBuf buf) {
@@ -94,6 +88,18 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
             c.receive(player, routerID, header, buf);
             c.receivedHeader = null;
         });
+    }
+
+    public void sendTo(boolean isServer, String router, UUID uuid, TwoWayChannel.Data data, TwoWayChannel.Header header, TwoWayChannel.Rule.RuleConsumer rule) {
+        sendTo(isServer, router, uuid, data, header, rule, false);
+    }
+
+    public void sendTo(boolean isServer, String router, UUID uuid) {
+        sendTo(isServer, router, uuid, null, null, null, false);
+    }
+
+    protected void terminate(UUID uuid) {
+        sendTo(true, "", uuid, null, null, null, true);
     }
 
     @Override

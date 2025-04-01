@@ -12,6 +12,9 @@ import org.apache.logging.log4j.util.InternalApi;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * Registers a {@link TwoWayChannel} with a name and allows for easy access to it <br>
+ */
 public class NamedAPI implements Syncable<NamedAPI> {
     private static final ThreadLocal<HashMap<ResourceLocation, UUID>> channels = ThreadLocal.withInitial(HashMap::new);
     private final SyncConfig syncConfig;
@@ -31,11 +34,17 @@ public class NamedAPI implements Syncable<NamedAPI> {
         this.syncConfig = null;
     }
 
+    /**
+     * Configure the api on channel open
+     */
     public NamedAPI configure(Consumer<TwoWayChannel> consumer) {
         this.configurer.add(consumer);
         return this;
     }
 
+    /**
+     * Specify this on server, automatically starts the API, when the server is on
+     */
     public NamedAPI initOnServerStart() {
         RefractionEvents.SERVER_STARTING.register((server) -> {
             this.open(server.overworld());
@@ -43,6 +52,9 @@ public class NamedAPI implements Syncable<NamedAPI> {
         return this;
     }
 
+    /**
+     * Specify this on client, automatically starts the API, when the server has opened a client channel
+     */
     public NamedAPI initOnOpen() {
         RefractionClientEvents.NAMED_CHANNEL_OPEN.register((api, id) -> {
             if (api.equals(this.api)) this.open(ClientData.getPlayer().level(), id);
@@ -50,11 +62,20 @@ public class NamedAPI implements Syncable<NamedAPI> {
         return this;
     }
 
+    /**
+     * Specify this on a commonly used API <br>
+     * WARNING: With an improperly configured common api <br>
+     * It's easy to overlook a security issues on the server <br>
+     * Reference for a safe common API: {@link net.refractionapi.refraction.feature.reconfig.ReConfigurer ReConfig}
+     */
     public NamedAPI initCommon() {
         this.initOnOpen();
         return this.initOnServerStart();
     }
 
+    /**
+     * Usually you can use {@link NamedAPI#initOnServerStart()} (server)
+     */
     public NamedAPI open(Level level) {
         this.channel = new TwoWayChannel(level);
         this.configurer.forEach((consumer) -> consumer.accept(this.channel));
@@ -64,6 +85,9 @@ public class NamedAPI implements Syncable<NamedAPI> {
         return this;
     }
 
+    /**
+     * Usually you can use {@link NamedAPI#initOnOpen()} (client)
+     */
     public NamedAPI open(Level level, UUID uuid) {
         if (uuid == null) {
             throw new IllegalArgumentException("UUID cannot be null");
@@ -76,6 +100,9 @@ public class NamedAPI implements Syncable<NamedAPI> {
         return this;
     }
 
+    /**
+     * Usually you can use {@link NamedAPI#initOnOpen()} (client)
+     */
     public NamedAPI open(Level level, ResourceLocation api) {
         return open(level, getChannel(api));
     }
@@ -98,16 +125,20 @@ public class NamedAPI implements Syncable<NamedAPI> {
         return channels.get().entrySet().stream().filter((entry) -> entry.getValue().equals(id)).findFirst().map(Map.Entry::getKey);
     }
 
-    public static void sendToServer(ResourceLocation id, String router, TwoWayChannel.Extra extra, TwoWayChannel.Header header) {
+    /**
+     * Static providers for client channels if they are non-static-accessible <br>
+     * and the API key is known
+     */
+    public static void sendToServer(ResourceLocation id, String router, TwoWayChannel.Data data, TwoWayChannel.Header header) {
         HashMap<ResourceLocation, UUID> map = channels.get();
         UUID channel = map.get(id);
         if (channel != null) {
-            TwoWayIntermediary.instance(false).sendTo(false, router, channel, extra, header);
+            TwoWayIntermediary.instance(false).sendTo(false, router, channel, data, header, null);
         }
     }
 
-    public static void sendToServer(ResourceLocation id, String router, TwoWayChannel.Extra extra) {
-        sendToServer(id, router, extra, null);
+    public static void sendToServer(ResourceLocation id, String router, TwoWayChannel.Data data) {
+        sendToServer(id, router, data, null);
     }
 
     public static void sendToServer(ResourceLocation id, String router, TwoWayChannel.Header header) {

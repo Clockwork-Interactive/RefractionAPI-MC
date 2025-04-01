@@ -33,7 +33,7 @@ public class ServerObject implements Syncable<ServerObject> {
     }
 
     public int receiveDefault(Player player, FriendlyByteBuf buf) {
-        Refraction.LOGGER.info("Default: {} ; Extra: {} sent by {}", buf.readUtf(), buf.readUtf(), player.getName().getString());
+        Refraction.LOGGER.info("Default: {} ; Data: {} sent by {}", buf.readUtf(), buf.readUtf(), player.getName().getString());
         return 1;
     }
 

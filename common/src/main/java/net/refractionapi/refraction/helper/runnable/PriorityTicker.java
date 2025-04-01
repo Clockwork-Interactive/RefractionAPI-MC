@@ -10,7 +10,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class PriorityTicker<T> {
-
     private final HashMap<Integer, Pair<Predicate<T>, Consumer<T>>> tasks = new HashMap<>();
     private boolean noTask = false;
 
@@ -60,5 +59,4 @@ public class PriorityTicker<T> {
                 });
         Optional.ofNullable(this.tasks.get(-2)).ifPresent(pair -> pair.getSecond().accept(t));
     }
-
 }

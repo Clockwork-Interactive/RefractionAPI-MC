@@ -18,7 +18,7 @@ public class LevelRenderContext {
     GameRenderer gameRenderer;
     LightTexture lightmapTextureManager;
     Matrix4f projectionMatrix;
-    Matrix4f positionMatri;
+    Matrix4f positionMatrix;
     MultiBufferSource source;
     Level level;
 
@@ -30,7 +30,7 @@ public class LevelRenderContext {
         this.gameRenderer = gameRenderer;
         this.lightmapTextureManager = lightmapTextureManager;
         this.projectionMatrix = projectionMatrix;
-        this.positionMatri = positionMatrix;
+        this.positionMatrix = positionMatrix;
         this.source = source;
         this.level = level;
     }
@@ -68,7 +68,7 @@ public class LevelRenderContext {
     }
 
     public Matrix4f getPositionMatrix() {
-        return positionMatri;
+        return positionMatrix;
     }
 
     public MultiBufferSource getSource() {

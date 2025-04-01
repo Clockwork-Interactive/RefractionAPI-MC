@@ -18,7 +18,6 @@ import java.util.List;
 @Experimental
 @ApiStatus.Internal
 public class MazeGenerator {
-
     private final int gridSize = 5;
     private int mazeSize;
     private int[][] maze;
@@ -270,5 +269,4 @@ public class MazeGenerator {
             }
         }
     }
-
 }

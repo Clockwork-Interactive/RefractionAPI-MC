@@ -3,6 +3,7 @@ package net.refractionapi.refraction;
 import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.config.RRuntimeConfig;
+import net.refractionapi.refraction.config.RServerConfig;
 import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.debug.RDebugRenderers;
 import net.refractionapi.refraction.events.RefractionEvents;
@@ -17,6 +18,7 @@ import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
 import net.refractionapi.refraction.gui.*;
 import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 import net.refractionapi.refraction.helper.command.RDebugCommand;
+import net.refractionapi.refraction.helper.command.RReConfigCommand;
 import net.refractionapi.refraction.helper.entity.FrozenManager;
 import net.refractionapi.refraction.helper.registry.item.RItems;
 import net.refractionapi.refraction.helper.runnable.RunnableCooldownHandler;
@@ -63,12 +65,16 @@ public class Refraction {
         AtdaExampleRegistry.init();
         FrozenManager.init();
         RefractionEvents.PLAYER_JOINED.register(RefractionData::get);
-        RefractionEvents.REGISTER_COMMANDS.register((RDebugCommand::new));
+        RefractionEvents.REGISTER_COMMANDS.register((c) -> {
+            new RDebugCommand(c);
+            new RReConfigCommand(c);
+        });
         RefractionEvents.SERVER_STARTED.register(TwoWayIntermediary::init);
         if (RefractionServices.PLATFORM.isClient()) {
             ClientData.load();
         }
         ReConfigurer.registerCommon("refraction-common", ReConfigExample.builder);
+        ReConfigurer.registerServer("refraction-server", RServerConfig.builder);
     }
 
     public static void startGui(long ptr) {

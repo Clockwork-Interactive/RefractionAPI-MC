@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 public class RegistryHelper {
-
     public static <T> Holder<T> getRegistry(HolderLookup.Provider provider, ResourceKey<Registry<T>> registry, ResourceKey<T> key) {
         return provider.lookupOrThrow(registry).getOrThrow(key);
     }
@@ -42,5 +41,4 @@ public class RegistryHelper {
     public static boolean enchantmentEffectExists(ItemStack stack, DataComponentType<List<TargetedConditionalEffect<EnchantmentEntityEffect>>> lookFor, MapCodec<?> codec) {
         return !getEnchantmentsWithEffect(stack, lookFor, codec).isEmpty();
     }
-
 }

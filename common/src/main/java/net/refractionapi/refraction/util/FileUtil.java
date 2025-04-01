@@ -58,12 +58,20 @@ public class FileUtil {
             return LevelResource.class.getDeclaredConstructor(String.class).newInstance(name);
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
                  NoSuchMethodException e) {
-            throw new RuntimeException("Failed to create LevelResource directory!", e);
+            throw new RuntimeException("Failed to create LevelResource %s directory!".formatted(name), e);
         }
     }
 
+    public static boolean createIfNotPresent(String path) {
+        return exists(path) || saveCompound(path, new CompoundTag());
+    }
+
+    public static String defaultDir(String path) {
+        return getDirectory(wrapDirectory(path));
+    }
+
     public static boolean saveCompound(String path, CompoundTag tag) {
-        if (!createPath(getDirectory(wrapDirectory(path)))) {
+        if (!createPath(defaultDir(path))) {
             Refraction.LOGGER.error("Failed to create path {}", getDirectory(path));
             return false;
         }
@@ -77,11 +85,14 @@ public class FileUtil {
     }
 
     public static CompoundTag loadCompound(String path) {
-        if (!createPath(getDirectory(wrapDirectory(path)))) {
+        if (!createPath(defaultDir(path))) {
             Refraction.LOGGER.error("Failed to load path {}", getDirectory(path));
             return null;
         }
         try {
+            if (!createIfNotPresent(path)) {
+                throw new IOException("invalid directory");
+            }
             return NbtIo.read(Path.of(new File(wrapDirectory(path)).getPath()));
         } catch (IOException e) {
             Refraction.LOGGER.error("Failed to load compound from {}", path, e);

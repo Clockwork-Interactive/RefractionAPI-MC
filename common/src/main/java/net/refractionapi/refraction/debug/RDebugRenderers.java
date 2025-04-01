@@ -11,6 +11,7 @@ import net.minecraft.world.level.pathfinder.Target;
 import net.minecraft.world.phys.AABB;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.config.RRuntimeConfig;
+import net.refractionapi.refraction.config.RServerConfig;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.helper.vec3.RAAB;
 import net.refractionapi.refraction.mixininterfaces.IPath;
@@ -22,7 +23,7 @@ public class RDebugRenderers implements IRDebugRenderers {
     private static final RDebugEmpty empty = new RDebugEmpty();
     public static final ResourceLocation API_ID = Refraction.id("debug");
     private static final NamedAPI api = NamedAPI.create(API_ID).configure((channel) -> {
-        channel.canSendTo((player) -> player.isCreative() || player.hasPermissions(2));
+        channel.canSendTo(RServerConfig::isPermitted);
     }).initOnServerStart();
 
     private RDebugRenderers() {
