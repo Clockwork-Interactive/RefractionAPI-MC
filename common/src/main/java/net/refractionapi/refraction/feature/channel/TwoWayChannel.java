@@ -29,7 +29,7 @@ import java.util.function.Predicate;
  */
 public class TwoWayChannel {
     private static final String DEFAULT = "default";
-    protected final UUID listenerID;
+    protected final UUID channelID;
     protected Status status = Status.CLOSED;
     protected Rule rule = Rule.ALL;
     protected Header HEADER = (router, buf) -> {
@@ -45,6 +45,7 @@ public class TwoWayChannel {
     @Nullable
     protected TwoWayChannel.ReceivedHeader receivedHeader;
     protected Predicate<ServerPlayer> canSendTo = (player) -> true;
+    protected boolean sendOnly = false;
     protected int id; // sent messages count
     protected final Int2ObjectArrayMap<Message> messages = new Int2ObjectArrayMap<>(); // sent messages
 
@@ -55,13 +56,13 @@ public class TwoWayChannel {
     /**
      * Usually used for client init
      */
-    public TwoWayChannel(Level level, UUID listenerID) {
-        this.listenerID = listenerID;
+    public TwoWayChannel(Level level, UUID channelID) {
+        this.channelID = channelID;
         this.level = level;
     }
 
     public UUID id() {
-        return this.listenerID;
+        return this.channelID;
     }
 
     /**
@@ -175,13 +176,18 @@ public class TwoWayChannel {
         return this;
     }
 
+    public TwoWayChannel setSendOnly() {
+        this.sendOnly = true;
+        return this;
+    }
+
     public ServerPlayer owner() {
         return this.owner;
     }
 
     public TwoWayChannel open() {
         if (this.isOpen()) throw new IllegalStateException("Channel is already open");
-        if (this.listenerID == null) throw new IllegalStateException("Listener ID must be set before opening channel");
+        if (this.channelID == null) throw new IllegalStateException("Listener ID must be set before opening channel");
         this.status = this.owner == null ? Status.OPEN : Status.COMMUNICATING; // we know a player will communicate
         this.instance().addChannel(this);
         return this;
@@ -191,8 +197,9 @@ public class TwoWayChannel {
         if (this.isClosed()) throw new IllegalStateException("Channel is already closed");
         this.status = Status.CLOSED;
         TwoWayIntermediary instance = instance();
-        instance.terminate(this.listenerID);
-        instance.CHANNELS.remove(this.listenerID);
+        if (isServer())
+            terminate();
+        instance.CHANNELS.remove(this.channelID);
         return this;
     }
 
@@ -202,7 +209,8 @@ public class TwoWayChannel {
 
     public void terminate() {
         if (this.level.isClientSide) throw new UnsupportedOperationException("Cannot terminate channel on client side");
-        this.instance().terminate(this.listenerID);
+        this.instance().terminate(this.channelID);
+        NamedAPI.getChannel(this.channelID).ifPresent(NamedAPI::removeChannel);
     }
 
     public TwoWayChannel closeOnTerminate() {
@@ -234,7 +242,7 @@ public class TwoWayChannel {
 
     public boolean send(String routerID, Data data, TwoWayChannel.Header header, Rule.RuleConsumer rule) {
         if (this.isClosed()) return false;
-        this.instance().sendTo(!this.level.isClientSide, routerID, this.listenerID, data, header, rule);
+        this.instance().sendTo(!this.level.isClientSide, routerID, this.channelID, data, header, rule);
         id++;
         return true;
     }
@@ -293,29 +301,37 @@ public class TwoWayChannel {
         String post = headerBuf.getString("post-r-set");
         int id = headerBuf.getInt("post-r-id");
         if (!post.equals("post-r-set")) return; // mis-input handling for post-packets
-        this.send(header.player, header.router, data, (i,    buf) -> {
+        this.send(header.player, header.router, data, (i, buf) -> {
             buf.putBoolean("post-r-res", true);
             buf.putInt("post-r-id", id); // packet id stored on the client
         });
     }
 
-    public void receive(@Nullable Player player, String routerID, FriendlyByteBuf header, FriendlyByteBuf buf) {
-        this.receivedHeader = new ReceivedHeader(routerID, player, header.readNbt());
-        if (this.isClosed() || !this.isCommunicating() || !this.valid.apply(player, new FriendlyByteBuf(buf.copy()), routerID))
-            return;
-        CompoundTag receivedHeaderTag = receivedHeader.header;
+    private boolean handleRespond(Player player, String routerID, FriendlyByteBuf buf, CompoundTag receivedHeaderTag) {
         int id = receivedHeaderTag.getInt("post-r-id");
         if (receivedHeaderTag.contains("post-r-res")) { // POST-protocol handling
-            if (player instanceof ServerPlayer s) {
-               s.connection.disconnect(Component.literal("Illegal packet"));
-               Refraction.LOGGER.info("Player {} sent an illegal packet (POST protocol)", player.getDisplayName().getString());
-               return;
+            if (player instanceof ServerPlayer s) { // a player shouldn't be able to send respond packets
+                s.connection.disconnect(Component.literal("Illegal packet"));
+                Refraction.LOGGER.info("Player {} sent an illegal packet (POST protocol)", player.getDisplayName().getString());
+                return true;
             }
             assert this.messages.containsKey(id) : "Message ID doesn't exist %d".formatted(id);
             this.messages.get(id).onRespond().get().ifPresent((c) -> c.message(player, routerID, this.receivedHeader, new FriendlyByteBuf(buf.copy())));
             this.messages.remove(id); // prevent double-callbacks
+            return true;
+        }
+        return false;
+    }
+
+    public void receive(@Nullable Player player, String routerID, FriendlyByteBuf header, FriendlyByteBuf buf) {
+        if (this.isServer() && sendOnly && player != null) {
+            Refraction.LOGGER.warn("Player {} tried sending a packet to a send-only channel", player.getDisplayName().getString());
             return;
         }
+        this.receivedHeader = new ReceivedHeader(routerID, player, header.readNbt());
+        if (this.isClosed() || !this.isCommunicating() || !this.valid.apply(player, new FriendlyByteBuf(buf.copy()), routerID))
+            return;
+        if (handleRespond(player, routerID, buf, receivedHeader.header)) return;
         Router router = this.ROUTERS.get(routerID);
         if (router == null) {
             Refraction.LOGGER.warn("Received message for unknown router: {}", routerID);

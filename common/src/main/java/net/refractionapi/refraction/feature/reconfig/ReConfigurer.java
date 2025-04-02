@@ -6,20 +6,24 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.storage.LevelResource;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.feature.channel.SyncConfig;
+import net.refractionapi.refraction.feature.channel.ThreadedAPI;
 import net.refractionapi.refraction.feature.channel.TwoWayChannel;
 import net.refractionapi.refraction.platform.RefractionServices;
 import net.refractionapi.refraction.util.FileUtil;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
 /**
@@ -30,16 +34,18 @@ public class ReConfigurer {
     private static final LevelResource RECONFIG = FileUtil.createResource("reconfig");
     private static final HashMap<Side, HashMap<String, RCBuilder>> builders = new HashMap<>();
     public static final ResourceLocation CONFIG = Refraction.id("reconfig");
-    protected static NamedAPI configurer = NamedAPI.create(CONFIG)
+    protected static ThreadedAPI configurer = NamedAPI.create(CONFIG)
             .configure((channel) -> {
                 channel.valid((plr, buf, route) -> !channel.isServer()); // only the server can send reconfig files --Zeus
                 channel.registerListener(ReConfigurer::fromServer);
                 channel.registerListener("single", ReConfigurer::fromServer);
+                channel.registerListener("reload", (plr, buf) -> reload(buf.readEnum(Side.class), (s, b) -> {
+                }));
                 channel.registerSender(ReConfigurer::toClient);
             }).initCommon();
     protected static SyncConfig syncConfig = new SyncConfig()
             .setSyncer((entity) -> {
-                configurer.sync(entity);
+                configurer.get().sync(entity);
                 syncCommonConfigs();
             });
 
@@ -62,8 +68,16 @@ public class ReConfigurer {
         load(file, builder); // we can directly load the client configs --Zeus
     }
 
-    public static void reload(Side side) {
-        builders.get(side).forEach((id, builder) -> builder.load());
+    public static int reload(Side side, BiConsumer<String, RCBuilder> onReload) {
+        if (side.equals(Side.CLIENT) && configurer.channel().isServer()) {
+            configurer.channel().send("reload", (buf) -> buf.writeEnum(side));
+            return 0;
+        }
+        builders.get(side).forEach((id, builder) -> {
+            builder.load();
+            onReload.accept(id, builder);
+        });
+        return 1;
     }
 
     private static void put(Side side, String id, RCBuilder builder) {
@@ -127,7 +141,8 @@ public class ReConfigurer {
         JsonObject object = new JsonObject();
         try {
             builder.values().forEach((value) -> {
-                if (!value.description().get().isEmpty()) object.addProperty("comment-%s".formatted(value.name().get()), value.description().get());
+                if (!value.description().get().isEmpty())
+                    object.addProperty("comment-%s".formatted(value.name().get()), value.description().get());
                 value.value().serialize(value.name().get(), object);
             });
             if (!location.exists() && location.getParentFile().mkdirs()) {
@@ -144,7 +159,7 @@ public class ReConfigurer {
         File location = new File("%s.json5".formatted(file));
         JsonObject json = getJsonObject(location);
         assert json != null;
-        json.asMap().forEach((name, element) -> { // remove any invalid values / comments --Zeus
+        new ConcurrentHashMap<>(json.asMap()).forEach((name, element) -> { // remove any invalid values / comments --Zeus
             if (!builder.valueExists(name)) json.remove(name);
         });
         saveObject(location, json);
@@ -196,7 +211,11 @@ public class ReConfigurer {
     }
 
     static int fromServer(Player player, FriendlyByteBuf buf) {
-        if (player != null) return 0; // should be impossible --Zeus
+        if (player instanceof ServerPlayer s) {
+            s.connection.disconnect(Component.literal("Sent | client -> server | reconfig packet"));
+            Refraction.LOGGER.warn("Player {} sent a reconfig load packet \n This should be impossible! \n Please report this to the Refraction dev team", s.getDisplayName().getString());
+            return 0;
+        }
         String name = buf.readUtf();
         String json = buf.readUtf();
         JsonReader reader = new JsonReader(new StringReader(json));

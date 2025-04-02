@@ -12,7 +12,7 @@ public class ReConfigExample {
     public static final RCMap<RCString, RCDouble> EXAMPLE;
 
     static {
-        EXAMPLE = builder.set("example", "Example string list", RCString.class, RCDouble.class, Map.of(
+        EXAMPLE = builder.set("example", "Example string | double map", RCString.class, RCDouble.class, Map.of(
                 new RCString("key1"), new RCDouble(1.0),
                 new RCString("key2"), new RCDouble(2.0)
         )).build();
