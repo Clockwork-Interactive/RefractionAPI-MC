@@ -32,6 +32,10 @@ public class NamedAPI implements Syncable<NamedAPI> {
         this.syncConfig = null;
     }
 
+    public ResourceLocation id() {
+        return api;
+    }
+
     /**
      * Configure the api on channel open
      */
@@ -40,35 +44,42 @@ public class NamedAPI implements Syncable<NamedAPI> {
         return this;
     }
 
+    public static NamedAPI initOnServerStart(NamedAPI api) {
+        RefractionEvents.SERVER_STARTING.register((server) -> {
+            api.open(server.overworld());
+        });
+        return api;
+    }
+
     /**
      * Specify this on server, automatically starts the API, when the server is on
      */
     public NamedAPI initOnServerStart() {
-        RefractionEvents.SERVER_STARTING.register((server) -> {
-            this.open(server.overworld());
+        return initOnServerStart(this);
+    }
+
+    public static NamedAPI initOnOpen(NamedAPI namedAPI) {
+        RefractionClientEvents.NAMED_CHANNEL_OPEN.register((api, id) -> {
+            if (api.equals(namedAPI.api)) namedAPI.open(ClientData.getPlayer().level(), id);
         });
-        return this;
+        return namedAPI;
     }
 
     /**
      * Specify this on client, automatically starts the API, when the server has opened a client channel
      */
     public NamedAPI initOnOpen() {
-        RefractionClientEvents.NAMED_CHANNEL_OPEN.register((api, id) -> {
-            if (api.equals(this.api)) this.open(ClientData.getPlayer().level(), id);
-        });
-        return this;
+        return initOnOpen(this);
     }
 
     /**
      * Specify this on a commonly used API <br>
      * WARNING: With an improperly configured common api <br>
-     * It's easy to overlook a security issues on the server <br>
+     * It's easy to overlook security issues on the server <br>
      * Reference for a safe common API: {@link net.refractionapi.refraction.feature.reconfig.ReConfigurer ReConfig}
      */
-    public NamedAPI initCommon() {
-        this.initOnOpen();
-        return this.initOnServerStart();
+    public ThreadedAPI initCommon() {
+        return new ThreadedAPI(this);
     }
 
     /**
@@ -123,6 +134,10 @@ public class NamedAPI implements Syncable<NamedAPI> {
         return channels.get().entrySet().stream().filter((entry) -> entry.getValue().equals(id)).findFirst().map(Map.Entry::getKey);
     }
 
+    public static void removeChannel(ResourceLocation rl) {
+        channels.get().remove(rl);
+    }
+
     /**
      * Static providers for client channels if they are non-static-accessible <br>
      * and the API key is known
@@ -149,6 +164,12 @@ public class NamedAPI implements Syncable<NamedAPI> {
 
     public static NamedAPI create(ResourceLocation id) {
         return new NamedAPI(id);
+    }
+
+    protected static NamedAPI create(NamedAPI api) {
+        NamedAPI namedAPI = new NamedAPI(api.api);
+        namedAPI.configurer.addAll(api.configurer);
+        return namedAPI;
     }
 
     public static void clear() {

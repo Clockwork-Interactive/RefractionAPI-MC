@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.config.RRuntimeConfig;
 import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
@@ -13,13 +14,16 @@ public class RReConfigCommand {
         dispatcher.register(Commands.literal("reconfig").requires(context ->
                         context.hasPermission(2)
                 ).then(Commands.literal("reload-all")
-                                .executes(context -> reloadAllConfigs(context.getSource()))
+                        .executes(context -> reloadAllConfigs(context.getSource()))
                 )
         );
     }
 
     private int reloadAllConfigs(CommandSourceStack stack) {
-        for (ReConfigurer.Side side : ReConfigurer.Side.values()) ReConfigurer.reload(side);
+        for (ReConfigurer.Side side : ReConfigurer.Side.values())
+            ReConfigurer.reload(side, (id, builder) ->
+                    stack.sendSuccess(() -> Component.literal("Reloaded %s %s".formatted(id, side)), true)
+            );
         return 1;
     }
 }
