@@ -5,7 +5,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.protocol.Packet;
 import net.refractionapi.refraction.gui.RIMGuiInternal;
-import net.refractionapi.refraction.gui.RIMNetworkActivity;
+import net.refractionapi.refraction.gui.tools.RIMNetworkActivity;
 import net.refractionapi.refraction.platform.RefractionServices;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

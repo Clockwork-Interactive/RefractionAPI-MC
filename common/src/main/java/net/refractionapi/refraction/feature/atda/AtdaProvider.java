@@ -63,6 +63,11 @@ public abstract class AtdaProvider<E, D extends AtdaData<D>> implements IAtdaPro
 
     @Override
     public void deserialize(CompoundTag tag) {
-        getData().load(tag);
+        D data = getData();
+        if (data.first) {
+            data.onFirstLoad(tag);
+            data.first = false;
+        }
+        data.load(tag);
     }
 }

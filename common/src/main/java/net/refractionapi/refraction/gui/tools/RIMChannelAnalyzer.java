@@ -1,9 +1,10 @@
-package net.refractionapi.refraction.gui;
+package net.refractionapi.refraction.gui.tools;
 
 import imgui.ImGui;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.feature.channel.TwoWayChannel;
 import net.refractionapi.refraction.feature.channel.TwoWayIntermediary;
+import net.refractionapi.refraction.gui.RIMTool;
 import net.refractionapi.refraction.util.Pair;
 
 import java.util.List;

@@ -132,6 +132,10 @@ public class NamedAPI implements Syncable<NamedAPI> {
         return channels.get().get(id);
     }
 
+    public static HashMap<ResourceLocation, UUID> channels() {
+        return channels();
+    }
+
     public static Optional<ResourceLocation> getChannel(UUID id) {
         return channels.get().entrySet().stream().filter((entry) -> entry.getValue().equals(id)).findFirst().map(Map.Entry::getKey);
     }

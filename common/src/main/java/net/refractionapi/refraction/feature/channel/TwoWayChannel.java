@@ -125,6 +125,10 @@ public class TwoWayChannel {
         return this.router(id, listener, null);
     }
 
+    public String[] routes() {
+        return ROUTERS.keySet().toArray(String[]::new);
+    }
+
     /**
      * If a channel can receive packets
      */

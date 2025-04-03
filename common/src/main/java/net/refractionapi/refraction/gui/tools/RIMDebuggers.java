@@ -1,7 +1,8 @@
-package net.refractionapi.refraction.gui;
+package net.refractionapi.refraction.gui.tools;
 
 import imgui.internal.ImGui;
 import net.refractionapi.refraction.debug.RDebugRenderer;
+import net.refractionapi.refraction.gui.RIMTool;
 
 public class RIMDebuggers extends RIMTool {
     @Override

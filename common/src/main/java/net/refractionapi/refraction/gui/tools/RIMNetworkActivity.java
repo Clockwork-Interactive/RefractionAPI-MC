@@ -1,9 +1,10 @@
-package net.refractionapi.refraction.gui;
+package net.refractionapi.refraction.gui.tools;
 
 import imgui.ImGui;
 import imgui.extension.implot.ImPlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.PacketType;
+import net.refractionapi.refraction.gui.RIMTool;
 
 import java.util.function.BooleanSupplier;
 import java.util.stream.IntStream;

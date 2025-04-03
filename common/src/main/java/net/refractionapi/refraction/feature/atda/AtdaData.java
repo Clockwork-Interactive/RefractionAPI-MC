@@ -8,6 +8,7 @@ import net.refractionapi.refraction.feature.data.Syncable;
 public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
     IAtdaProvider providerSync;
     Atda<?, ?> atdaSync;
+    boolean first = true;
 
     public AtdaData() {
         this.setSynced();
@@ -17,6 +18,10 @@ public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
         this.providerSync = providerSync;
         this.atdaSync = atda;
         return this;
+    }
+
+    public void onFirstLoad(CompoundTag tag) {
+
     }
 
     public abstract void save(CompoundTag tag);
