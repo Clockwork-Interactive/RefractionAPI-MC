@@ -14,6 +14,7 @@ import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.util.Mutable;
 import net.refractionapi.refraction.util.Pair;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -120,6 +121,10 @@ public class TwoWayIntermediary implements Syncable<TwoWayIntermediary> {
 
     public List<Pair<UUID, Optional<TwoWayChannel>>> channels() {
         return List.copyOf(CHANNELS.entrySet().stream().map(entry -> new Pair<>(entry.getKey(), entry.getValue())).toList());
+    }
+
+    public HashMap<UUID, Optional<TwoWayChannel>> hashChannels() {
+        return new HashMap<>(this.CHANNELS);
     }
 
     public static TwoWayIntermediary instance(boolean isServer) {

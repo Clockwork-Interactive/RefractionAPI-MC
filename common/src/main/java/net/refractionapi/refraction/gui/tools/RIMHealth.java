@@ -1,6 +1,7 @@
-package net.refractionapi.refraction.gui;
+package net.refractionapi.refraction.gui.tools;
 
 import imgui.ImGui;
+import net.refractionapi.refraction.gui.RIMTool;
 
 public class RIMHealth extends RIMTool {
     private double tps = 20;

@@ -1,7 +1,8 @@
-package net.refractionapi.refraction.gui;
+package net.refractionapi.refraction.gui.tools;
 
 import imgui.ImGui;
 import imgui.type.ImString;
+import net.refractionapi.refraction.gui.RIMTool;
 
 public class RIMCommandExec extends RIMTool {
     private final ImString command = new ImString(32500);

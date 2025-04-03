@@ -16,6 +16,8 @@ import net.refractionapi.refraction.feature.examples.reconfig.ReConfigExample;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
 import net.refractionapi.refraction.gui.*;
+import net.refractionapi.refraction.gui.cli.CLIComms;
+import net.refractionapi.refraction.gui.tools.*;
 import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 import net.refractionapi.refraction.helper.command.RDebugCommand;
 import net.refractionapi.refraction.helper.command.RReConfigCommand;
@@ -64,6 +66,7 @@ public class Refraction {
         RItems.init();
         AtdaExampleRegistry.init();
         FrozenManager.init();
+        CLIComms.init();
         RefractionEvents.PLAYER_JOINED.register(RefractionData::get);
         RefractionEvents.REGISTER_COMMANDS.register((c) -> {
             new RDebugCommand(c);
@@ -84,7 +87,8 @@ public class Refraction {
                     new RIMDebuggers(),
                     new RIMChannelAnalyzer(),
                     new RIMCommandExec(),
-                    new RIMHealth()
+                    new RIMHealth(),
+                    new RIMCli()
             );
         }
     }
