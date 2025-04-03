@@ -31,7 +31,7 @@ public class RIMCli extends RIMTool {
             input.set("");
         }
         // auto focus text
-        if (!ImGui.isMouseClicked(0) && ImGui.isWindowFocused() && ImGui.isItemFocused()) {
+        if (!ImGui.isMouseClicked(0) && !ImGui.isMouseDown(0) && ImGui.isWindowFocused() && ImGui.isItemFocused()) {
             ImGui.setKeyboardFocusHere(-1);
         }
         ImGui.end();

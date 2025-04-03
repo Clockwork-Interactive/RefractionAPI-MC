@@ -32,7 +32,7 @@ public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
     public void write(FriendlyByteBuf buf) {
         CompoundTag tag = new CompoundTag();
         this.save(tag);
-        buf.writeUtf(this.providerSync.getSyncID() + this.getClass().getName());
+        buf.writeUtf(this.providerSync.getSyncID());
         buf.writeUtf(this.atdaSync.id.toString());
         buf.writeNbt(tag);
     }

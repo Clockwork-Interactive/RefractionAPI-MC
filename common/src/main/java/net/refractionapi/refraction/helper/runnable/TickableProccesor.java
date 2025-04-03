@@ -4,11 +4,12 @@ import net.minecraft.world.level.LevelAccessor;
 import net.refractionapi.refraction.events.RefractionEvents;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 
 public class TickableProccesor {
-    private static final HashMap<TickableProccesor, LevelAccessor> RUNNABLES = new HashMap<>();
+    private static final ConcurrentHashMap<TickableProccesor, LevelAccessor> RUNNABLES = new ConcurrentHashMap<>();
     private boolean running = false;
     private BiConsumer<LevelAccessor, Boolean> process = (level, post) -> {
     };

@@ -94,7 +94,7 @@ public class Atda<E, D extends AtdaData<D>> {
         if (!(lookup instanceof IAtdaProvider lookupProvider))
             throw new RuntimeException("Invalid lookup called for non-IAtdaProvider class %s".formatted(lookup.getClass().toString()));
         if (lookupProvider.getLevel().isClientSide) {
-            return (D) this.clientLookup.get(lookupProvider.getSyncID() + data.getClass().getName());
+            return (D) this.clientLookup.get(lookupProvider.getSyncID());
         }
         for (IAtdaProvider iAtdaProvider : safeGet(lookup)) {
             Optional<D> data = iAtdaProvider.getAtda(this);
