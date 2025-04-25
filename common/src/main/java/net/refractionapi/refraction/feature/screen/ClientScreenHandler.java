@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
+@Deprecated
 public class ClientScreenHandler {
     private RefractionScreen screen;
     private ScreenBuilder<?> builder;

@@ -317,9 +317,9 @@ public class TwoWayChannel {
             if (player instanceof ServerPlayer s) { // a player shouldn't be able to send respond packets
                 s.connection.disconnect(Component.literal("Illegal packet"));
                 Refraction.LOGGER.info("Player {} sent an illegal packet (POST protocol)", player.getDisplayName().getString());
-                return true;
+                return false;
             }
-            assert this.messages.containsKey(id) : "Message ID doesn't exist %d".formatted(id);
+            assert this.messages.containsKey(id) : "ScreenMessage ID doesn't exist %d".formatted(id);
             this.messages.get(id).onRespond().get().ifPresent((c) -> c.message(player, routerID, this.receivedHeader, new FriendlyByteBuf(buf.copy())));
             this.messages.remove(id); // prevent double-callbacks
             return true;

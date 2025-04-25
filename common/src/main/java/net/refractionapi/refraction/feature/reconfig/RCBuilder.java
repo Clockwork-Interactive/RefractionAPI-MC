@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.feature.reconfig;
 
 import net.refractionapi.refraction.util.Mutable;
+import net.refractionapi.refraction.util.Side;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import java.util.function.Predicate;
 public class RCBuilder {
     private Value[] values = new Value[0];
     private Value current = null;
-    protected ReConfigurer.Side side;
+    protected Side side;
     protected String file;
     protected String name;
     protected boolean syncOnSave = false;
@@ -84,7 +85,7 @@ public class RCBuilder {
         return (T) this.current.value;
     }
 
-    protected RCBuilder with(ReConfigurer.Side side, String name, String file) {
+    protected RCBuilder with(Side side, String name, String file) {
         this.side = side;
         this.name = name;
         this.file = file;
@@ -127,7 +128,7 @@ public class RCBuilder {
     public RCBuilder copy() {
         Value[] valuesCopy = this.values;
         Value currentCopy = this.current;
-        ReConfigurer.Side sideCopy = this.side;
+        Side sideCopy = this.side;
         String fileCopy = this.file;
         String nameCopy = this.name;
         return new RCBuilder() {{

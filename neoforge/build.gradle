@@ -8,7 +8,7 @@ neoForge {
     // Automatically enable neoforge AccessTransformers if the file exists
     def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
-        accessTransformers.add(at.absolutePath)
+        accessTransformers.from(at.absolutePath)
     }
     parchment {
         minecraftVersion = parchment_minecraft
@@ -45,16 +45,14 @@ repositories {
 
 dependencies {
     jarJar(api(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-binding:$imgui_version")))
-    jarJar(api(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-lwjgl3:$imgui_version")))
+    jarJar(api(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-lwjgl3:$imgui_version"))) {
+        exclude group: 'org.lwjgl'
+        exclude group: 'org.lwjgl.lwjgl'
+    }
     jarJar(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-natives-windows:$imgui_version"))
 
     jarJar(api(clientAdditionalRuntimeClasspath("io.github.classgraph:classgraph:$classgraph_version")))
     jarJar(api(clientAdditionalRuntimeClasspath("io.github.toolfactory:narcissus:$narcissus_version")))
-}
-
-def additionalImplementation(String dependency) {
-    configurations.implementation.dependencies.add(dependencies.create(dependency))
-    return dependency
 }
 
 jar {

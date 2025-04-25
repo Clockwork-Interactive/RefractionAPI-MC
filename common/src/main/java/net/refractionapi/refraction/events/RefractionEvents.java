@@ -7,6 +7,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.LevelAccessor;
 import net.refractionapi.refraction.feature.atda.IAtdaProvider;
+import net.refractionapi.refraction.feature.channel.NamedAPI;
+import net.refractionapi.refraction.feature.channel.TwoWayChannel;
 
 public interface RefractionEvents {
     RefractionEvent<LoadLevel> LOAD_LEVEL = new RefractionEventCaller<>(LoadLevel.class, listeners -> world -> {
@@ -71,6 +73,11 @@ public interface RefractionEvents {
             listener.clone(current, old);
         }
     });
+    RefractionEvent<CLIServer> REGISTER_CLI = new RefractionEventCaller<>(CLIServer.class, listeners -> (channel) -> {
+        for (CLIServer listener : listeners) {
+            listener.configure(channel);
+        }
+    });
 
     default void registerOverlays() {
         // REGISTER_LAYERS.register(layer -> {
@@ -132,5 +139,10 @@ public interface RefractionEvents {
     @FunctionalInterface
     interface PlayerClone {
         void clone(ServerPlayer current, ServerPlayer old);
+    }
+
+    @FunctionalInterface
+    interface CLIServer {
+        void configure(NamedAPI channel);
     }
 }

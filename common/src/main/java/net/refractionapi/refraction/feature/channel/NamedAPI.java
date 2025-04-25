@@ -7,6 +7,8 @@ import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.data.Syncable;
+import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
+import net.refractionapi.refraction.util.Side;
 import org.apache.logging.log4j.util.InternalApi;
 
 import java.util.*;
@@ -19,7 +21,8 @@ public class NamedAPI implements Syncable<NamedAPI> {
     private static final ThreadLocal<HashMap<ResourceLocation, UUID>> channels = ThreadLocal.withInitial(HashMap::new);
     private final SyncConfig syncConfig;
     private final ResourceLocation api;
-    private final List<Consumer<TwoWayChannel>> configurer = new ArrayList<>();
+    private final List<SidedConfigurer> configurer = new ArrayList<>();
+    private Consumer<NamedAPI> preConfigure = (nap) -> {};
     private TwoWayChannel channel;
 
     private NamedAPI(ResourceLocation apiID) {
@@ -42,7 +45,22 @@ public class NamedAPI implements Syncable<NamedAPI> {
      * Configure the api on channel open
      */
     public NamedAPI configure(Consumer<TwoWayChannel> consumer) {
-        this.configurer.add(consumer);
+        this.configurer.add(new SidedConfigurer(Side.COMMON, consumer));
+        return this;
+    }
+
+    public NamedAPI configureServer(Consumer<TwoWayChannel> consumer) {
+        this.configurer.add(new SidedConfigurer(Side.SERVER, consumer));
+        return this;
+    }
+
+    public NamedAPI configureClient(Consumer<TwoWayChannel> consumer) {
+        this.configurer.add(new SidedConfigurer(Side.CLIENT, consumer));
+        return this;
+    }
+
+    public NamedAPI preConfigure(Consumer<NamedAPI> consumer) {
+        this.preConfigure = consumer;
         return this;
     }
 
@@ -89,10 +107,7 @@ public class NamedAPI implements Syncable<NamedAPI> {
      */
     public NamedAPI open(Level level) {
         this.channel = new TwoWayChannel(level);
-        this.configurer.forEach((consumer) -> consumer.accept(this.channel));
-        this.syncAllServer(level);
-        this.channel.open();
-        channels.get().put(this.api, this.channel.id());
+        postOpen(level);
         return this;
     }
 
@@ -104,11 +119,25 @@ public class NamedAPI implements Syncable<NamedAPI> {
             throw new IllegalArgumentException("UUID cannot be null");
         }
         this.channel = new TwoWayChannel(level, uuid);
-        this.configurer.forEach((consumer) -> consumer.accept(this.channel));
-        this.syncAll(level);
+        postOpen(level);
+        return this;
+    }
+
+    protected void postOpen(Level level) {
+        this.preConfigure.accept(this);
+        this.configurer.forEach((sidedConfigurer) -> {
+            if (sidedConfigurer.side.equals(Side.COMMON)) {
+                sidedConfigurer.configurer.accept(this.channel);
+                return;
+            }
+            if (level.isClientSide && sidedConfigurer.side.equals(Side.CLIENT))
+                sidedConfigurer.configurer.accept(this.channel);
+            else if (!level.isClientSide && sidedConfigurer.side.equals(Side.SERVER))
+                sidedConfigurer.configurer.accept(this.channel);
+        });
+        this.syncAllServer(level);
         this.channel.open();
         channels.get().put(this.api, this.channel.id());
-        return this;
     }
 
     /**
@@ -175,11 +204,16 @@ public class NamedAPI implements Syncable<NamedAPI> {
     protected static NamedAPI create(NamedAPI api) {
         NamedAPI namedAPI = new NamedAPI(api.api);
         namedAPI.configurer.addAll(api.configurer);
+        namedAPI.preConfigure = api.preConfigure;
         return namedAPI;
     }
 
     public static void clear() {
         channels.get().clear();
+    }
+
+    public record SidedConfigurer(Side side, Consumer<TwoWayChannel> configurer) {
+
     }
 
     @Override
@@ -206,8 +240,6 @@ public class NamedAPI implements Syncable<NamedAPI> {
     }
 
     static {
-        RefractionClientEvents.CLIENT_PLAYER_LEAVE.register(() -> {
-            channels.get().clear();
-        });
+        RefractionClientEvents.CLIENT_PLAYER_LEAVE.register(() -> channels.get().clear());
     }
 }

@@ -19,8 +19,8 @@ import java.util.function.Function;
  * The example registry of this can be found in the examples folder <br>
  * Registering the auto clientScreenCreator can be found in {@link ClientScreenHandler#init()}
  */
+@Deprecated // Use @ScreenScheme
 public class ScreenBuilder<T extends ServerScreen> {
-
     private static final HashMap<String, ScreenBuilder<?>> builders = new HashMap<>();
     private final String id;
     private final Function<Object[], CompoundTag> serializer;
@@ -75,7 +75,7 @@ public class ScreenBuilder<T extends ServerScreen> {
 
     public void setScreen(Object... args) {
         if (!this.clientAccessible) {
-            Refraction.LOGGER.warn("Screen {} is not client accessible, did you forget to set .clientAccessible()?", this.id);
+            Refraction.LOGGER.warn("Screen {} is not client accessible, did you forget to set #clientAccessible()?", this.id);
             return;
         }
         ClientData.screenHandler.openScreen(this, args);
@@ -129,7 +129,6 @@ public class ScreenBuilder<T extends ServerScreen> {
     }
 
     public static class Builder {
-
         private Function<Object[], CompoundTag> serializer = null;
         private Function<CompoundTag, Object[]> deserializer = null;
         private BiFunction<Object[], ScreenBuilder<?>, Object> clientScreenCreator = null;
@@ -207,7 +206,5 @@ public class ScreenBuilder<T extends ServerScreen> {
             }
             return new ScreenBuilder<>(id, this.serializer, this.deserializer, this.clientScreenCreator, (BiConsumer<S, CompoundTag>) this.serverHandler, (Function<ServerPlayer, S>) this.serverScreenCreator, this.clientAccessible);
         }
-
     }
-
 }

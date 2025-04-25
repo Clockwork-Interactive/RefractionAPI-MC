@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.config.RRuntimeConfig;
 import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
+import net.refractionapi.refraction.util.Side;
 
 public class RReConfigCommand {
     public RReConfigCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -20,7 +21,7 @@ public class RReConfigCommand {
     }
 
     private int reloadAllConfigs(CommandSourceStack stack) {
-        for (ReConfigurer.Side side : ReConfigurer.Side.values())
+        for (Side side : Side.values())
             ReConfigurer.reload(side, (id, builder) ->
                     stack.sendSuccess(() -> Component.literal("Reloaded %s %s".formatted(id, side)), true)
             );

@@ -5,7 +5,6 @@ import org.apache.commons.lang3.text.WordUtils;
 import java.util.Optional;
 
 public class StringUtils {
-
     /**
      * Formats registry strings. <br>
      * For example "minecraft:oak_sapling" formats to "Oak Sapling"
@@ -27,5 +26,4 @@ public class StringUtils {
     public static float floatFromString(String string) {
         return Optional.ofNullable(string).filter((s) -> !s.isEmpty()).map((s) -> Float.parseFloat(s.trim().replaceAll("[^0-9.] ", ""))).orElse(0.0F);
     }
-
 }

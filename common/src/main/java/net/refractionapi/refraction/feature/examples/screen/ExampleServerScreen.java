@@ -7,7 +7,6 @@ import net.refractionapi.refraction.feature.screen.ServerScreen;
 import static net.refractionapi.refraction.Refraction.LOGGER;
 
 public class ExampleServerScreen extends ServerScreen {
-
     public ExampleServerScreen(ServerPlayer player) {
         super(ExampleScreenRegistry.EXAMPLE_SCREEN, player);
     }
@@ -25,5 +24,4 @@ public class ExampleServerScreen extends ServerScreen {
         response.putString("data", "Hello from the server!");
         sendData(response);
     }
-
 }

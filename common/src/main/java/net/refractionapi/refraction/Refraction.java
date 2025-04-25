@@ -15,7 +15,8 @@ import net.refractionapi.refraction.feature.examples.interaction.ExampleInteract
 import net.refractionapi.refraction.feature.examples.reconfig.ReConfigExample;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
-import net.refractionapi.refraction.gui.*;
+import net.refractionapi.refraction.gui.RIMGuiInternal;
+import net.refractionapi.refraction.gui.RIMServer;
 import net.refractionapi.refraction.gui.cli.CLIComms;
 import net.refractionapi.refraction.gui.tools.*;
 import net.refractionapi.refraction.helper.clazz.RModRegistrar;

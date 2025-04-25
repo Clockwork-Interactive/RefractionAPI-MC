@@ -50,15 +50,19 @@ public class RIMNetworkActivity extends RIMTool {
     @Override
     public void render() {
         ImGui.begin("Network Activity");
-        if (!ImPlot.beginPlot("Network Activity", "Ticks", "Packets")) {
+        if (!ImPlot.beginPlot("Network Activity")) {
             ImGui.end();
             return;
         }
-        Integer[] recPacketsForTick = IntStream.range(0, 200).mapToObj(i -> this.packetsRec[i] == null ? 0 : this.packetsRec[i].length).toArray(Integer[]::new);
-        Integer[] sentPacketsForTick = IntStream.range(0, 200).mapToObj(i -> this.packetsSent[i] == null ? 0 : this.packetsSent[i].length).toArray(Integer[]::new);
+        int[] recPacketsForTick = IntStream.range(0, 200)
+                .map(i -> this.packetsRec[i] == null ? 0 : this.packetsRec[i].length)
+                .toArray();
+        int[] sentPacketsForTick = IntStream.range(0, 200)
+                .map(i -> this.packetsSent[i] == null ? 0 : this.packetsSent[i].length)
+                .toArray();
         Integer[] ticks = IntStream.range(0, 200).boxed().toArray(Integer[]::new);
-        ImPlot.plotLine("Incoming Packets", ticks, recPacketsForTick);
-        ImPlot.plotLine("Outgoing Packets", ticks, sentPacketsForTick);
+        ImPlot.plotLine("Incoming Packets", recPacketsForTick);
+        ImPlot.plotLine("Outgoing Packets", sentPacketsForTick);
         ImPlot.endPlot();
         ImGui.end();
     }

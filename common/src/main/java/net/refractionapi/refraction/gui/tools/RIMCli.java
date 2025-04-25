@@ -8,7 +8,7 @@ import net.refractionapi.refraction.gui.cli.CLI;
 
 public class RIMCli extends RIMTool {
     private final CLI cli = new CLI();
-    private ImString input = new ImString();
+    private final ImString input = new ImString();
 
     @Override
     public void init() {
@@ -31,7 +31,7 @@ public class RIMCli extends RIMTool {
             input.set("");
         }
         // auto focus text
-        if (!ImGui.isMouseClicked(0) && ImGui.isWindowFocused() && ImGui.isItemFocused()) {
+        if (!ImGui.isMouseClicked(0) && !ImGui.isAnyMouseDown() && ImGui.isWindowHovered() && ImGui.isWindowFocused() && ImGui.isItemFocused()) {
             ImGui.setKeyboardFocusHere(-1);
         }
         ImGui.end();

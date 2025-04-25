@@ -22,7 +22,6 @@ import java.util.Optional;
  */
 @ApiStatus.Internal
 public abstract class TabbedScreen extends Screen implements RefractionScreen {
-
     private final TabNavigator navigator = new TabNavigator();
     private Tab[] tabs = new Tab[0];
     private Tab currentTab;
@@ -215,5 +214,4 @@ public abstract class TabbedScreen extends Screen implements RefractionScreen {
     public boolean isPauseScreen() {
         return false;
     }
-
 }
