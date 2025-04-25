@@ -47,6 +47,7 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
 
     public void beginFrame() {
         this.imGuiGlfw.newFrame();
+        this.imGuiGl3.newFrame();
         ImGui.newFrame();
     }
 
@@ -122,8 +123,8 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
 
     @Override
     public void free() {
-        this.imGuiGl3.dispose();
-        this.imGuiGlfw.dispose();
+        this.imGuiGl3.destroyDeviceObjects();
+        this.imGuiGlfw.shutdown();
         ImGui.destroyContext();
         ImPlot.destroyContext(this.contextPlot);
     }

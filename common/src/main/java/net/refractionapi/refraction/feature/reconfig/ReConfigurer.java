@@ -20,6 +20,7 @@ import net.refractionapi.refraction.feature.channel.ThreadedAPI;
 import net.refractionapi.refraction.feature.channel.TwoWayChannel;
 import net.refractionapi.refraction.platform.RefractionServices;
 import net.refractionapi.refraction.util.FileUtil;
+import net.refractionapi.refraction.util.Side;
 
 import java.io.*;
 import java.util.HashMap;
@@ -37,11 +38,12 @@ public class ReConfigurer {
     protected static ThreadedAPI configurer = NamedAPI.create(CONFIG)
             .configure((channel) -> {
                 channel.valid((plr, buf, route) -> !channel.isServer()); // only the server can send reconfig files --Zeus
+                channel.registerSender(ReConfigurer::toClient);
+            }).configureClient((channel) -> {
                 channel.registerListener(ReConfigurer::fromServer);
                 channel.registerListener("single", ReConfigurer::fromServer);
                 channel.registerListener("reload", (plr, buf) -> reload(buf.readEnum(Side.class), (s, b) -> {
                 }));
-                channel.registerSender(ReConfigurer::toClient);
             }).initCommon();
     protected static SyncConfig syncConfig = new SyncConfig()
             .setSyncer((entity) -> {
@@ -240,11 +242,5 @@ public class ReConfigurer {
             saveAll(Side.COMMON);
             clearSide(Side.SERVER);
         });
-    }
-
-    public enum Side {
-        SERVER,
-        COMMON,
-        CLIENT
     }
 }

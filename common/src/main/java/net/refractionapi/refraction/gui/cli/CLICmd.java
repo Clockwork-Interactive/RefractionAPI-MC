@@ -22,6 +22,10 @@ public abstract class CLICmd {
 
     public abstract String description();
 
+    public int priority() {
+        return 0;
+    }
+
     public abstract void mapArgs();
 
     public void mapArg(String arg, String desc, Arg<?> argFunc) {
@@ -78,7 +82,12 @@ public abstract class CLICmd {
     }
 
     protected boolean hasTrailing(String[] args, int pos) {
-        return args.length >= pos + 1;
+        return args.length - 1 > pos;
+    }
+
+    protected CLICmd combine(CLICmd cmd) {
+        this.argExecs.putAll(cmd.argExecs);
+        return this;
     }
 
     protected int parseInt(String arg) {

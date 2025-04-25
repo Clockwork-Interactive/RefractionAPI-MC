@@ -7,6 +7,7 @@ import net.refractionapi.refraction.networking.S2C.SendScreenDataS2CPacket;
 import net.refractionapi.refraction.networking.S2C.SetScreenS2CPacket;
 import org.jetbrains.annotations.ApiStatus;
 
+@Deprecated
 public abstract class ServerScreen {
     private final ScreenBuilder<?> builder;
     private final ServerPlayer player;

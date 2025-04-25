@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.gui.cli;
 
 import joptsimple.internal.Strings;
+import net.refractionapi.refraction.events.RefractionClientEvents;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ public class CLI {
         String[] cmdArgs = Arrays.stream(args)
                 .skip(1)
                 .filter(arg -> !arg.isEmpty())
+                .map(String::strip)
                 .toArray(String[]::new);
         cmds.get(command).exec(cmdArgs);
     }
@@ -58,9 +60,15 @@ public class CLI {
         add(new ClearCmd(this));
         add(new HijackCmd(this));
         add(new LSCmd(this));
+        RefractionClientEvents.CLI_REGISTER.invoker().register(this);
     }
 
-    private void add(CLICmd cliCmd) {
-        this.cmds.put(cliCmd.command(), cliCmd);
+    public void add(CLICmd cliCmd) {
+        this.cmds.compute(cliCmd.command(), (k, v) -> {
+            if (v == null) return cliCmd;
+            if (v.priority() >= cliCmd.priority()) v.combine(cliCmd);
+            else v = cliCmd.combine(v);
+            return v;
+        });
     }
 }

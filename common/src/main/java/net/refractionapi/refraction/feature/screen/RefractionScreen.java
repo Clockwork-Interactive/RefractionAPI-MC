@@ -6,8 +6,8 @@ import net.refractionapi.refraction.client.ClientData;
 import java.util.Arrays;
 import java.util.HashMap;
 
+@Deprecated
 public interface RefractionScreen {
-
     void handleServerEvent(Code code, CompoundTag tag);
 
     default void sendData(CompoundTag tag) {
@@ -38,5 +38,4 @@ public interface RefractionScreen {
             this.identifier = identifier;
         }
     }
-
 }

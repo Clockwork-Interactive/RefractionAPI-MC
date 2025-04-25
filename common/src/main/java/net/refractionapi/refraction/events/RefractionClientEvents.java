@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.events;
 
 import net.minecraft.resources.ResourceLocation;
+import net.refractionapi.refraction.gui.cli.CLI;
 import net.refractionapi.refraction.mixininterfaces.IParticleEngine;
 
 import java.util.UUID;
@@ -38,6 +39,11 @@ public class RefractionClientEvents {
             listener.onOpen(id, uuid);
         }
     });
+    public static final RefractionEvent<RegisterCLI> CLI_REGISTER = new RefractionEventCaller<>(RegisterCLI.class, listeners -> (cli) -> {
+        for (RegisterCLI listener : listeners) {
+            listener.register(cli);
+        }
+    });
 
     @FunctionalInterface
     public interface NamedChannelOpen {
@@ -57,5 +63,10 @@ public class RefractionClientEvents {
     @FunctionalInterface
     public interface RenderContext {
         void onRender(LevelRenderContext context);
+    }
+
+    @FunctionalInterface
+    public interface RegisterCLI {
+        void register(CLI cli);
     }
 }

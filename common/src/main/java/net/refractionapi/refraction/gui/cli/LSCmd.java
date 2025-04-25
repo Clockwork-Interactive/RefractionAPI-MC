@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.feature.channel.TwoWayChannel;
 import net.refractionapi.refraction.feature.channel.TwoWayIntermediary;
+import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 import net.refractionapi.refraction.util.Pair;
 
 import java.util.Optional;
@@ -27,6 +28,15 @@ public class LSCmd extends CLICmd {
     @Override
     public void mapArgs() {
         mapArg("-twc", "Display two way channels.", this::listTwoWayChannels);
+        mapArg("-mods", "Displays refraction-registered mods.", this::listMods);
+    }
+
+    public int listMods(String[] args, int pos) {
+        print("Registered Mods:");
+        for (String mod : RModRegistrar.mods()) {
+            print("  " + mod);
+        }
+        return 1;
     }
 
     public int listTwoWayChannels(String[] args, int pos) {
@@ -37,7 +47,7 @@ public class LSCmd extends CLICmd {
             channel.getSecond().ifPresent((c) -> {
                 print(" Known Routes:");
                 for (String route : c.routes()) {
-                    print("   %s".formatted(route));
+                    print("   " + route);
                 }
             });
             i++;

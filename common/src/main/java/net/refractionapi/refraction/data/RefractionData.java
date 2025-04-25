@@ -4,6 +4,7 @@ import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.events.event.RefractionCommonData;
 import net.refractionapi.refraction.feature.screen.ScreenBuilder;
 import net.refractionapi.refraction.feature.screen.ServerScreen;
+import net.refractionapi.refraction.feature.scheme.ServerScheme;
 
 import java.util.Optional;
 
@@ -11,6 +12,7 @@ public class RefractionData {
     public final Player player;
     public ServerScreen screen;
     public ScreenBuilder<?> builder;
+    public ServerScheme scheme;
 
     public Optional<ServerScreen> getScreen() {
         return screen == null || builder == null ? Optional.empty() : Optional.of(this.screen);

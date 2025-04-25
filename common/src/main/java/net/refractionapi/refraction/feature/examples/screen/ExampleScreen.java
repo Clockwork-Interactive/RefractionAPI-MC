@@ -8,7 +8,6 @@ import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.feature.screen.RefractionScreen;
 
 public class ExampleScreen extends Screen implements RefractionScreen {
-
     private final String transferredData;
 
     public ExampleScreen(String transferredData) {
@@ -30,5 +29,4 @@ public class ExampleScreen extends Screen implements RefractionScreen {
     public void handleServerEvent(Code code, CompoundTag tag) {
         Refraction.LOGGER.info("Received data from server: {}", tag.getString("data"));
     }
-
 }

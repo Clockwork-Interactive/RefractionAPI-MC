@@ -3,7 +3,9 @@ package net.refractionapi.refraction.helper.clazz;
 import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.platform.RefractionServices;
 import net.refractionapi.refraction.util.ClientInitializers;
+import net.refractionapi.refraction.util.Mutable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,6 +13,7 @@ import java.util.List;
 public class RModRegistrar {
     private static final StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
     private static final HashMap<String, String> modIDMap = new HashMap<>();
+    protected static final HashMap<String, ModRetainer> retainers = new HashMap<>();
 
     public static String getCallerModID() {
         return modIDMap.get(getSignature(walker.getCallerClass()));
@@ -26,12 +29,21 @@ public class RModRegistrar {
     public static void registerSelf(String modID, boolean scan) {
         String sig = getSignature(walker.getCallerClass());
         modIDMap.put(sig, modID);
+        retainers.put(modID, new ModRetainer(modID, sig, new Mutable<>(null)));
         if (RefractionServices.PLATFORM.isClient() && scan)
-            ClientInitializers.init(sig);
+            ClientInitializers.scanMod(modID, sig);
     }
 
     public static void registerSelf(String modID) {
-        registerSelf(modID, false);
+        registerSelf(modID, true);
+    }
+
+    public static ModRetainer getRetainer(String modID) {
+        return retainers.get(modID);
+    }
+
+    public static Collection<ModRetainer> retainers() {
+        return retainers.values();
     }
 
     public static void registerMod(String signature, String modID) {
@@ -52,6 +64,10 @@ public class RModRegistrar {
 
     public static ResourceLocation id(Class<?> caller, String id) {
         return ResourceLocation.tryBuild(modIDMap.get(getSignature(caller)), id);
+    }
+
+    public static String[] mods() {
+        return modIDMap.entrySet().stream().map((e) -> "%s | %s".formatted(e.getValue(), e.getKey())).toArray(String[]::new);
     }
 
     private static String getSignature(Class<?> clazz) {
