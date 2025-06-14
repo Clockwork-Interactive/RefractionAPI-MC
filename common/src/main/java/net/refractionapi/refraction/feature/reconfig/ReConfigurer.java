@@ -215,7 +215,7 @@ public class ReConfigurer {
     static int fromServer(Player player, FriendlyByteBuf buf) {
         if (player instanceof ServerPlayer s) {
             s.connection.disconnect(Component.literal("Sent | client -> server | reconfig packet"));
-            Refraction.LOGGER.warn("Player {} sent a reconfig load packet \n This should be impossible! \n Please report this to the Refraction dev team", s.getDisplayName().getString());
+            Refraction.LOGGER.warn("Player {} sent a reconfig load packet\nThis should be impossible!\nPlease report this to the Refraction dev team", s.getDisplayName().getString());
             return 0;
         }
         String name = buf.readUtf();

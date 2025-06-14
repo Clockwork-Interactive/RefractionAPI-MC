@@ -39,6 +39,6 @@ public class RIMHealth extends RIMTool {
 
     @Override
     public String group() {
-        return "Networking";
+        return NETWORK;
     }
 }

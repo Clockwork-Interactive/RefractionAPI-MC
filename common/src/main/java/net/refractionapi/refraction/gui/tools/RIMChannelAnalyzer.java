@@ -47,6 +47,6 @@ public class RIMChannelAnalyzer extends RIMTool {
 
     @Override
     public String group() {
-        return "Networking";
+        return NETWORK;
     }
 }

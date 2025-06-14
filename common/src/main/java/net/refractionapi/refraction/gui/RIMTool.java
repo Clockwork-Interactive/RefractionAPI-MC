@@ -5,7 +5,8 @@ import net.refractionapi.refraction.feature.channel.NamedAPI;
 
 public abstract class RIMTool {
     protected ImBoolean open = new ImBoolean(false);
-    protected ImBoolean visible = new ImBoolean(false);
+    protected final String DEBUG = "Debugging";
+    protected final String NETWORK = "Networking";
 
     public abstract void init();
 

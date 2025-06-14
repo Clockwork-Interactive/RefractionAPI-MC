@@ -3,6 +3,8 @@ package net.refractionapi.refraction.feature.scheme;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.refractionapi.refraction.data.PlrExtension;
+import net.refractionapi.refraction.data.TData;
 import net.refractionapi.refraction.feature.channel.TwoWayChannel;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -55,9 +57,11 @@ public abstract class ServerScheme {
 
     @ApiStatus.Internal
     public void close() {
-        channel.send("default", (buf) -> {},(router, ct) -> ct.putInt("code", ScreenScheme.Code.CLOSE.ordinal()));
+        channel.send("default", (buf) -> {
+        }, (router, ct) -> ct.putInt("code", ScreenScheme.Code.CLOSE.ordinal()));
         channel.close();
         onClose();
+        TData.get(player, PlrExtension.class).scheme = null;
     }
 
     @ApiStatus.Internal

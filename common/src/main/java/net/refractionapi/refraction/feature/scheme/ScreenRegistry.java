@@ -28,7 +28,7 @@ public class ScreenRegistry {
         schemes.put(server, client);
     }
 
-    public static <T extends Screen> T createScreen(ScreenScheme<?> builder, Object[] args) {
+    public static <T> T createScreen(ScreenScheme<?> builder, Object[] args) {
         return (T) ClazzUtil.create(schemes.get(builder.schemeClass()), args);
     }
 

@@ -44,6 +44,6 @@ public class RIMCli extends RIMTool {
 
     @Override
     public String group() {
-        return "Debuggers";
+        return DEBUG;
     }
 }

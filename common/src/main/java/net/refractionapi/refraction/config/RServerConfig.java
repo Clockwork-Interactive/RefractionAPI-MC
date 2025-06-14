@@ -14,6 +14,7 @@ public class RServerConfig {
     public static final RCList<RCString> permittedUsers;
 
     public static boolean isPermitted(Player player) {
+        if (player == null) return false;
         return whitelistEnabled() ? permittedUsers.asList().contains(player.getStringUUID()) : player.hasPermissions(2);
     }
 
@@ -22,7 +23,15 @@ public class RServerConfig {
     }
 
     static {
-        enableRDebugWhitelist = builder.set("enableRDebugWhitelist", "if Refraction Debug should be locked behind the \"permittedUsers\" whitelist", false).build();
-        permittedUsers = builder.set("permittedUsers-UUID", RCString.class, List.of("should be in UUID form | you can safely delete or replace this")).build();
+        enableRDebugWhitelist = builder.set(
+                "enableRDebugWhitelist",
+                "if Refraction Debug should be locked behind the \"permittedUsers\" whitelist",
+                false
+        ).build();
+        permittedUsers = builder.set(
+                "permittedUsers-UUID",
+                RCString.class,
+                List.of("should be in UUID form | you can safely delete or replace this")
+        ).build();
     }
 }

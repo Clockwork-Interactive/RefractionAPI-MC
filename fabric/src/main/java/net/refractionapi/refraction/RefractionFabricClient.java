@@ -14,7 +14,6 @@ import net.refractionapi.refraction.feature.cutscenes.client.CinematicBars;
 import net.refractionapi.refraction.feature.quest.client.QuestRenderer;
 
 public class RefractionFabricClient implements ClientModInitializer, ScreenEvents.Remove {
-
     @Override
     public void onInitializeClient() {
         HudRenderCallback.EVENT.register(CinematicBars::bars);
@@ -29,5 +28,4 @@ public class RefractionFabricClient implements ClientModInitializer, ScreenEvent
     public void onRemove(Screen screen) {
         RefractionClientMEvents.onRemove(screen);
     }
-
 }

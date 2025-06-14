@@ -31,6 +31,6 @@ public class RIMDebuggers extends RIMTool {
 
     @Override
     public String group() {
-        return "Debuggers";
+        return DEBUG;
     }
 }
