@@ -6,10 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Client self initialization <br>
- * gets cleared when leaving a world
+ * Client self initialization. <br>
+ * Gets cleared when leaving the world if #value is true.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface InitSelf {
+    boolean value();
 }

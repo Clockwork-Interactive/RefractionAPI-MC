@@ -1,4 +1,4 @@
-package net.refractionapi.refraction.util;
+package net.refractionapi.refraction.init;
 
 import net.minecraft.nbt.CompoundTag;
 import net.refractionapi.refraction.Refraction;

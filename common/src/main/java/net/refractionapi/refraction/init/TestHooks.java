@@ -1,4 +1,4 @@
-package net.refractionapi.refraction.util;
+package net.refractionapi.refraction.init;
 
 public class TestHooks {
     public TestHooks() {

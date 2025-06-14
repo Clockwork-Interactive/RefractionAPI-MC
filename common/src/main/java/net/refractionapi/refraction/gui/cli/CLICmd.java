@@ -6,7 +6,6 @@ import net.refractionapi.refraction.util.Pair;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 @SuppressWarnings("unchecked")
 public abstract class CLICmd {

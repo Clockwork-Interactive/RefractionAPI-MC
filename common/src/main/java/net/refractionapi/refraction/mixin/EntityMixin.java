@@ -26,7 +26,6 @@ import java.util.Optional;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin implements IEntity {
-
     @Shadow public abstract int getId();
 
     @Shadow public abstract Level level();

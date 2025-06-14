@@ -198,7 +198,7 @@ public class TwoWayChannel {
     }
 
     public TwoWayChannel close() {
-        if (this.isClosed()) throw new IllegalStateException("Channel is already closed");
+        if (this.isClosed()) return this;
         this.status = Status.CLOSED;
         TwoWayIntermediary instance = instance();
         if (isServer())

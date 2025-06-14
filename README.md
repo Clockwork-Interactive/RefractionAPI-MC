@@ -17,6 +17,16 @@ dependencies {
 }
 ```
 
+# Setting up
+To set up some Refraction features, you need to register the mod to it. <br>
+Adding this to your main class constructor will register it.
+```java
+#constructor(...) {
+    RModRegistrar.registerSelf(MOD_ID);
+    // everything else
+}
+```
+
 ### All big things that Refraction offers: <br>
 - ReConfig—Config system with auto syncing support <br>
 - Atda—Persistent data storage system <br>

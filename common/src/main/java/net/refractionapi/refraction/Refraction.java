@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.config.RRuntimeConfig;
 import net.refractionapi.refraction.config.RServerConfig;
+import net.refractionapi.refraction.data.PlrExtension;
 import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.debug.RDebugRenderers;
 import net.refractionapi.refraction.events.RefractionEvents;
@@ -28,9 +29,9 @@ import net.refractionapi.refraction.helper.runnable.RunnableCooldownHandler;
 import net.refractionapi.refraction.helper.runnable.RunnableHandler;
 import net.refractionapi.refraction.helper.runnable.Runnabler;
 import net.refractionapi.refraction.helper.runnable.TickableProccesor;
+import net.refractionapi.refraction.init.TestHooks;
+import net.refractionapi.refraction.init.TestHooksClient;
 import net.refractionapi.refraction.platform.RefractionServices;
-import net.refractionapi.refraction.util.TestHooks;
-import net.refractionapi.refraction.util.TestHooksClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,9 @@ public class Refraction {
     public static final RRuntimeConfig config = new RRuntimeConfig();
     public static final SyncConfig syncConfig = new SyncConfig()
             .setSyncer(config::sync);
+    public static PlrExtension data;
 
+    @SuppressWarnings("deprecation")
     public static void init() {
         if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) {
             RRuntimeConfig.debugTools = true;
@@ -54,7 +57,8 @@ public class Refraction {
                 new TestHooksClient();
             }
         }
-        register();
+        RModRegistrar.registerSelf(MOD_ID);
+        data = new PlrExtension(RModRegistrar.getSpec());
         RIMServer.init();
         RDebugRenderers.init();
         Runnabler.init();
@@ -87,15 +91,12 @@ public class Refraction {
                     ptr,
                     new RIMDebuggers(),
                     new RIMChannelAnalyzer(),
-                    new RIMCommandExec(),
+                    new RIMNetworkActivity(),
+                    new RIMScreenInspector(),
                     new RIMHealth(),
                     new RIMCli()
             );
         }
-    }
-
-    private static void register() {
-        RModRegistrar.registerSelf(MOD_ID);
     }
 
     public static ResourceLocation id(String id) {

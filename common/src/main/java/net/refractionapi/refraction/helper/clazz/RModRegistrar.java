@@ -1,9 +1,9 @@
 package net.refractionapi.refraction.helper.clazz;
 
 import net.minecraft.resources.ResourceLocation;
+import net.refractionapi.refraction.init.ModSpec;
 import net.refractionapi.refraction.platform.RefractionServices;
-import net.refractionapi.refraction.util.ClientInitializers;
-import net.refractionapi.refraction.util.Mutable;
+import net.refractionapi.refraction.init.ClientInitializers;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.List;
 public class RModRegistrar {
     private static final StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
     private static final HashMap<String, String> modIDMap = new HashMap<>();
-    protected static final HashMap<String, ModRetainer> retainers = new HashMap<>();
+    protected static final HashMap<String, ModSpec> retainers = new HashMap<>();
 
     public static String getCallerModID() {
         return modIDMap.get(getSignature(walker.getCallerClass()));
@@ -26,23 +26,32 @@ public class RModRegistrar {
         })));
     }
 
-    public static void registerSelf(String modID, boolean scan) {
+    public static void registerSelf(String modID) {
         String sig = getSignature(walker.getCallerClass());
         modIDMap.put(sig, modID);
-        retainers.put(modID, new ModRetainer(modID, sig, new Mutable<>(null)));
-        if (RefractionServices.PLATFORM.isClient() && scan)
+        retainers.put(modID, new ModSpec(modID, sig));
+        if (RefractionServices.PLATFORM.isClient())
             ClientInitializers.scanMod(modID, sig);
     }
 
-    public static void registerSelf(String modID) {
-        registerSelf(modID, true);
+    /**
+     * You might want to use this if dealing with static inits. --Zeus
+     */
+    public static void registerSelfNoScan(String modID) {
+        String sig = getSignature(walker.getCallerClass());
+        modIDMap.put(sig, modID);
+        retainers.put(modID, new ModSpec(modID, sig));
     }
 
-    public static ModRetainer getRetainer(String modID) {
+    public static ModSpec getSpec(String modID) {
         return retainers.get(modID);
     }
 
-    public static Collection<ModRetainer> retainers() {
+    public static ModSpec getSpec() {
+        return retainers.get(getCallerModID());
+    }
+
+    public static Collection<ModSpec> specs() {
         return retainers.values();
     }
 

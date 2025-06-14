@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.Refraction;
@@ -80,6 +81,10 @@ public class ClientData {
 
     public static LivingEntity getEntity(int id) {
         return Minecraft.getInstance().level.getEntity(id) instanceof LivingEntity livingEntity ? livingEntity : null;
+    }
+
+    public static Entity getEntityRaw(int id) {
+        return Minecraft.getInstance().level.getEntity(id);
     }
 
     public static void handleInteraction(Supplier<NPCInteraction> interaction, CompoundTag tag) {

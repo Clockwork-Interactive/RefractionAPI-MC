@@ -3,9 +3,7 @@ package net.refractionapi.refraction.gui.cli;
 import joptsimple.internal.Strings;
 import net.refractionapi.refraction.events.RefractionClientEvents;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CLI {
@@ -60,6 +58,7 @@ public class CLI {
         add(new ClearCmd(this));
         add(new HijackCmd(this));
         add(new LSCmd(this));
+        add(new CLIServerCommand(this));
         RefractionClientEvents.CLI_REGISTER.invoker().register(this);
     }
 
@@ -70,5 +69,9 @@ public class CLI {
             else v = cliCmd.combine(v);
             return v;
         });
+        // sort by cmd name
+        this.cmds.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEachOrdered(e -> this.cmds.put(e.getKey(), e.getValue()));
     }
 }

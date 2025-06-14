@@ -14,6 +14,7 @@ import net.refractionapi.refraction.events.RefractionEventCaller;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.feature.channel.TwoWayChannel;
+import net.refractionapi.refraction.gui.cli.CLIComms;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -33,10 +34,10 @@ public class RIMServer {
 
     private RIMServer(MinecraftServer server) {
         this.server = server;
+        new CLIComms(server);
         this.channel = NamedAPI.create(CHANNEL_NAME).configure((channel -> {
             channel.valid((plr, buf, router) -> RServerConfig.isPermitted(plr));
             channel.canSendTo(RServerConfig::isPermitted);
-            channel.registerListener("command", this::command);
             channel.registerListener("auth", this::isValid);
         })).open(server.overworld());
         REGISTER_CHANNEL.invoker().register(this.channel.channel());
@@ -48,13 +49,6 @@ public class RIMServer {
 
     public int isValid(Player player, FriendlyByteBuf buf) {
         this.channel.channel().respond(this.channel.channel().header(), (data) -> {});
-        return 1;
-    }
-
-    public int command(Player player, FriendlyByteBuf buf) {
-        CommandSourceStack stack = new CommandSourceStack(player, player.position(), player.getRotationVector(), (ServerLevel) player.level(), 2, player.getDisplayName().getString(), player.getDisplayName(), this.server, player);
-        String command = buf.readUtf();
-        this.server.getCommands().performPrefixedCommand(stack, command);
         return 1;
     }
 

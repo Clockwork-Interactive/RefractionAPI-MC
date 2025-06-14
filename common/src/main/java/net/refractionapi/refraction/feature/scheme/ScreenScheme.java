@@ -7,7 +7,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.client.RefractionClient;
+import net.refractionapi.refraction.data.PlrExtension;
 import net.refractionapi.refraction.data.RefractionData;
+import net.refractionapi.refraction.data.TData;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.feature.channel.ThreadedAPI;
 import net.refractionapi.refraction.feature.channel.TwoWayChannel;
@@ -46,7 +48,7 @@ public class ScreenScheme<T> {
             BiConsumer<Object[], FriendlyByteBuf> serializer,
             Function<FriendlyByteBuf, Object[]> deserializer,
             BiFunction<ScreenScheme<?>, Object[], Object> clientScreenCreator,
-            Class<? extends ServerScheme > schemeClass,
+            Class<? extends ServerScheme> schemeClass,
             TriConsumer<ServerScheme, Code, FriendlyByteBuf> serverHandler,
             Function<ServerPlayer, ServerScheme> serverScreenCreator,
             boolean clientAccessible
@@ -85,8 +87,8 @@ public class ScreenScheme<T> {
         return 1;
     }
 
-    protected static RefractionData data(Player player) {
-        return RefractionData.get(player);
+    protected static PlrExtension data(Player player) {
+        return TData.get(player, PlrExtension.class);
     }
 
     protected Class<? extends ServerScheme> schemeClass() {
@@ -100,7 +102,9 @@ public class ScreenScheme<T> {
         if (!(player instanceof ServerPlayer serverPlayer)) return null;
         ServerScheme scheme = this.serverScreenCreator.apply(serverPlayer);
         if (scheme == null || !scheme.canOpen()) return null;
-        data(player).scheme = scheme;
+        PlrExtension data = data(player);
+        if (data.scheme != null) data.scheme.close();
+        data.scheme = scheme;
         SCREEN_API.channel().send(
                 player,
                 "default",
