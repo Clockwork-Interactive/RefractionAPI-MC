@@ -7,13 +7,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.feature.channel.TwoWayChannel;
 import net.refractionapi.refraction.helper.clazz.ClazzUtil;
-import org.apache.logging.log4j.util.InternalApi;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.UUID;
 
-@InternalApi
 public class ScreenRegistry {
     private static final HashMap<Class<? extends ServerScheme>, Class<? extends RScreen>> schemes = new HashMap<>();
     private RScreen screen = null;

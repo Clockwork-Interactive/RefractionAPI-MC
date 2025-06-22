@@ -64,7 +64,7 @@ public abstract class ServerLevelMixin implements ILevel {
 
     @Override
     public String getSyncID() {
-        return "%s".formatted(getLevel().dimensionTypeRegistration().getRegisteredName().replace(":", "-"));
+        return "";//return "%s".formatted(getLevel().dimensionTypeRegistration().getRegisteredName().replace(":", "-"));
     }
 
     @Override

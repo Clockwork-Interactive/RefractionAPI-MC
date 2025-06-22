@@ -7,9 +7,7 @@ import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.data.Syncable;
-import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
 import net.refractionapi.refraction.util.Side;
-import org.apache.logging.log4j.util.InternalApi;
 
 import java.util.*;
 import java.util.function.Consumer;
