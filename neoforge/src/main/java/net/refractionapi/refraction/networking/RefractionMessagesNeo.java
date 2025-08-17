@@ -49,7 +49,7 @@ public class RefractionMessagesNeo implements RefractionMessages {
     }
 
     public static void init(IEventBus eventBus) {
-        eventBus.addListener((Consumer< RegisterPayloadHandlersEvent>) event -> {
+        eventBus.addListener((Consumer<RegisterPayloadHandlersEvent>) event -> {
             registrar = event.registrar(Refraction.MOD_ID);
             RefractionMessages.register();
             registrar = null;

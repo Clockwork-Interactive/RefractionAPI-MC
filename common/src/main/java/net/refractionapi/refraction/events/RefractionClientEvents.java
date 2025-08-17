@@ -44,6 +44,11 @@ public class RefractionClientEvents {
             listener.register(cli);
         }
     });
+    public static final RefractionEvent<Generic> FINISH_LOADING = new RefractionEventCaller<>(Generic.class, listeners -> () -> {
+        for (Generic listener : listeners) {
+            listener.onEvent();
+        }
+    });
 
     @FunctionalInterface
     public interface NamedChannelOpen {

@@ -160,7 +160,7 @@ public class Atda<E, D extends AtdaData<D>> {
                 Refraction.LOGGER.warn("Atda not registered {}", location);
                 continue;
             }
-            for (IAtdaProvider iAtdaProvider : atda.providers.get(lookup)) {
+            for (IAtdaProvider iAtdaProvider : atda.providers.getOrDefault(lookup, new ArrayList<>())) {
                 iAtdaProvider.deserialize(compoundTag.getCompound(iAtdaProvider.getClass().getName()));
             }
         }

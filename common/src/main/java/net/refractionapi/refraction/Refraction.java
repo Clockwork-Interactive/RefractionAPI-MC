@@ -21,6 +21,7 @@ import net.refractionapi.refraction.gui.RIMServer;
 import net.refractionapi.refraction.gui.cli.CLIComms;
 import net.refractionapi.refraction.gui.tools.*;
 import net.refractionapi.refraction.helper.clazz.RModRegistrar;
+import net.refractionapi.refraction.helper.command.DiscardCommand;
 import net.refractionapi.refraction.helper.command.RDebugCommand;
 import net.refractionapi.refraction.helper.command.RReConfigCommand;
 import net.refractionapi.refraction.helper.entity.FrozenManager;
@@ -76,6 +77,7 @@ public class Refraction {
         RefractionEvents.REGISTER_COMMANDS.register((c) -> {
             new RDebugCommand(c);
             new RReConfigCommand(c);
+            new DiscardCommand(c);
         });
         RefractionEvents.SERVER_STARTED.register(TwoWayIntermediary::init);
         if (RefractionServices.PLATFORM.isClient()) {

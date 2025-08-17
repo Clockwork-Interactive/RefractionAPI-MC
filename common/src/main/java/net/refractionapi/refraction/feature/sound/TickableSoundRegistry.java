@@ -14,7 +14,6 @@ import java.util.List;
 
 @Experimental
 public class TickableSoundRegistry {
-
     private static final HashMap<String, SoundEntry<?>> SOUNDS = new HashMap<>();
     private static final HashMap<LivingEntity, List<Pair<String, DeserializedSound>>> cachedSounds = new HashMap<>();
 
@@ -53,5 +52,4 @@ public class TickableSoundRegistry {
 
     private record SoundEntry<T extends AbstractTickableSoundInstance>(Class<T> sound) {
     }
-
 }

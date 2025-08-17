@@ -2,7 +2,6 @@ package net.refractionapi.refraction.mixin;
 
 import net.minecraft.client.Minecraft;
 import net.refractionapi.refraction.Refraction;
-import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.config.RRuntimeConfig;
 import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.gui.RIMGuiInternal;
@@ -45,5 +44,10 @@ public class MinecraftMixin {
     @Inject(method = "disconnect(Lnet/minecraft/client/gui/screens/Screen;Z)V", at = @At("HEAD"))
     public void disconnect(CallbackInfo ci) {
         RefractionClientEvents.CLIENT_PLAYER_LEAVE.invoker().onEvent();
+    }
+
+    @Inject(method = "onGameLoadFinished", at = @At("TAIL"))
+    public void finish(CallbackInfo ci) {
+       RefractionClientEvents.FINISH_LOADING.invoker().onEvent();
     }
 }
