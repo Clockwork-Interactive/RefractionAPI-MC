@@ -15,6 +15,7 @@ import net.refractionapi.refraction.feature.examples.atda.AtdaExampleRegistry;
 import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionRegistry;
 import net.refractionapi.refraction.feature.examples.reconfig.ReConfigExample;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
+import net.refractionapi.refraction.feature.examples.task.ExampleTaskRegistry;
 import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
 import net.refractionapi.refraction.gui.RIMGuiInternal;
 import net.refractionapi.refraction.gui.RIMServer;
@@ -73,6 +74,7 @@ public class Refraction {
         AtdaExampleRegistry.init();
         FrozenManager.init();
         CLIComms.init();
+        ExampleTaskRegistry.init();
         RefractionEvents.PLAYER_JOINED.register(RefractionData::get);
         RefractionEvents.REGISTER_COMMANDS.register((c) -> {
             new RDebugCommand(c);

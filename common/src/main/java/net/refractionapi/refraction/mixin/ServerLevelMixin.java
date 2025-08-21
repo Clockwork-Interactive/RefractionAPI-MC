@@ -15,6 +15,7 @@ import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.atda.Atda;
 import net.refractionapi.refraction.feature.atda.AtdaData;
 import net.refractionapi.refraction.feature.atda.IAtdaProvider;
+import net.refractionapi.refraction.feature.task.Tasks;
 import net.refractionapi.refraction.helper.misc.TagIO;
 import net.refractionapi.refraction.mixininterfaces.ILevel;
 import net.refractionapi.refraction.util.FileUtil;
@@ -32,6 +33,8 @@ import java.util.concurrent.Executor;
 
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelMixin implements ILevel {
+    public Tasks tasks;
+
     @Shadow
     @Nonnull
     public abstract MinecraftServer getServer();
@@ -42,11 +45,15 @@ public abstract class ServerLevelMixin implements ILevel {
     @Inject(at = @At("TAIL"), method = "<init>")
     public void initServer(MinecraftServer server, Executor dispatcher, LevelStorageSource.LevelStorageAccess levelStorageAccess, ServerLevelData serverLevelData, ResourceKey dimension, LevelStem levelStem, ChunkProgressListener progressListener, boolean isDebug, long biomeZoomSeed, List customSpawners, boolean tickTime, RandomSequences randomSequences, CallbackInfo ci) {
         RefractionEvents.REGISTER_ATDA.invoker().register(this);
+        assureTasks();
+        tasks.loadFromDisk();
         //Atda.deserializeAll(this, getIO().load(getSyncID()));
     }
 
     @Inject(at = @At("TAIL"), method = "save")
     public void save(ProgressListener progress, boolean flush, boolean skipSave, CallbackInfo ci) {
+        assureTasks();
+        tasks.saveToDisk();
         //getIO().save(getSyncID(), Atda.serializeAll(this));
     }
 
@@ -65,6 +72,15 @@ public abstract class ServerLevelMixin implements ILevel {
     @Override
     public String getSyncID() {
         return "%s".formatted(getLevel().dimensionTypeRegistration().getRegisteredName().replace(":", "-"));
+    }
+
+    public void assureTasks() {
+        if (tasks == null) tasks = new Tasks((ServerLevel) (Object) this);
+    }
+
+    @Override
+    public Tasks tasks() {
+        return tasks;
     }
 
     @Override

@@ -36,7 +36,7 @@ public class TagIO {
     @SuppressWarnings("unchecked")
     public Pair<String, CompoundTag>[] list() {
         return Arrays.stream(FileUtil.getFiles(directoryPath))
-                .map(name -> new Pair<>(name, load(name)))
+                .map(name -> new Pair<>(name, load(name.replace(".nbt", ""))))
                 .toArray(Pair[]::new);
     }
 }

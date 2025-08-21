@@ -59,6 +59,7 @@ public class CLI {
         add(new HijackCmd(this));
         add(new LSCmd(this));
         add(new CLIServerCommand(this));
+        add(new TasksCmd(this));
         RefractionClientEvents.CLI_REGISTER.invoker().register(this);
     }
 

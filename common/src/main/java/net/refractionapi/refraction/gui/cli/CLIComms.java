@@ -11,6 +11,11 @@ import net.refractionapi.refraction.config.RServerConfig;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.feature.channel.ThreadedAPI;
+import net.refractionapi.refraction.feature.task.Task;
+import net.refractionapi.refraction.feature.task.TaskHolder;
+import net.refractionapi.refraction.feature.task.Tasks;
+
+import java.util.List;
 
 public record CLIComms(MinecraftServer server) {
     private static CLIComms instance;
@@ -20,6 +25,7 @@ public record CLIComms(MinecraftServer server) {
             .configureServer((c) -> {
                 c.valid((plr, buf, id) -> RServerConfig.isPermitted(plr));
                 c.registerListener("command", instance()::command);
+                c.registerListener("tasks", instance()::tasks);
             })
             .initCommon();
 
@@ -31,6 +37,34 @@ public record CLIComms(MinecraftServer server) {
         CommandSourceStack stack = new CommandSourceStack(player, player.position(), player.getRotationVector(), (ServerLevel) player.level(), 2, player.getDisplayName().getString(), player.getDisplayName(), this.server, player);
         String command = buf.readUtf();
         server.getCommands().performPrefixedCommand(stack, command);
+        return 1;
+    }
+
+    public int tasks(Player player, FriendlyByteBuf buf) {
+        if (!(player.level() instanceof ServerLevel serverLevel)) return 0;
+        String mode = buf.readUtf();
+        switch (mode) {
+            case "run" -> {
+                ResourceLocation id = ResourceLocation.parse(buf.readUtf());
+                TaskHolder<?> holder = Tasks.get(id);
+                if (holder == null) return 0;
+                holder.create(serverLevel);
+            }
+            case "request" -> {
+                Tasks tasks = Tasks.get(serverLevel);
+                List<Task> taskList = tasks.tasks();
+                int size = taskList.size();
+                api.channel().respond(api.channel().header(), (send) -> {
+                    send.writeInt(size);
+                    taskList.forEach((task) -> send.writeUtf("%s - %s [%s/%s]".formatted(
+                            task.id(),
+                            task.holder().taskDesc,
+                            task.ticks(),
+                            task.maxTickString()
+                    )));
+                });
+            }
+        }
         return 1;
     }
 
