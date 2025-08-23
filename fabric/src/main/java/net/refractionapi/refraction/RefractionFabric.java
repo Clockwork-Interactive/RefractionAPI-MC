@@ -36,7 +36,7 @@ public class RefractionFabric implements ModInitializer {
         ServerTickEvents.END_WORLD_TICK.register(world -> RefractionEvents.LEVEL_TICK.invoker().onTick(world, true));
         ServerLivingEntityEvents.AFTER_DEATH.register(RefractionCommonData::death);
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> RefractionEvents.SERVER_STOPPING.invoker().onStop());
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> RefractionEvents.SERVER_STARTED.invoker().onStart(server));
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> RefractionEvents.SERVER_STARTED.invoker().onEvent(server));
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> RefractionEvents.PLAYER_JOINED.invoker().onJoin(handler.getPlayer()));
         ServerWorldEvents.LOAD.register((server, world) -> RefractionEvents.LOAD_LEVEL.invoker().onLoad(world));
         CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) -> RefractionEvents.REGISTER_COMMANDS.invoker().register(dispatcher));

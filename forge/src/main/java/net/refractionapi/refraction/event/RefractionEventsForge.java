@@ -50,7 +50,7 @@ public class RefractionEventsForge implements RefractionEvents {
 
     @SubscribeEvent
     public static void serverStarted(ServerStartedEvent event) {
-        RefractionEvents.SERVER_STARTED.invoker().onStart(event.getServer());
+        RefractionEvents.SERVER_STARTED.invoker().onEvent(event.getServer());
     }
 
     @SubscribeEvent

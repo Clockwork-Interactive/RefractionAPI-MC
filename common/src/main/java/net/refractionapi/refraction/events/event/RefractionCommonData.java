@@ -15,7 +15,6 @@ import java.util.HashMap;
 import static net.refractionapi.refraction.feature.quest.QuestHandler.QUESTS;
 
 public class RefractionCommonData {
-    public static final HashMap<Player, RefractionData> runtimeData = new HashMap<>();
     public static Quest quest;
     public static CompoundTag tag = new CompoundTag();
 

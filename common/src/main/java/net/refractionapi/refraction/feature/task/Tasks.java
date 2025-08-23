@@ -1,66 +1,89 @@
 package net.refractionapi.refraction.feature.task;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.LevelResource;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.helper.misc.TagIO;
 import net.refractionapi.refraction.helper.runnable.TickableProccesor;
-import net.refractionapi.refraction.mixininterfaces.ILevel;
 import net.refractionapi.refraction.util.FileUtil;
 import net.refractionapi.refraction.util.Pair;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Minimalist task persistent handling
- */
-public class Tasks {
-    private static final HashMap<ResourceLocation, TaskHolder<?>> registered = new HashMap<>();
-    private final List<Task> tasks = new CopyOnWriteArrayList<>();
+public abstract class Tasks<A, T extends Task<A>> {
+    private static final HashMap<ResourceLocation, TaskHolder<?, ?>> registered = new HashMap<>();
     private final LevelResource TASK_RESOURCE = FileUtil.createResource("tasks");
-    protected final ServerLevel level;
+    protected final A accessor;
+    boolean loaded = false;
 
-    public Tasks(ServerLevel level) {
-        this.level = level;
-        new TickableProccesor().process((accessor, bool) -> tickTasks(bool)).start(level);
+    public Tasks(A accessor) {
+        this.accessor = accessor;
+    }
+
+    public Tasks<A, T> init() {
+        new TickableProccesor().process((accessor, bool) -> tickTasks(bool)).start(level());
+        return this;
     }
 
     public void tickTasks(boolean post) {
         if (post) return;
-        tasks.removeIf((task) -> {
-            boolean removed = task.maxTicks() != -1 && task.tickCount > task.maxTicks();
-            if (removed) task.onEnd();
-            return removed;
-        });
-        tasks.forEach((task) -> {
-            task.handleStateTick();
-            if (task.state.equals(Task.State.RUNNING)) {
-                task.tick();
-                task.tickCount++;
+        tasks().forEach((task) -> {
+            boolean removed = task.state == Task.State.STOPPED || (task.maxTicks() != -1 && task.tickCount > task.maxTicks());
+            if (removed && !task.removed) {
+                onStop(task);
+                task.onEnd();
+                task.state = Task.State.STOPPED;
+                task.removed = true; // wait for save before removing from list
+                return;
+            }
+            try {
+                task.handleStateTick();
+                if (task.state.equals(Task.State.RUNNING)) {
+                    task.tick();
+                    task.tickCount++;
+                }
+            } catch (Exception e) {
+                task.state = Task.State.STOPPED;
+                Refraction.LOGGER.error("Caught exception in ticking Task | stopping", e);
             }
         });
     }
 
+    public void onStop(T task) {
+        TagIO io = new TagIO(getDir());
+        String id = taskIdString(task);
+        CompoundTag loaded = io.load(id);
+        loaded.remove(task.uuid.toString());
+        io.save(id, loaded);
+    }
+
+    public String taskIdString(Task task) {
+        return task.id.toString().replace(":", "-");
+    }
+
     public void saveToDisk() {
+        if (!loaded) return;
         try {
             TagIO io = new TagIO(getDir());
-            tasks.forEach((task) -> {
-                String id = task.id.toString().replace(":", "-");
+            tasks().forEach((task) -> {
+                String id = taskIdString(task);
                 CompoundTag loaded = io.load(id);
-                CompoundTag serialized = new CompoundTag();
-                task.serialize(serialized);
-                if (!serialized.contains("uuid")) {
-                    Refraction.LOGGER.error("Failed to save task {}, invalid UUID", task.id);
-                    return;
+                if (!task.state.equals(Task.State.STOPPED)) {
+                    CompoundTag serialized = new CompoundTag();
+                    task.save(serialized);
+                    if (!serialized.contains("uuid")) {
+                        Refraction.LOGGER.error("Failed to save task {}, invalid UUID", task.id);
+                        return;
+                    }
+                    loaded.put(task.uuid.toString(), serialized);
+                } else {
+                    tasks().remove(task);
+                    loaded.remove(task.uuid.toString());
                 }
-                loaded.put(task.uuid.toString(), serialized);
                 io.save(id, loaded);
             });
         } catch (Exception e) {
@@ -68,7 +91,8 @@ public class Tasks {
         }
     }
 
-    public void loadFromDisk() {
+    @SuppressWarnings("unchecked")
+    public void loadFromDisk(A accessor) {
         try {
             TagIO io = new TagIO(getDir());
             AtomicInteger loaded = new AtomicInteger();
@@ -78,14 +102,14 @@ public class Tasks {
                     Refraction.LOGGER.warn("No registered Task found for ID {}", id);
                     continue;
                 }
-                TaskHolder<?> holder = registered.get(id);
+                TaskHolder<?, A> holder = (TaskHolder<?, A>) registered.get(id);
                 if (holder == null) {
                     Refraction.LOGGER.warn("Invalid Task holder for {}", id);
                     continue;
                 }
                 CompoundTag tag = pair.second;
                 for (String key : tag.getAllKeys()) {
-                    holder.fromNBT(level, holder, id, tag.getCompound(key));
+                    holder.fromNBT(accessor, holder, id, tag.getCompound(key));
                     loaded.getAndIncrement();
                 }
             }
@@ -93,45 +117,47 @@ public class Tasks {
         } catch (Exception e) {
             Refraction.LOGGER.error("Error occurred while loading Tasks", e);
         }
+        loaded = true;
     }
 
-    public String getDir() {
-        return "%s/%s".formatted(level.getServer().getWorldPath(TASK_RESOURCE), level.dimensionTypeRegistration().getRegisteredName().replaceAll("[^a-zA-Z0-9\\.\\-]", "_"));
-    }
+    public abstract List<T> tasks();
 
-    public List<Task> tasks() {
-        return tasks;
-    }
+    public abstract ServerLevel level();
 
-    public static TaskHolder<?> get(ResourceLocation id) {
+    public static TaskHolder<?, ?> get(ResourceLocation id) {
         return registered.get(id);
     }
 
-    public static void registerTask(ResourceLocation id, TaskHolder<?> holder) {
+    public static void registerTask(ResourceLocation id, TaskHolder<?, ?> holder) {
         if (registered.containsKey(id)) Refraction.LOGGER.warn("Duplicate Task ID {}", id);
         registered.put(id, holder);
     }
 
-    public static Tasks get(ServerLevel level) {
-        return level instanceof ILevel iLevel ? iLevel.tasks() : null;
-    }
-
-    public void addTask(Task task) {
-        TaskHolder<?> holder = task.holder;
+    public void addTask(T task) {
+        TaskHolder<?, ?> holder = task.holder;
         if (holder == null) return;
         if (holder.created && holder.allowOnlyOne()) return;
-        if (task.level != level) {
+        if (task.accessor != accessor) {
             Refraction.LOGGER.warn(
-                    "Task {} level doesn't match with current level {} != {}",
+                    "Task {} accessor doesn't match with current accessor {} != {}",
                     task.id,
-                    task.level.dimensionTypeRegistration().getRegisteredName(),
-                    level.dimensionTypeRegistration().getRegisteredName()
+                    task.accessor.toString(),
+                    accessor.toString()
             );
             return;
         }
         holder.created = true;
-        tasks.add(task);
+        tasks().add(task);
+        task.postAdd();
         task.onAdd();
         if (task.tickCount == 0) task.onStart();
+    }
+
+    public String getDir() {
+        return "%s/%s".formatted(level().getServer().getWorldPath(TASK_RESOURCE), getSubDir());
+    }
+
+    public String getSubDir() {
+        return level().dimensionTypeRegistration().getRegisteredName().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
     }
 }

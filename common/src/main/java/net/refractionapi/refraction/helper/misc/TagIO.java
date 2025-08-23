@@ -35,6 +35,7 @@ public class TagIO {
 
     @SuppressWarnings("unchecked")
     public Pair<String, CompoundTag>[] list() {
+        if (!FileUtil.exists(directoryPath)) return new Pair[0];
         return Arrays.stream(FileUtil.getFiles(directoryPath))
                 .map(name -> new Pair<>(name, load(name.replace(".nbt", ""))))
                 .toArray(Pair[]::new);

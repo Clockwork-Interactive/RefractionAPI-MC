@@ -17,6 +17,7 @@ import net.refractionapi.refraction.feature.examples.reconfig.ReConfigExample;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.feature.examples.task.ExampleTaskRegistry;
 import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
+import net.refractionapi.refraction.feature.task.PlayerTasks;
 import net.refractionapi.refraction.gui.RIMGuiInternal;
 import net.refractionapi.refraction.gui.RIMServer;
 import net.refractionapi.refraction.gui.cli.CLIComms;
@@ -75,7 +76,10 @@ public class Refraction {
         FrozenManager.init();
         CLIComms.init();
         ExampleTaskRegistry.init();
-        RefractionEvents.PLAYER_JOINED.register(RefractionData::get);
+        RefractionEvents.PLAYER_JOINED.register((player) -> {
+            RefractionData.get(player);
+            PlayerTasks.get(player);
+        });
         RefractionEvents.REGISTER_COMMANDS.register((c) -> {
             new RDebugCommand(c);
             new RReConfigCommand(c);

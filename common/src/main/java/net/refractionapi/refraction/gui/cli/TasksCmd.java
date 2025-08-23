@@ -12,7 +12,7 @@ public class TasksCmd extends CLICmd {
 
     @Override
     public String description() {
-        return "Show all tasks on current level";
+        return "Show all tasks on current level and player";
     }
 
     @Override

@@ -1,38 +1,59 @@
 package net.refractionapi.refraction.feature.task;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.refractionapi.refraction.feature.data.Syncable;
 
 import java.util.UUID;
 
-public abstract class Task {
+public abstract class Task<A> implements Syncable<Task<A>> {
     protected int tickCount = 0;
-    protected final TaskHolder<?> holder;
+    protected final TaskHolder<?, ?> holder;
     protected final ResourceLocation id;
     protected UUID uuid;
-    protected final ServerLevel level;
+    protected final A accessor;
     protected State state = State.RUNNING;
+    protected boolean removed = false;
+    protected CompoundTag loadingTag = new CompoundTag();
 
-    public Task(ResourceLocation id, TaskHolder<?> holder, ServerLevel level) {
+    public Task(ResourceLocation id, TaskHolder<?, ?> holder, A accessor) {
         this.holder = holder;
-        this.level = level;
+        this.accessor = accessor;
         this.id = id;
+        this.setSynced();
     }
 
-    public Task(ServerLevel serverLevel, TaskHolder<?> holder, ResourceLocation id, CompoundTag tag) {
-        this.level = serverLevel;
+    public Task(A accessor, TaskHolder<?, ?> holder, ResourceLocation id, CompoundTag tag) {
+        this.accessor = accessor;
         this.holder = holder;
         this.id = id;
-        this.deserialize(tag);
+        this.loadingTag = tag;
+        this.setSynced();
+    }
+
+    public Task() {
+        this.holder = null;
+        this.id = null;
+        this.accessor = null;
     }
 
     public String maxTickString() {
-        return holder.maxTicks == -1 ? "inf" : holder.maxTicks + "";
+        return maxTicks() == -1 ? "inf" : maxTicks() + "";
+    }
+
+    public State state() {
+        return state;
     }
 
     public int maxTicks() {
         return holder.maxTicks;
+    }
+
+    public final void postAdd() {
+        if (loadingTag.isEmpty()) return;
+        this.load(loadingTag);
     }
 
     public void onAdd() {
@@ -47,18 +68,40 @@ public abstract class Task {
 
     }
 
+    public void end() {
+        state = State.STOPPED;
+    }
+
     public void handleStateTick() {
 
     }
 
-    public void serialize(CompoundTag tag) {
+    public abstract Level level();
+
+    public void save(CompoundTag tag) {
         tag.putInt("ticks", tickCount);
+        tag.putString("state", state.name());
         tag.putUUID("uuid", uuid = uuid == null ? UUID.randomUUID() : uuid);
     }
 
-    public void deserialize(CompoundTag tag) {
+    public void load(CompoundTag tag) {
         this.tickCount = tag.getInt("ticks");
+        this.state = State.valueOf(tag.getString("state"));
         this.uuid = tag.getUUID("uuid");
+    }
+
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        CompoundTag tag = new CompoundTag();
+        save(tag);
+        buf.writeNbt(tag);
+    }
+
+    @Override
+    public void read(FriendlyByteBuf buf) {
+        CompoundTag tag = buf.readNbt();
+        if (tag == null) return;
+        load(tag);
     }
 
     public int ticks() {
@@ -69,7 +112,7 @@ public abstract class Task {
         return id;
     }
 
-    public TaskHolder<?> holder() {
+    public TaskHolder<?, ?> holder() {
         return holder;
     }
 

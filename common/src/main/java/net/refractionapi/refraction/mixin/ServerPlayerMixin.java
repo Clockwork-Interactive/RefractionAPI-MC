@@ -2,6 +2,7 @@ package net.refractionapi.refraction.mixin;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.data.TData;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.mixininterfaces.IServerPlayer;
@@ -15,6 +16,8 @@ import java.util.IdentityHashMap;
 
 @Mixin(ServerPlayer.class)
 public class ServerPlayerMixin implements IServerPlayer {
+    RefractionData refractionData;
+
     @Unique
     final IdentityHashMap<TData, TData> data = new IdentityHashMap<>();
 
@@ -30,5 +33,14 @@ public class ServerPlayerMixin implements IServerPlayer {
     @Override
     public TData get(TData data) {
         return this.data.computeIfAbsent(data, data1 -> data.create(data.id, (Player) (Object) this));
+    }
+
+    public ServerPlayer player() {
+        return (ServerPlayer) (Object) this;
+    }
+
+    @Override
+    public RefractionData get() {
+        return refractionData = (refractionData == null ? new RefractionData(player()) : refractionData);
     }
 }

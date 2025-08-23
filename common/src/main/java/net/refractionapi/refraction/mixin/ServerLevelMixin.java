@@ -15,7 +15,7 @@ import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.atda.Atda;
 import net.refractionapi.refraction.feature.atda.AtdaData;
 import net.refractionapi.refraction.feature.atda.IAtdaProvider;
-import net.refractionapi.refraction.feature.task.Tasks;
+import net.refractionapi.refraction.feature.task.LevelTasks;
 import net.refractionapi.refraction.helper.misc.TagIO;
 import net.refractionapi.refraction.mixininterfaces.ILevel;
 import net.refractionapi.refraction.util.FileUtil;
@@ -33,7 +33,7 @@ import java.util.concurrent.Executor;
 
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelMixin implements ILevel {
-    public Tasks tasks;
+    public LevelTasks levelTasks;
 
     @Shadow
     @Nonnull
@@ -46,14 +46,15 @@ public abstract class ServerLevelMixin implements ILevel {
     public void initServer(MinecraftServer server, Executor dispatcher, LevelStorageSource.LevelStorageAccess levelStorageAccess, ServerLevelData serverLevelData, ResourceKey dimension, LevelStem levelStem, ChunkProgressListener progressListener, boolean isDebug, long biomeZoomSeed, List customSpawners, boolean tickTime, RandomSequences randomSequences, CallbackInfo ci) {
         RefractionEvents.REGISTER_ATDA.invoker().register(this);
         assureTasks();
-        tasks.loadFromDisk();
+        levelTasks.loadFromDisk((ServerLevel) (Object) this);
+        levelTasks.init();
         //Atda.deserializeAll(this, getIO().load(getSyncID()));
     }
 
     @Inject(at = @At("TAIL"), method = "save")
     public void save(ProgressListener progress, boolean flush, boolean skipSave, CallbackInfo ci) {
         assureTasks();
-        tasks.saveToDisk();
+        levelTasks.saveToDisk();
         //getIO().save(getSyncID(), Atda.serializeAll(this));
     }
 
@@ -75,12 +76,12 @@ public abstract class ServerLevelMixin implements ILevel {
     }
 
     public void assureTasks() {
-        if (tasks == null) tasks = new Tasks((ServerLevel) (Object) this);
+        if (levelTasks == null) levelTasks = (LevelTasks) new LevelTasks((ServerLevel) (Object) this).init();
     }
 
     @Override
-    public Tasks tasks() {
-        return tasks;
+    public LevelTasks tasks() {
+        return levelTasks;
     }
 
     @Override

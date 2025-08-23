@@ -5,16 +5,17 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.config.RServerConfig;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.feature.channel.ThreadedAPI;
-import net.refractionapi.refraction.feature.task.Task;
-import net.refractionapi.refraction.feature.task.TaskHolder;
-import net.refractionapi.refraction.feature.task.Tasks;
+import net.refractionapi.refraction.feature.task.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public record CLIComms(MinecraftServer server) {
@@ -46,21 +47,33 @@ public record CLIComms(MinecraftServer server) {
         switch (mode) {
             case "run" -> {
                 ResourceLocation id = ResourceLocation.parse(buf.readUtf());
-                TaskHolder<?> holder = Tasks.get(id);
-                if (holder == null) return 0;
-                holder.create(serverLevel);
+                TaskHolder<?, ?> holder = LevelTasks.get(id);
+                if (holder instanceof LevelTaskHolder<?> levelHolder) {
+                    levelHolder.create(serverLevel);
+                    return 0;
+                } else if (holder instanceof PlayerTaskHolder<?> playerHolder) {
+                    playerHolder.create((ServerPlayer) player);
+                    return 0;
+                }
             }
             case "request" -> {
-                Tasks tasks = Tasks.get(serverLevel);
-                List<Task> taskList = tasks.tasks();
-                int size = taskList.size();
+                LevelTasks levelTasks = LevelTasks.get(serverLevel);
+                PlayerTasks playerTasks = PlayerTasks.get((ServerPlayer) player);
+                List<PlayerTask> tasks = playerTasks.tasks();
+                List<LevelTask> taskList = levelTasks.tasks();
+                List<Task<?>> combined = new ArrayList<>() {{
+                    addAll(tasks);
+                    addAll(taskList);
+                }};
+                int size = combined.size();
                 api.channel().respond(api.channel().header(), (send) -> {
                     send.writeInt(size);
-                    taskList.forEach((task) -> send.writeUtf("%s - %s [%s/%s]".formatted(
+                    combined.forEach((task) -> send.writeUtf("%s - %s [%s/%s] | %s\n".formatted(
                             task.id(),
                             task.holder().taskDesc,
                             task.ticks(),
-                            task.maxTickString()
+                            task.maxTickString(),
+                            task.state().toString()
                     )));
                 });
             }

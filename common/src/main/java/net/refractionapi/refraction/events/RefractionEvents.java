@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.LevelAccessor;
 import net.refractionapi.refraction.feature.atda.IAtdaProvider;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
-import net.refractionapi.refraction.feature.channel.TwoWayChannel;
 
 public interface RefractionEvents {
     RefractionEvent<LoadLevel> LOAD_LEVEL = new RefractionEventCaller<>(LoadLevel.class, listeners -> world -> {
@@ -45,12 +44,12 @@ public interface RefractionEvents {
     });
     RefractionEvent<ServerEvent> SERVER_STARTING = new RefractionEventCaller<>(ServerEvent.class, listeners -> server -> {
         for (ServerEvent listener : listeners) {
-            listener.onStart(server);
+            listener.onEvent(server);
         }
     });
     RefractionEvent<ServerEvent> SERVER_STARTED = new RefractionEventCaller<>(ServerEvent.class, listeners -> server -> {
         for (ServerEvent listener : listeners) {
-            listener.onStart(server);
+            listener.onEvent(server);
         }
     });
     RefractionEvent<PlayerJoin> PLAYER_JOINED = new RefractionEventCaller<>(PlayerJoin.class, listeners -> player -> {
@@ -78,12 +77,22 @@ public interface RefractionEvents {
             listener.configure(channel);
         }
     });
+    RefractionEvent<ServerEvent> ON_SAVE = new RefractionEventCaller<>(ServerEvent.class, listeners -> (server) -> {
+        for (ServerEvent listener : listeners) {
+            listener.onEvent(server);
+        }
+    });
 
     default void registerOverlays() {
         // REGISTER_LAYERS.register(layer -> {
         //     layer.add(new LayeredDraw().add(CinematicBars::bars), () -> true);
         //     layer.add(new LayeredDraw().add(QuestRenderer::quest), () -> true);
         // });
+    }
+
+    @FunctionalInterface
+    interface Generic {
+        void onEvent();
     }
 
     @FunctionalInterface
@@ -108,7 +117,7 @@ public interface RefractionEvents {
 
     @FunctionalInterface
     interface ServerEvent {
-        void onStart(MinecraftServer server);
+        void onEvent(MinecraftServer server);
     }
 
     @FunctionalInterface
