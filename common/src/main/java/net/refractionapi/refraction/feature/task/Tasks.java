@@ -154,7 +154,7 @@ public abstract class Tasks<A, T extends Task<A>> {
     }
 
     public String getDir() {
-        return "%s/%s".formatted(level().getServer().getWorldPath(TASK_RESOURCE), getSubDir());
+        return "%s/%s".formatted(level().getServer().getWorldPath(TASK_RESOURCE).toFile(), getSubDir());
     }
 
     public String getSubDir() {

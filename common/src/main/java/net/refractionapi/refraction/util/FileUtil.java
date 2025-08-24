@@ -33,24 +33,24 @@ public class FileUtil {
     }
 
     public static String wrapDirectory(String path) {
-        return "./%s".formatted(path);
+        return new File(path).isAbsolute() ? path : "./%s".formatted(path);
     }
 
     public static String[] getFiles(String path) {
-        return Path.of(new File(path).getAbsolutePath()).toFile().list();
+        return new File(path).list();
     }
 
     public static boolean createPath(String path) {
-        Path p = Path.of(new File(path).getAbsolutePath());
-        return p.toFile().exists() || p.toFile().mkdirs();
+        File file = new File(path);
+        return file.exists() || file.mkdirs();
     }
 
     public static boolean deleteFile(String path) {
-        return Path.of(new File(path).getAbsolutePath()).toFile().delete();
+        return new File(path).delete();
     }
 
     public static boolean exists(String path) {
-        return Path.of(new File(path).getAbsolutePath()).toFile().exists();
+        return new File(path).exists();
     }
 
     public static LevelResource createResource(String name) {
