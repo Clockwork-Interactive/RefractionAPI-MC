@@ -32,7 +32,7 @@ public abstract class Tasks<A, T extends Task<A>> {
     public void tickTasks(boolean post) {
         if (post) return;
         tasks().forEach((task) -> {
-            boolean removed = task.state == Task.State.STOPPED || (task.maxTicks() != -1 && task.tickCount > task.maxTicks());
+            boolean removed = task.shouldStop() || task.state == Task.State.STOPPED || (task.maxTicks() != -1 && task.tickCount > task.maxTicks());
             if (removed && !task.removed) {
                 onStop(task);
                 task.onEnd();
@@ -151,6 +151,10 @@ public abstract class Tasks<A, T extends Task<A>> {
         task.postAdd();
         task.onAdd();
         if (task.tickCount == 0) task.onStart();
+    }
+
+    public void removeTaskOfType(Class<Task<?>> taskClass) {
+        tasks().removeIf(taskClass::isInstance);
     }
 
     public String getDir() {

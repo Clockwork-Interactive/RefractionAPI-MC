@@ -80,6 +80,9 @@ public class Refraction {
             RefractionData.get(player);
             PlayerTasks.get(player);
         });
+        RefractionEvents.PLAYER_CLONE.register(((current, old) -> {
+            PlayerTasks.get(current);
+        }));
         RefractionEvents.REGISTER_COMMANDS.register((c) -> {
             new RDebugCommand(c);
             new RReConfigCommand(c);

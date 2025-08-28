@@ -4,6 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.examples.atda.AtdaExampleData;
@@ -16,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
@@ -67,6 +67,16 @@ public class Atda<E, D extends AtdaData<D>> {
         RefractionEvents.REGISTER_ATDA.register((provider) -> {
             if (clazz.isInstance(provider))
                 consumer.accept(clazz.cast(provider));
+        });
+    }
+
+    public static <T> void register(Class<T> clazz, Atda<T, ?> atda, AtdaProvider<?, ?> provider) {
+        Atda.registerProvider(clazz, (player) -> AtdaUtils.attachAtda(player, atda, provider));
+    }
+
+    public static void registerCloning(Atda<Player, ?> atda) {
+        RefractionEvents.PLAYER_CLONE.register((current, old) -> {
+            AtdaUtils.onClone(old, current, atda);
         });
     }
 

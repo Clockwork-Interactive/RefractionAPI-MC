@@ -19,6 +19,15 @@ public abstract class PlayerTask extends Task<ServerPlayer> {
         super();
     }
 
+    public boolean stopOnDeath() {
+        return true;
+    }
+
+    @Override
+    public boolean shouldStop() {
+        return stopOnDeath() && player().isDeadOrDying();
+    }
+
     @Override
     public Level level() {
         return accessor == null ? ClientData.getPlayer().level() : accessor.serverLevel();

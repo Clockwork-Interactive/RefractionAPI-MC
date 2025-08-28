@@ -51,6 +51,10 @@ public abstract class Task<A> implements Syncable<Task<A>> {
         return holder.maxTicks;
     }
 
+    public boolean shouldStop() {
+        return false;
+    }
+
     public final void postAdd() {
         if (loadingTag.isEmpty()) return;
         this.load(loadingTag);

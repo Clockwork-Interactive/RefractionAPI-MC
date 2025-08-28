@@ -11,11 +11,7 @@ public class AtdaExampleRegistry {
 
     public static void init() {
         if (!RRuntimeConfig.debugTools) return;
-        Atda.registerProvider(Player.class, (player) -> {
-            AtdaUtils.attachAtda(player, AtdaExampleRegistry.EXAMPLE, new AtdaExampleProvider());
-        });
-        RefractionEvents.PLAYER_CLONE.register((current, old) -> {
-            AtdaUtils.onClone(old, current, AtdaExampleRegistry.EXAMPLE);
-        });
+        Atda.register(Player.class, EXAMPLE, new AtdaExampleProvider());
+        Atda.registerCloning(EXAMPLE);
     }
 }

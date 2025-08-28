@@ -48,14 +48,14 @@ public abstract class ServerLevelMixin implements ILevel {
         assureTasks();
         levelTasks.loadFromDisk((ServerLevel) (Object) this);
         levelTasks.init();
-        //Atda.deserializeAll(this, getIO().load(getSyncID()));
+        Atda.deserializeAll(this, getIO().load(getSyncID()));
     }
 
     @Inject(at = @At("TAIL"), method = "save")
     public void save(ProgressListener progress, boolean flush, boolean skipSave, CallbackInfo ci) {
         assureTasks();
         levelTasks.saveToDisk();
-        //getIO().save(getSyncID(), Atda.serializeAll(this));
+        getIO().save(getSyncID(), Atda.serializeAll(this));
     }
 
     @Override
@@ -72,10 +72,10 @@ public abstract class ServerLevelMixin implements ILevel {
 
     @Override
     public String getSyncID() {
-        return "%s".formatted(getLevel().dimensionTypeRegistration().getRegisteredName().replace(":", "-"));
+        return "%s".formatted(getLevel().dimensionTypeRegistration().getRegisteredName().replaceAll("[^a-zA-Z0-9\\.\\-]", "_"));
     }
 
-    public void assureTasks() {
+    public void assureTasks() { // lowkey I meant to put "ensure", but it's kinda funny --Zeus
         if (levelTasks == null) levelTasks = (LevelTasks) new LevelTasks((ServerLevel) (Object) this).init();
     }
 
@@ -90,6 +90,6 @@ public abstract class ServerLevelMixin implements ILevel {
     }
 
     public TagIO getIO() {
-        return tagIO = tagIO == null ? new TagIO(getServer().getWorldPath(resource).toString()) : tagIO;
+        return tagIO = tagIO == null ? new TagIO(getServer().getWorldPath(resource).toFile().toString()) : tagIO;
     }
 }
