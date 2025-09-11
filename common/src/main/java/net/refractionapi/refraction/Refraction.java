@@ -8,6 +8,7 @@ import net.refractionapi.refraction.data.PlrExtension;
 import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.debug.RDebugRenderers;
 import net.refractionapi.refraction.events.RefractionEvents;
+import net.refractionapi.refraction.events.Scheduler;
 import net.refractionapi.refraction.feature.channel.SyncConfig;
 import net.refractionapi.refraction.feature.channel.TwoWayIntermediary;
 import net.refractionapi.refraction.feature.cutscenes.CutsceneHandler;
@@ -76,6 +77,7 @@ public class Refraction {
         FrozenManager.init();
         CLIComms.init();
         ExampleTaskRegistry.init();
+        Scheduler.init();
         RefractionEvents.PLAYER_JOINED.register((player) -> {
             RefractionData.get(player);
             PlayerTasks.get(player);

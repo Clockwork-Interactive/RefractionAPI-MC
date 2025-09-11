@@ -12,10 +12,7 @@ import net.refractionapi.refraction.feature.examples.atda.AtdaExampleProvider;
 import net.refractionapi.refraction.feature.examples.atda.AtdaExampleRegistry;
 import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -104,13 +101,18 @@ public class Atda<E, D extends AtdaData<D>> {
         if (!(lookup instanceof IAtdaProvider lookupProvider))
             throw new RuntimeException("Invalid lookup called for non-IAtdaProvider class %s".formatted(lookup.getClass().toString()));
         if (lookupProvider.getLevel().isClientSide) {
-            return (D) this.clientLookup.get(lookupProvider.getSyncID() + data.getClass().getName());
+            return (D) this.clientLookup.entrySet().stream()
+                    .filter(entry -> entry.getKey().equals(lookupProvider.getSyncID() + entry.getValue().getClass().getName()))
+                    .map(Map.Entry::getValue)
+                    .findFirst()
+                    .orElse(null);
+
         }
         for (IAtdaProvider iAtdaProvider : safeGet(lookup)) {
             Optional<D> data = iAtdaProvider.getAtda(this);
             if (data.isPresent()) {
                 data.get().setSyncables(lookupProvider, this);
-                return iAtdaProvider instanceof AtdaProvider<?, ?> provider ? provider.readOnly(lookup) ? (D) provider.copyData() : data.get() : data.get();
+                return iAtdaProvider instanceof AtdaProvider<?, ?> provider ? (provider.readOnly(lookup) ? (D) provider.copyData() : data.get()) : data.get();
             }
         }
         return null;
