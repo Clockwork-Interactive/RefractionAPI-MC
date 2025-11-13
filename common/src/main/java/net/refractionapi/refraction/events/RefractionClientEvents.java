@@ -39,6 +39,11 @@ public class RefractionClientEvents {
             listener.onOpen(id, uuid);
         }
     });
+    public static final RefractionEvent<NamedChannelOpen> TWC_NAMED_OPEN = new RefractionEventCaller<>(NamedChannelOpen.class, listeners -> (id, uuid) -> {
+        for (NamedChannelOpen listener : listeners) {
+            listener.onOpen(id, uuid);
+        }
+    });
     public static final RefractionEvent<RegisterCLI> CLI_REGISTER = new RefractionEventCaller<>(RegisterCLI.class, listeners -> (cli) -> {
         for (RegisterCLI listener : listeners) {
             listener.register(cli);

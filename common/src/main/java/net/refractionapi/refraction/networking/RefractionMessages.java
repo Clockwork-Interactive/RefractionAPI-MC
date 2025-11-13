@@ -31,6 +31,8 @@ public interface RefractionMessages {
         registerPacket(SerializerS2CPacket.class, RNetworkDirection.PLAY_TO_CLIENT);
         registerPacket(TwoWayS2CPacket.class, RNetworkDirection.PLAY_TO_CLIENT);
         registerPacket(TwoWayC2SPacket.class, RNetworkDirection.PLAY_TO_SERVER);
+        registerPacket(TWCPacket.class, RNetworkDirection.PLAY_TO_CLIENT);
+        registerPacket(TWCPacket.class, RNetworkDirection.PLAY_TO_SERVER);
     }
 
     static <MSG extends Packet> void sendToServer(MSG message) {

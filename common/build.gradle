@@ -50,3 +50,8 @@ artifacts {
     commonResources sourceSets.main.resources.sourceDirectories.singleFile
 }
 
+java {
+    toolchain {
+    languageVersion = JavaLanguageVersion.of(21)
+    }
+}
