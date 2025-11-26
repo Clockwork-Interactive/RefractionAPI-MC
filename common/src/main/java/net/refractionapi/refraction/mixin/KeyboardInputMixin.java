@@ -10,9 +10,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(KeyboardInput.class)
 public class KeyboardInputMixin extends Input {
-    @Inject(at = @At("HEAD"), method = "tick", cancellable = true)
+    @Inject(at = @At("TAIL"), method = "tick", cancellable = true)
     public void tick(boolean p_234118_, float p_234119_, CallbackInfo ci) {
-        if (!ClientData.canMove) {
+        if (!ClientData.canPlayerMove) {
             this.forwardImpulse = 0.0F;
             this.leftImpulse = 0.0F;
             this.jumping = false;

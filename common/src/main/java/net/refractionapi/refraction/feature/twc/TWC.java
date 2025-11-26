@@ -61,12 +61,12 @@ public class TWC implements ITWC<TWC> {
         return new TWC(level);
     }
 
-    public static TWC.Static unnamed() {
-        return new TWC.Static(null);
+    public static Sided unnamed() {
+        return new Sided(null);
     }
 
-    public static TWC.Static named(ResourceLocation apiKey) {
-        return new TWC.Static(apiKey);
+    public static Sided named(ResourceLocation apiKey) {
+        return new Sided(apiKey);
     }
 
     public TWC preSendHook(Function<Message, Message> hook) {
@@ -175,12 +175,19 @@ public class TWC implements ITWC<TWC> {
         return this;
     }
 
+    public static Message message() {
+        return new Message();
+    }
+
     public void sendMessage(String routerID, ServerPlayer player, Message message) {
-        safeRouter(routerID, (router) -> router.send(player, message));
+        message.twc = this;
+        message.player = player;
+        router(routerID).send(player, message);
     }
 
     public void sendMessage(String routerID, Message message) {
-        safeRouter(routerID, (router) -> router.send(message));
+        message.twc = this;
+        router(routerID).send(message);
     }
 
     public void post(String routerID, Message message, Consumer<Message> callback) {
@@ -231,56 +238,57 @@ public class TWC implements ITWC<TWC> {
         return TWCMiddleWare.instance();
     }
 
-    public static class Static implements ITWC<TWC> {
+    public static class Sided implements ITWC<TWC> {
         ThreadLocal<TWC> instance = new ThreadLocal<>();
         final ResourceLocation apiKey;
         private final List<TWC.SidedConfigurer> configurer = new ArrayList<>();
         private Consumer<TWC> preConfigure = (nap) -> {
         };
 
-        public Static(ResourceLocation apiKey) {
+        public Sided(ResourceLocation apiKey) {
             this.apiKey = apiKey;
         }
 
-        public Static initOnServer() {
+        public Sided initOnServer() {
             return initOnServer(this);
         }
 
-        public static Static initOnServer(Static twc) {
+        public static Sided initOnServer(Sided twc) {
             RefractionEvents.SERVER_STARTING.register((server) -> {
-                twc.open(server.overworld());
+                if (twc.get() != null && twc.get().isOpen()) return;
+                twc.open(server.overworld(), UUID.randomUUID());
             });
             return twc;
         }
 
-        public Static initOnClientRegistry() {
+        public Sided initOnClientRegistry() {
             return initOnClientRegistry(this);
         }
 
-        public static Static initOnClientRegistry(Static twc) {
+        public static Sided initOnClientRegistry(Sided twc) {
             RefractionClientEvents.TWC_NAMED_OPEN.register((rl, uuid) -> {
-                if (rl.equals(twc.apiKey)) twc.open(ClientData.getPlayer().level(), rl);
+                if (rl.equals(twc.apiKey)) twc.open(ClientData.getPlayer().level(), uuid);
             });
             return twc;
         }
 
-        public Static initCommon() {
+        public Sided initCommon() {
             return initCommon(this);
         }
 
-        public static Static initCommon(Static twc) {
+        public static Sided initCommon(Sided twc) {
             return twc.initOnServer().initOnClientRegistry();
         }
 
-        public void open(Level level) {
-            open(level, null);
-        }
-
-        public void open(Level level, ResourceLocation apiKey) {
-            instance.set(new TWC(level, apiKey));
+        public void open(Level level, UUID uuid) {
+            instance.set(new TWC(level, uuid, apiKey));
             instance.get().preConfigure = this.preConfigure;
             instance.get().configurer = this.configurer;
             instance.get().open();
+        }
+
+        public TWC get() {
+            return instance.get();
         }
 
         @Override
@@ -298,22 +306,22 @@ public class TWC implements ITWC<TWC> {
             instance.get().post(routerID, message, callback);
         }
 
-        public Static configure(Consumer<TWC> consumer) {
+        public Sided configure(Consumer<TWC> consumer) {
             this.configurer.add(new TWC.SidedConfigurer(Side.COMMON, consumer));
             return this;
         }
 
-        public Static configureServer(Consumer<TWC> consumer) {
+        public Sided configureServer(Consumer<TWC> consumer) {
             this.configurer.add(new TWC.SidedConfigurer(Side.SERVER, consumer));
             return this;
         }
 
-        public Static configureClient(Consumer<TWC> consumer) {
+        public Sided configureClient(Consumer<TWC> consumer) {
             this.configurer.add(new TWC.SidedConfigurer(Side.CLIENT, consumer));
             return this;
         }
 
-        public Static preConfigure(Consumer<TWC> consumer) {
+        public Sided preConfigure(Consumer<TWC> consumer) {
             this.preConfigure = consumer;
             return this;
         }
@@ -342,12 +350,16 @@ public class TWC implements ITWC<TWC> {
         private String router = "";
         private FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         private Header header = new Header(new CompoundTag());
-        private final Player player;
-        private final TWC twc;
+        private Player player;
+        private TWC twc;
 
-        public Message(TWC twc, Player player) {
+        protected Message(TWC twc, Player player) {
             this.twc = twc;
             this.player = player;
+        }
+
+        public Message() {
+            this(null, null);
         }
 
         public Message header(Consumer<Header> header) {
@@ -399,6 +411,10 @@ public class TWC implements ITWC<TWC> {
 
         public Router router(TWC twc) {
             return twc.router(router);
+        }
+
+        public boolean isClient() {
+            return twc.level().isClientSide;
         }
 
         protected FriendlyByteBuf toBytes(String router) {

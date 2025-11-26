@@ -27,10 +27,13 @@ import net.refractionapi.refraction.feature.sound.TrackingSound;
 import net.refractionapi.refraction.helper.math.EasingFunctions;
 import net.refractionapi.refraction.util.Keybindings;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class ClientData {
-    public static boolean canMove = true;
+    private static final List<String> nonToggleableShaders = new ArrayList<>();
+    public static boolean canPlayerMove = true;
     public static boolean canRotateCamera = true;
 
     public static int startFOV = -1;
@@ -48,6 +51,14 @@ public class ClientData {
     public static EasingFunctions easingFunctionZRot = EasingFunctions.LINEAR;
 
     public static ClientScreenHandler screenHandler = new ClientScreenHandler();
+
+    public static void addNonToggleableShader(String id) {
+        nonToggleableShaders.add(id);
+    }
+
+    public static boolean isToggleable(String id) {
+        return !nonToggleableShaders.contains(id);
+    }
 
     public static void trackingSound(int entityId, SoundEvent soundEvent, boolean looping, int ticks) {
         LivingEntity livingEntity = (LivingEntity) Minecraft.getInstance().level.getEntity(entityId);
@@ -105,7 +116,7 @@ public class ClientData {
     }
 
     public static void reset() {
-        canMove = true;
+        canPlayerMove = true;
         canRotateCamera = true;
         startFOV = -1;
         currentFOV = -1;

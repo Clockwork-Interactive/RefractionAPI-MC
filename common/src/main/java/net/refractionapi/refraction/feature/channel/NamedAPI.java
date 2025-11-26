@@ -174,7 +174,7 @@ public class NamedAPI implements Syncable<NamedAPI> {
     }
 
     /**
-     * Static providers for client channels if they are non-static-accessible <br>
+     * Sided providers for client channels if they are non-static-accessible <br>
      * and the API key is known
      */
     public static void sendToServer(ResourceLocation id, String router, TwoWayChannel.Data data, TwoWayChannel.Header header) {

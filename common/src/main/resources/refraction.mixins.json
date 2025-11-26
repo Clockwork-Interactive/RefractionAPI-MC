@@ -15,11 +15,13 @@
     "PathNavigationMixin",
     "PlayerMixin",
     "ServerLevelMixin",
-    "ServerPlayerMixin"
+    "ServerPlayerMixin",
+    "StructureTemplateMixin"
   ],
   "client": [
     "CameraMixin",
     "ClientPacketMixin",
+    "CreateWorldScreenMixin",
     "DebugRendererMixin",
     "EntityRenderDispatcherMixin",
     "GameRendererMixin",

@@ -1,10 +1,9 @@
-package net.refractionapi.refraction.helper.registry.item;
+package net.refractionapi.refraction.helper.registry;
 
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.refractionapi.refraction.config.RRuntimeConfig;
 import net.refractionapi.refraction.feature.examples.rendering.ExampleArmorTypes;
-import net.refractionapi.refraction.helper.registry.RRegister;
 import net.refractionapi.refraction.helper.registry.item.items.FloodDebugger;
 import net.refractionapi.refraction.helper.registry.item.items.NVGItem;
 import net.refractionapi.refraction.helper.registry.item.items.RandomItem;

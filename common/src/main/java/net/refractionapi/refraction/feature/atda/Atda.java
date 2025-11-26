@@ -4,6 +4,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.events.RefractionEvents;
@@ -11,6 +13,7 @@ import net.refractionapi.refraction.feature.examples.atda.AtdaExampleData;
 import net.refractionapi.refraction.feature.examples.atda.AtdaExampleProvider;
 import net.refractionapi.refraction.feature.examples.atda.AtdaExampleRegistry;
 import net.refractionapi.refraction.helper.clazz.RModRegistrar;
+import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,10 +34,21 @@ public class Atda<E, D extends AtdaData<D>> {
     final HashMap<String, AtdaData<?>> clientLookup = new HashMap<>();
     final ResourceLocation id;
     final Class<E> clazz;
+    private TriConsumer<MinecraftServer, E, D> attachHook = (server, entity, atdaData) -> {
+    };
 
     private Atda(Class<E> clazz, ResourceLocation identifier) {
         this.clazz = clazz;
         this.id = identifier;
+    }
+
+    public static <O, D extends AtdaData<D>> void attachHook(Atda<O, D> atda, TriConsumer<MinecraftServer, O, D> hook) {
+        atda.attachHook = hook;
+    }
+
+    public static <O, D extends AtdaData<D>> void syncOnLoad(Atda<O, D> atda) {
+        // unsafe cast, but we trust the user to only call this on Entity Atda --Zeus
+        atda.attachHook = (server, obj, raw) -> raw.sync((Entity) obj);
     }
 
     public void add(E obj, IAtdaProvider provider) {
@@ -42,7 +56,11 @@ public class Atda<E, D extends AtdaData<D>> {
         if (provider instanceof AtdaProvider<?, ?> atdaProvider)
             atdaProvider.setType(this.clazz);
         this.providers.computeIfAbsent(obj, k -> new ArrayList<>()).add(provider);
-        getRaw(obj);
+        var raw = getRaw(obj);
+        if (provider.getLevel() == null || provider.getLevel().isClientSide) return;
+        var server = provider.getLevel().getServer();
+        attachHook.accept(server, obj, raw);
+        raw.onAttach(obj, server);
     }
 
     public static <O, D extends AtdaData<D>> Atda<O, D> register(Class<O> clazz, String id) {
@@ -106,7 +124,6 @@ public class Atda<E, D extends AtdaData<D>> {
                     .map(Map.Entry::getValue)
                     .findFirst()
                     .orElse(null);
-
         }
         for (IAtdaProvider iAtdaProvider : safeGet(lookup)) {
             Optional<D> data = iAtdaProvider.getAtda(this);
@@ -163,7 +180,7 @@ public class Atda<E, D extends AtdaData<D>> {
         if (tag == null || !tag.contains("refraction_reserved_atda")) return;
         CompoundTag serializedData = tag.getCompound("refraction_reserved_atda");
         ListTag listTag = serializedData.getList("refraction_atda", Tag.TAG_COMPOUND);
-        if (listTag == null || listTag.isEmpty()) return;
+        if (listTag.isEmpty()) return;
         for (Tag t : listTag) {
             CompoundTag compoundTag = (CompoundTag) t;
             ResourceLocation location = ResourceLocation.tryParse(compoundTag.getString("refraction_atda_reserved_data_fragment"));

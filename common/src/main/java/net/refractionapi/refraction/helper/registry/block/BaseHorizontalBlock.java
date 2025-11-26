@@ -17,7 +17,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public abstract class BaseHorizontalBlock extends HorizontalDirectionalBlock {
-
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public BaseHorizontalBlock(Properties pProperties) {
@@ -52,5 +51,4 @@ public abstract class BaseHorizontalBlock extends HorizontalDirectionalBlock {
 
     @Override
     public abstract VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext);
-
 }

@@ -8,8 +8,9 @@ import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.feature.channel.SyncConfig;
 import net.refractionapi.refraction.feature.data.Syncable;
+import net.refractionapi.refraction.networking.C2S.TWCC2SPacket;
 import net.refractionapi.refraction.networking.RefractionMessages;
-import net.refractionapi.refraction.networking.S2C.TWCPacket;
+import net.refractionapi.refraction.networking.S2C.TWCS2CPacket;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +24,7 @@ public class TWCMiddleWare implements Syncable<TWCMiddleWare> {
     private final SyncConfig config = new SyncConfig().setSyncer(this::sync);
 
     public TWCMiddleWare() {
-
+        this.setSynced();
     }
 
     protected void open(TWC channel) {
@@ -38,7 +39,7 @@ public class TWCMiddleWare implements Syncable<TWCMiddleWare> {
         sync(channel);
     }
 
-    private void sync(TWC channel) {
+    protected void sync(TWC channel) {
         if (!channel.level().isClientSide) config.syncAll((ServerLevel) channel.level());
     }
 
@@ -74,17 +75,17 @@ public class TWCMiddleWare implements Syncable<TWCMiddleWare> {
         twc.routeMessage(message);
     }
 
-    private void sendToServer(
+    protected void sendToServer(
             TWC twc,
             String routerID,
             TWC.Message message
     ) {
         var twcID = twc.id();
         FriendlyByteBuf buf = message.toBytes(routerID);
-        RefractionMessages.sendToServer(new TWCPacket(twcID, buf));
+        RefractionMessages.sendToServer(new TWCC2SPacket(twcID, buf));
     }
 
-    private void sendToPlayer(
+    protected void sendToPlayer(
             TWC twc,
             String routerID,
             TWC.Message message,
@@ -92,7 +93,7 @@ public class TWCMiddleWare implements Syncable<TWCMiddleWare> {
     ) {
         var twcID = twc.id();
         FriendlyByteBuf buf = message.toBytes(routerID);
-        for (ServerPlayer target : targets) RefractionMessages.sendToPlayer(new TWCPacket(twcID, buf), target);
+        for (ServerPlayer target : targets) RefractionMessages.sendToPlayer(new TWCS2CPacket(twcID, buf), target);
     }
 
     private void writeRouters(FriendlyByteBuf buf) {

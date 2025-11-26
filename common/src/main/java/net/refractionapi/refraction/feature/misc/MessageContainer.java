@@ -32,7 +32,12 @@ public class MessageContainer {
     }
 
     public void of(String... keys) {
-        for (String key : keys) addEntry(key, "WARNING: not assigned");
+        if (keys.length % 2 != 0) throw new IllegalArgumentException("Keys length must be even (key-value pairs)");
+        for (int i = 0; i < keys.length; i += 2) addEntry(keys[i], keys[i + 1]);
+    }
+
+    public void ofUnassigned(String... keys) {
+        for (String key : keys) addEntry(key, "WARNING: Unassigned!");
     }
 
     public WeightedRandom<Pair<String, String>> getMessages(DamageType type) {

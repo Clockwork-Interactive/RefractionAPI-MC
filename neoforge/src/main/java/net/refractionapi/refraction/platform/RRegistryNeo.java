@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.platform;
 
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -15,7 +16,9 @@ public class RRegistryNeo implements RRegistry {
 
     @Override
     public RRegister<Block> registerBlock(String id, Supplier<Block> block) {
-        return new RRegister<>(id, BLOCKS.register(id, block));
+        var reg = new RRegister<>(id, BLOCKS.register(id, block));
+        ITEMS.register(id, () -> new BlockItem(reg.get(), new Item.Properties()));
+        return reg;
     }
 
     @Override

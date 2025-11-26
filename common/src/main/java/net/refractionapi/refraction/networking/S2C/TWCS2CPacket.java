@@ -10,23 +10,24 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class TWCPacket extends Packet {
+public class TWCS2CPacket extends Packet {
     final UUID uuid;
     final FriendlyByteBuf buf;
 
-    public TWCPacket(UUID uuid, FriendlyByteBuf buf) {
+    public TWCS2CPacket(UUID uuid, FriendlyByteBuf buf) {
         this.uuid = uuid;
         this.buf = buf;
     }
 
-    public TWCPacket(FriendlyByteBuf buf) {
+    public TWCS2CPacket(FriendlyByteBuf buf) {
         this.uuid = buf.readUUID();
         this.buf = new FriendlyByteBuf(Unpooled.copiedBuffer(buf.readByteArray()));
     }
 
     @Override
     public void write(FriendlyByteBuf buf) {
-        buf.writeBytes(this.buf);
+        buf.writeUUID(this.uuid);
+        buf.writeByteArray(this.buf.array());
     }
 
     @Override

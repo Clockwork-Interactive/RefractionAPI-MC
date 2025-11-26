@@ -28,7 +28,7 @@ public class EnablePlayerMovementS2CPacket extends Packet {
     @Override
     public void handle(@Nullable Player player, Consumer<Runnable> context) {
         context.accept(() -> {
-            ClientData.canMove = this.canMove;
+            ClientData.canPlayerMove = this.canMove;
         });
     }
 

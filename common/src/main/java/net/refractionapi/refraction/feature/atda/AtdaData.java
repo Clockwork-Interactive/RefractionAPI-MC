@@ -3,6 +3,8 @@ package net.refractionapi.refraction.feature.atda;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.Entity;
 import net.refractionapi.refraction.feature.data.Syncable;
 
 public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
@@ -21,6 +23,10 @@ public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
     }
 
     public void onFirstLoad(CompoundTag tag) {
+
+    }
+
+    public void onAttach(Object owner, MinecraftServer server) {
 
     }
 

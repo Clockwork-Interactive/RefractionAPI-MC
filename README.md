@@ -37,7 +37,7 @@ Adding this to your main class constructor will register it.
 - RefractionEvents—Event system with multiloader support <br>
 - VoxelUtils—Voxel generation utilities <br>
 - Particler—Particle wrapper with render and tick manipulation <br>
-- RAABB—Allows for non-axis aligner boxes with collision <br>
+- RAABB—Allows for non-axis aligned boxes with collision <br>
 - Cutscenes—Customizable cutscenes through code (future command support) <br>
 - Custom debuggers—Similar to Minecraft's system of debugging, Refraction has custom debug support <br>
 - Interactions—NPC Interaction handler <br>

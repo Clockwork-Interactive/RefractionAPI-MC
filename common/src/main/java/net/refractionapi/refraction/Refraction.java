@@ -16,8 +16,10 @@ import net.refractionapi.refraction.feature.examples.atda.AtdaExampleRegistry;
 import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionRegistry;
 import net.refractionapi.refraction.feature.examples.reconfig.ReConfigExample;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
+import net.refractionapi.refraction.feature.examples.subdivision.ExampleSubdivisionRegistry;
 import net.refractionapi.refraction.feature.examples.task.ExampleTaskRegistry;
 import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
+import net.refractionapi.refraction.feature.subdivision.Subdivision;
 import net.refractionapi.refraction.feature.task.PlayerTasks;
 import net.refractionapi.refraction.gui.RIMGuiInternal;
 import net.refractionapi.refraction.gui.RIMServer;
@@ -27,12 +29,15 @@ import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 import net.refractionapi.refraction.helper.command.DiscardCommand;
 import net.refractionapi.refraction.helper.command.RDebugCommand;
 import net.refractionapi.refraction.helper.command.RReConfigCommand;
+import net.refractionapi.refraction.helper.command.SubdivisionCommand;
 import net.refractionapi.refraction.helper.entity.FrozenManager;
-import net.refractionapi.refraction.helper.registry.item.RItems;
+import net.refractionapi.refraction.helper.registry.RBlocks;
+import net.refractionapi.refraction.helper.registry.RItems;
 import net.refractionapi.refraction.helper.runnable.RunnableCooldownHandler;
 import net.refractionapi.refraction.helper.runnable.RunnableHandler;
 import net.refractionapi.refraction.helper.runnable.Runnabler;
 import net.refractionapi.refraction.helper.runnable.TickableProccesor;
+import net.refractionapi.refraction.init.Playground;
 import net.refractionapi.refraction.init.TestHooks;
 import net.refractionapi.refraction.init.TestHooksClient;
 import net.refractionapi.refraction.platform.RefractionServices;
@@ -40,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.util.Locale;
 
 public class Refraction {
     public static final String MOD_ID = "refraction";
@@ -54,13 +60,7 @@ public class Refraction {
 
     @SuppressWarnings("deprecation")
     public static void init() {
-        if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) {
-            RRuntimeConfig.debugTools = true;
-            new TestHooks();
-            if (RefractionServices.PLATFORM.isClient()) {
-                new TestHooksClient();
-            }
-        }
+        if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) Playground.init();
         RModRegistrar.registerSelf(MOD_ID);
         data = new PlrExtension(RModRegistrar.getSpec());
         RIMServer.init();
@@ -70,14 +70,19 @@ public class Refraction {
         RunnableCooldownHandler.init();
         TickableProccesor.init();
         CutsceneHandler.init();
-        ExampleInteractionRegistry.init();
-        ExampleScreenRegistry.init();
-        RItems.init();
-        AtdaExampleRegistry.init();
         FrozenManager.init();
         CLIComms.init();
-        ExampleTaskRegistry.init();
         Scheduler.init();
+        Subdivision.init();
+
+        ExampleInteractionRegistry.init();
+        ExampleScreenRegistry.init();
+        AtdaExampleRegistry.init();
+        ExampleTaskRegistry.init();
+        ExampleSubdivisionRegistry.init();
+        RBlocks.init();
+        RItems.init();
+
         RefractionEvents.PLAYER_JOINED.register((player) -> {
             RefractionData.get(player);
             PlayerTasks.get(player);
@@ -89,6 +94,7 @@ public class Refraction {
             new RDebugCommand(c);
             new RReConfigCommand(c);
             new DiscardCommand(c);
+            new SubdivisionCommand(c);
         });
         RefractionEvents.SERVER_STARTED.register(TwoWayIntermediary::init);
         if (RefractionServices.PLATFORM.isClient()) {
@@ -99,6 +105,7 @@ public class Refraction {
     }
 
     public static void startGui(long ptr) {
+        if (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("mac")) return;
         if (RefractionServices.PLATFORM.isClient()) {
             RIMGuiInternal.gui = new RIMGuiInternal(
                     ptr,

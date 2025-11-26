@@ -9,7 +9,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BaseHorizontalEntityBlock extends BaseHorizontalBlock implements EntityBlock {
-
     public BaseHorizontalEntityBlock(Properties pProperties) {
         super(pProperties);
     }
@@ -24,5 +23,4 @@ public abstract class BaseHorizontalEntityBlock extends BaseHorizontalBlock impl
             }
         };
     }
-
 }

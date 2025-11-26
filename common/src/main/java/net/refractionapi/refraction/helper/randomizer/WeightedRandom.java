@@ -3,7 +3,6 @@ package net.refractionapi.refraction.helper.randomizer;
 import java.util.HashMap;
 
 public class WeightedRandom<T> {
-
     public final HashMap<T, Float> weightedRandomList = new HashMap<>();
 
     public WeightedRandom() {
@@ -54,5 +53,4 @@ public class WeightedRandom<T> {
     public HashMap<T, Float> getWeightedRandomList() {
         return this.weightedRandomList;
     }
-
 }

@@ -3,6 +3,7 @@ package net.refractionapi.refraction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
+import net.refractionapi.refraction.datagen.DataGenerators;
 import net.refractionapi.refraction.event.RefractionEventsNeo;
 import net.refractionapi.refraction.networking.RefractionMessagesNeo;
 import net.refractionapi.refraction.platform.RRegistryNeo;

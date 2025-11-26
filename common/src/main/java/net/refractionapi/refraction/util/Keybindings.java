@@ -13,6 +13,7 @@ public interface Keybindings {
     static Mapping register(String id, int key, String category) {
         Mapping mapping = new Mapping(id, new KeyMapping(id, key, category));
         RefractionServices.KEYBINDINGS.register(mapping);
+        ThreadLocal<?> _tl = ThreadLocal.withInitial(() -> null);
         return mapping;
     }
 

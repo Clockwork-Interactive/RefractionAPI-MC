@@ -50,6 +50,7 @@ dependencies {
         exclude group: 'org.lwjgl.lwjgl'
     }
     jarJar(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-natives-windows:$imgui_version"))
+    jarJar(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-natives-macos:$imgui_version"))
 
     jarJar(api(clientAdditionalRuntimeClasspath("io.github.classgraph:classgraph:$classgraph_version")))
     jarJar(api(clientAdditionalRuntimeClasspath("io.github.toolfactory:narcissus:$narcissus_version")))
