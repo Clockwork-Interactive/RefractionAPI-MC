@@ -17,6 +17,12 @@ public abstract class AtdaProvider<E, D extends AtdaData<D>> implements IAtdaPro
         return this.data == null ? this.data = build() : this.data;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public @NotNull <O, D extends AtdaData<D>> Optional<D> getAtda(Atda<O, D> holder) {
+        return holder == this.getHolder() ? (Optional<D>) Optional.of(this.getData()) : Optional.empty();
+    }
+
     public void setType(Class<?> clazz) {
         this.clazz = (Class<E>) clazz;
     }
@@ -37,7 +43,7 @@ public abstract class AtdaProvider<E, D extends AtdaData<D>> implements IAtdaPro
 
     @InternalApi
     public <O> void tickInternal(O obj) {
-        if (getData() == null || this.data == null || this.data.atdaSync == null || this.data.providerSync == null)
+        if (getData() == null || this.data == null || this.data.atdaSync == null || this.data.provider == null)
             return;
         tick((E) obj);
     }
@@ -48,12 +54,6 @@ public abstract class AtdaProvider<E, D extends AtdaData<D>> implements IAtdaPro
 
     public <O> boolean readOnly(O obj) {
         return false;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public @NotNull <O, D extends AtdaData<D>> Optional<D> getAtda(Atda<O, D> holder) {
-        return holder == this.getHolder() ? (Optional<D>) Optional.of(this.getData()) : Optional.empty();
     }
 
     @Override

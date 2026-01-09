@@ -4,11 +4,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.entity.Entity;
 import net.refractionapi.refraction.feature.data.Syncable;
 
 public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
-    IAtdaProvider providerSync;
+    IAtdaProvider provider;
     Atda<?, ?> atdaSync;
     boolean first = true;
 
@@ -17,7 +16,7 @@ public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
     }
 
     AtdaData<T> setSyncables(IAtdaProvider providerSync, Atda<?, ?> atda) {
-        this.providerSync = providerSync;
+        this.provider = providerSync;
         this.atdaSync = atda;
         return this;
     }
@@ -38,7 +37,7 @@ public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
     public void write(FriendlyByteBuf buf) {
         CompoundTag tag = new CompoundTag();
         this.save(tag);
-        buf.writeUtf(this.providerSync.getSyncID() + this.getClass().getName());
+        buf.writeUtf(this.provider.getSyncID());
         buf.writeUtf(this.atdaSync.id.toString());
         buf.writeNbt(tag);
     }
@@ -50,7 +49,7 @@ public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
         Atda<?, ?> atda = Atda.fromMap(ResourceLocation.parse(atdaID));
         if (atda == null) return;
         this.load(buf.readNbt());
-        atda.clientLookup.put(syncID, this);
+        atda.saveForClient(syncID, this);
     }
 
     public abstract void copyFrom(T data);

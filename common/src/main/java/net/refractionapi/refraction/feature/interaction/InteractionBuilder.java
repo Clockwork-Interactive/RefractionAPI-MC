@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class InteractionBuilder<T extends NPCInteraction> {
-
     private static final HashMap<String, InteractionBuilder<?>> builders = new HashMap<>();
     private final HashMap<Player, T> interactions = new HashMap<>();
     private final String id;
@@ -98,5 +97,4 @@ public class InteractionBuilder<T extends NPCInteraction> {
     public static Optional<InteractionBuilder<?>> getBuilder(String id) {
         return Optional.ofNullable(builders.get(id));
     }
-
 }

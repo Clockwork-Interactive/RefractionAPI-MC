@@ -10,9 +10,9 @@ import net.refractionapi.refraction.feature.atda.IAtdaProvider;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 
 public interface RefractionEvents {
-    RefractionEvent<LoadLevel> LOAD_LEVEL = new RefractionEventCaller<>(LoadLevel.class, listeners -> world -> {
-        for (LoadLevel listener : listeners) {
-            listener.onLoad(world);
+    RefractionEvent<Level> LOAD_LEVEL = new RefractionEventCaller<>(Level.class, listeners -> world -> {
+        for (Level listener : listeners) {
+            listener.onEvent(world);
         }
     });
     RefractionEvent<CommonTick> COMMON_TICK = new RefractionEventCaller<>(CommonTick.class, listeners -> (server, post) -> {
@@ -126,8 +126,8 @@ public interface RefractionEvents {
     }
 
     @FunctionalInterface
-    interface LoadLevel {
-        void onLoad(LevelAccessor accessor);
+    interface Level {
+        void onEvent(LevelAccessor accessor);
     }
 
     @FunctionalInterface

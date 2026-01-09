@@ -1,10 +1,10 @@
 package net.refractionapi.refraction.feature.data;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.refractionapi.refraction.feature.examples.data.SyncedDataExample;
 
@@ -25,16 +25,13 @@ public interface Syncable<C extends Syncable<C>> {
         serializers.get(this.getClass()).sync(this, sync);
     }
 
-    default void syncAll(Level level) {
+    default void sync(LevelAccessor level) {
         if (!(level instanceof ServerLevel serverLevel)) return;
-        for (ServerPlayer player : serverLevel.players()) {
-            this.sync(player);
-        }
+        sync(serverLevel.getServer());
     }
 
-    default void syncAllServer(LevelAccessor accessor) {
-        if (!(accessor instanceof ServerLevel serverLevel)) return;
-        for (ServerPlayer player : serverLevel.getServer().getPlayerList().getPlayers()) {
+    default void sync(MinecraftServer server) {
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             this.sync(player);
         }
     }

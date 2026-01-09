@@ -1,9 +1,12 @@
 package net.refractionapi.refraction.events;
 
 import net.minecraft.resources.ResourceLocation;
+import net.refractionapi.refraction.gui.RIMTool;
 import net.refractionapi.refraction.gui.cli.CLI;
 import net.refractionapi.refraction.mixininterfaces.IParticleEngine;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class RefractionClientEvents {
@@ -54,6 +57,24 @@ public class RefractionClientEvents {
             listener.onEvent();
         }
     });
+    public static final RefractionEvent<RIMToolRegistry> RIMTOOLS_REGISTER = new RefractionEventCaller<>(RIMToolRegistry.class, listeners -> () -> {
+        List<RIMTool> tools = new ArrayList<>();
+        for (var listener : listeners) {
+            var ret = listener.register();
+            if (ret != null) tools.addAll(ret);
+        }
+        return tools;
+    });
+
+    @FunctionalInterface
+    public interface RIMToolRegistry {
+        List<RIMTool> register();
+    }
+
+    @FunctionalInterface
+    public interface GenericReturn<T> {
+        T onEvent();
+    }
 
     @FunctionalInterface
     public interface NamedChannelOpen {

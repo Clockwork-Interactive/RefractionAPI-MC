@@ -10,9 +10,7 @@ public class AtdaExampleRegistry {
     public static void init() {
         if (!RRuntimeConfig.debugTools) return;
         Atda.register(Player.class, EXAMPLE, new AtdaExampleProvider());
-        Atda.attachHook(EXAMPLE, (server, entity, atda) -> {
-            atda.sync(entity);
-        });
+        Atda.syncOnLoad(EXAMPLE);
         Atda.registerCloning(EXAMPLE);
     }
 }

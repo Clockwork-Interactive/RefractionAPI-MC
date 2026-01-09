@@ -7,7 +7,6 @@ import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.data.Syncable;
-import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
 import net.refractionapi.refraction.util.Side;
 import org.apache.logging.log4j.util.InternalApi;
 
@@ -135,7 +134,7 @@ public class NamedAPI implements Syncable<NamedAPI> {
             else if (!level.isClientSide && sidedConfigurer.side.equals(Side.SERVER))
                 sidedConfigurer.configurer.accept(this.channel);
         });
-        this.syncAllServer(level);
+        this.sync(level);
         this.channel.open();
         channels.get().put(this.api, this.channel.id());
     }

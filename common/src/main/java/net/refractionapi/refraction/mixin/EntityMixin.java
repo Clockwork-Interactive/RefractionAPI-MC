@@ -62,7 +62,7 @@ public abstract class EntityMixin implements IEntity {
 
     @Inject(at = @At("RETURN"), method = "tick")
     public void tick(CallbackInfo ci) {
-        Atda.tickProviders(this);
+        Atda.tickAllFor(this);
     }
 
     @Override

@@ -5,6 +5,7 @@ import net.refractionapi.refraction.feature.data.Syncable;
 
 public class RRuntimeConfig implements Syncable<RRuntimeConfig> {
     public static boolean debugTools = false;
+    public static boolean serverStarted = false;
 
     public RRuntimeConfig() {
         this.setSynced();
@@ -13,10 +14,12 @@ public class RRuntimeConfig implements Syncable<RRuntimeConfig> {
     @Override
     public void write(FriendlyByteBuf buf) {
         buf.writeBoolean(debugTools);
+        buf.writeBoolean(serverStarted);
     }
 
     @Override
     public void read(FriendlyByteBuf buf) {
         debugTools = buf.readBoolean();
+        serverStarted = buf.readBoolean();
     }
 }

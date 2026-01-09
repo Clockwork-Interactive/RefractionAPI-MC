@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.mixin;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -55,7 +56,10 @@ public abstract class ServerLevelMixin implements ILevel {
     public void save(ProgressListener progress, boolean flush, boolean skipSave, CallbackInfo ci) {
         assureTasks();
         levelTasks.saveToDisk();
-        getIO().save(getSyncID(), Atda.serializeAll(this));
+        var nbt = new CompoundTag();
+        var data = Atda.serializeAll(this);
+        nbt.put("refraction_reserved_atda", data);
+        getIO().save(getSyncID(), nbt);
     }
 
     @Override

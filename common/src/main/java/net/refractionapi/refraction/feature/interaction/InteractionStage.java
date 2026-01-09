@@ -11,14 +11,13 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class InteractionStage {
-
     protected final NPCInteraction npcInteraction;
     protected final String id;
     protected boolean ends;
     protected Component dialogue;
     protected int dialogueTicks;
     protected String goTo;
-    protected final HashMap<Component, buttonOptions> options = new HashMap<>();
+    protected final HashMap<Component, ButtonOption> options = new HashMap<>();
     protected Consumer<NPCInteraction> onSwitch = (i) -> {};
 
     public InteractionStage(NPCInteraction npcInteraction, String id) {
@@ -42,12 +41,12 @@ public class InteractionStage {
     }
 
     public InteractionStage addOption(Component component, String goTo) {
-        this.options.put(component, new buttonOptions(goTo, Optional.empty()));
+        this.options.put(component, new ButtonOption(goTo, Optional.empty()));
         return this;
     }
 
     public InteractionStage addOption(Component component, String goTo, Consumer<NPCInteraction> consumer) {
-        this.options.put(component, new buttonOptions(goTo, Optional.ofNullable(consumer)));
+        this.options.put(component, new ButtonOption(goTo, Optional.ofNullable(consumer)));
         return this;
     }
 
@@ -73,7 +72,7 @@ public class InteractionStage {
     }
 
     public List<String> possibleGoTos() {
-        return List.copyOf(this.options.values().stream().map(buttonOptions::goTo).toList());
+        return List.copyOf(this.options.values().stream().map(ButtonOption::goTo).toList());
     }
 
     public List<Component> possibleOptions() {
@@ -105,12 +104,11 @@ public class InteractionStage {
         return this.options.get(component).goTo();
     }
 
-    public HashMap<Component, buttonOptions> getOptions() {
+    public HashMap<Component, ButtonOption> getOptions() {
         return this.options;
     }
 
-    public record buttonOptions(String goTo, Optional<Consumer<NPCInteraction>> onClick) {
+    public record ButtonOption(String goTo, Optional<Consumer<NPCInteraction>> onClick) {
 
     }
-
 }

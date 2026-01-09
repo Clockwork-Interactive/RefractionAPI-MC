@@ -3,10 +3,14 @@ package net.refractionapi.refraction.feature.examples.data;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.refractionapi.refraction.client.ClientData;
+import net.refractionapi.refraction.feature.data.SyncConfigurer;
 import net.refractionapi.refraction.feature.data.Syncable;
 
 public class SyncedDataExample implements Syncable<SyncedDataExample> {
-
+    public static final SyncConfigurer CONFIGURER = new SyncConfigurer()
+            .registerDecoder(Entity.class, buf -> ClientData.getEntity(buf.readInt()))
+            .registerDecoder(int.class, FriendlyByteBuf::readInt)
+            .registerDecoder(float.class, FriendlyByteBuf::readFloat);
     private final Entity anEntity;
     private final int anInt;
     private final float aFloat;

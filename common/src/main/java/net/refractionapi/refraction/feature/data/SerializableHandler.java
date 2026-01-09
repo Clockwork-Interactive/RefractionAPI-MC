@@ -4,6 +4,7 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.refractionapi.refraction.helper.clazz.ClazzUtil;
 import net.refractionapi.refraction.networking.S2C.SerializerS2CPacket;
 import net.refractionapi.refraction.platform.RefractionServices;
 
@@ -36,26 +37,20 @@ public class SerializableHandler<C extends Syncable<C>> {
 
     @SuppressWarnings("unchecked")
     public void sync(Syncable<?> data, Entity syncTo) {
-        if (syncTo instanceof ServerPlayer serverPlayer) {
-            // I split them up cause networking was being a pain
-            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-            FriendlyByteBuf constArgs = new FriendlyByteBuf(Unpooled.buffer());
-            this.serializer.accept((C) data, constArgs);
-            data.write(buf);
-            RefractionServices.MESSAGES.sendPlayer(new SerializerS2CPacket(
-                    (Class<? extends Syncable<?>>) data.getClass(),
-                    this.HANDLER.get((C) data),
-                    buf,
-                    constArgs
-            ), serverPlayer);
-        }
+        if (!(syncTo instanceof ServerPlayer serverPlayer)) return;
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        FriendlyByteBuf constArgs = new FriendlyByteBuf(Unpooled.buffer());
+        this.serializer.accept((C) data, constArgs);
+        data.write(buf);
+        RefractionServices.MESSAGES.sendPlayer(new SerializerS2CPacket(
+                (Class<? extends Syncable<?>>) data.getClass(),
+                this.HANDLER.get((C) data),
+                buf,
+                constArgs
+        ), serverPlayer);
     }
 
     public static Class<?>[] formClassArray(Object... objects) {
-        Class<?>[] classes = new Class[objects.length];
-        for (int i = 0; i < objects.length; i++) {
-            classes[i] = objects[i].getClass();
-        }
-        return classes;
+        return ClazzUtil.formClassArray(objects);
     }
 }

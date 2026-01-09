@@ -9,11 +9,13 @@ import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.internal.ImGuiContext;
+import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.system.NativeResource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -35,7 +37,10 @@ public class RIMGuiInternal implements NativeResource, IRIMGui {
     public RIMGuiInternal(long ptr, RIMTool... tools) {
         gui = this;
         this.tools = new HashSet<>();
-        Arrays.asList(tools).forEach(RIMGuiInternal.this::addWidget);
+        var toolList = new ArrayList<>(Arrays.asList(tools));
+        var extraTools = RefractionClientEvents.RIMTOOLS_REGISTER.invoker().register();
+        toolList.addAll(extraTools);
+        toolList.forEach(RIMGuiInternal.this::addWidget);
         this.context = new ImGuiContext(ImGui.createContext().ptr);
         this.contextPlot = new ImPlotContext(ImPlot.createContext().ptr);
         this.imGuiGlfw.init(ptr, true);

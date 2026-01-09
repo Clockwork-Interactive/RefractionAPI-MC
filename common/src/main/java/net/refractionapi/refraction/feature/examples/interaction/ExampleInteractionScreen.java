@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ExampleInteractionScreen extends Screen {
-
     private final NPCInteraction npcInteraction;
     private final HashMap<String, List<Button>> buttons = new HashMap<>();
     private String currentStage;
@@ -90,5 +89,4 @@ public class ExampleInteractionScreen extends Screen {
         this.currentStage = id;
         this.buttons.get(this.currentStage).forEach(this::addRenderableWidget);
     }
-
 }

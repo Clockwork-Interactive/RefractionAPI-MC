@@ -1,11 +1,15 @@
 # What is Refraction?
+
 This library has no specific purpose, it's just a collection of utilities that I've made for my own projects. <br>
 I've decided to make it public so that others can use it as well. <br>
 If you have any suggestions or want to contribute, feel free to do so! <br>
 
 # You might be wondering how to add this project without the maven repository.
-Build Refraction and get the jar file from the target folder. Add it to your project lib folder (make one if you haven't).
+
+Build Refraction and get the jar file from the target folder. Add it to your project lib folder (make one if you
+haven't).
 Then add the jar file as a flatdir dependency in your build.gradle file.
+
 ```gradle
 repositiories {
     flatDir {
@@ -18,8 +22,10 @@ dependencies {
 ```
 
 # Setting up
+
 To set up some Refraction features, you need to register the mod to it. <br>
 Adding this to your main class constructor will register it.
+
 ```java
 #constructor(...) {
     RModRegistrar.registerSelf(MOD_ID);
@@ -28,6 +34,7 @@ Adding this to your main class constructor will register it.
 ```
 
 ### All big things that Refraction offers: <br>
+
 - ReConfig—Config system with auto syncing support <br>
 - Atda—Persistent data storage system <br>
 - Syncables—Server → Client class syncing capability <br>
@@ -42,10 +49,31 @@ Adding this to your main class constructor will register it.
 - Custom debuggers—Similar to Minecraft's system of debugging, Refraction has custom debug support <br>
 - Interactions—NPC Interaction handler <br>
 - Quests—Quest handler system, doesn't offer quest stacking by default (future change) <br>
-- Server Screens—Full server side control of screens without extra packets including closing, opening and sharing data between client ↔ server <br>
+- Server Screens—Full server side control of screens without extra packets including closing, opening and sharing data
+  between client ↔ server <br>
 - Registrable tracking sounds—Ticking sounds that can be registered on the client and called from the server <br>
 - Flood Filler—Highly customizable flood filler <br>
 - Camera shake—Provides a camera shake interface <br>
 - SyncConfig—Automatic syncing for player joins <br>
 - Vec3Helper—A lot of vec3 util <br>
-And a lot more, just take a look for yourself, mainly in @helper and @feature dirs :D
+  And a lot more, just take a look for yourself, mainly in @helper and @feature dirs :D
+
+### Style Guide For Contributors
+#### General Guidelines
+- Use camelCase for variables and methods.
+- Use PascalCase for class names.
+- Use K&R brace style and use tabs.
+- No more than 2 levels of nesting if possible. (use early returns)
+- Add comments for public methods and classes. (also for non-clear private methods)
+- Use meaningful names for variables, methods, and classes.
+- Avoid hardcoding values, unless necessary.
+
+#### Specific Practices
+- Keep overhead low, avoid unnecessary object creation.
+- Validate client and server side code.
+- Use client proxy methods in common code.
+- Keep methods short and focused on a single task. (no monolithic methods)
+- IF a tool is not meant for internal use, make sure extension points are available and easy to configure.
+- Write example usages for complex features.
+
+Thank you! --Zeus

@@ -13,6 +13,7 @@ public class ExampleScreen extends Screen implements RefractionScreen {
     public ExampleScreen(String transferredData) {
         super(Component.literal(""));
         this.transferredData = transferredData;
+        ExampleScreenRegistry.EXAMPLE_SCHEME.open();
     }
 
     @Override

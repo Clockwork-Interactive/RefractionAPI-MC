@@ -18,7 +18,6 @@ import java.util.HashMap;
  * button <br>
  */
 public abstract class NPCInteraction {
-
     protected final Player player;
     protected final InteractionBuilder<?> builder;
     protected InteractionStage firstStage;
@@ -73,8 +72,8 @@ public abstract class NPCInteraction {
         });
         current.onSwitch.accept(this);
         this.currentStage = tag.contains("stage") ? tag.getString("stage") : this.currentStage;
-        InteractionStage stage1 = this.getStage(this.currentStage);
-        this.ended = stage1 == null || stage1.ends();
+        InteractionStage currStage = this.getStage(this.currentStage);
+        this.ended = currStage == null || currStage.ends();
         return true;
     }
 
@@ -111,5 +110,4 @@ public abstract class NPCInteraction {
         this.stages.put(id, stage);
         return stage;
     }
-
 }

@@ -5,9 +5,9 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.refractionapi.refraction.feature.quest.points.QuestPoint;
 import net.refractionapi.refraction.networking.RefractionMessages;
 import net.refractionapi.refraction.networking.S2C.SyncQuestInfoS2CPacket;
-import net.refractionapi.refraction.feature.quest.points.QuestPoint;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -63,7 +63,13 @@ public class QuestPart {
 
     public void syncToClient() {
         if (!this.quest.isCompleted())
-            RefractionMessages.sendToPlayer(new SyncQuestInfoS2CPacket(!this.quest.isCompleted(), this.quest.questName(), this.description, this.partDescription, this.tag), this.quest.getPlayer());
+            RefractionMessages.sendToPlayer(new SyncQuestInfoS2CPacket(
+                            !this.quest.isCompleted(),
+                            Component.Serializer.toJson(this.quest.questName(), getPlayer().registryAccess()),
+                            Component.Serializer.toJson(this.description, getPlayer().registryAccess()),
+                            this.partDescription.stream().map(component -> Component.Serializer.toJson(component, getPlayer().registryAccess())).toList(),
+                            this.tag),
+                    this.quest.getPlayer());
     }
 
     public QuestPart newPart(Component description) {

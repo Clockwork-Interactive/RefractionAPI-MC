@@ -1,4 +1,4 @@
-package net.refractionapi.refraction.feature.twc;
+ package net.refractionapi.refraction.feature.twc;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.CompoundTag;
@@ -192,18 +192,24 @@ public class TWC implements ITWC<TWC> {
 
     public void post(String routerID, Message message, Consumer<Message> callback) {
         if (!level().isClientSide) throw new IllegalStateException("TWC#post can only be called from the client side.");
-        safeRouter(routerID, (router) -> {
-            String callbackID = routerID + "_response_" + data().msgID;
-            // might want to unregister this after some n ticks --Zeus
-            listener(callbackID, (response) -> {
-                callback.accept(response);
-                router.listeners.remove(callbackID);
-            });
-            message.header((header) -> {
-                header.nbt().putString("response_router", callbackID);
-            });
-            router.send(message);
+        String callbackID = routerID + "_response_" + data().msgID;
+        // might want to unregister this after some n ticks --Zeus
+        listener(callbackID, "prim", (response) -> {
+            callback.accept(response);
+            // unregister self --Zeus
+            unregisterListener(callbackID, "prim");
         });
+        message.twc = this;
+        message.header((header) -> header.nbt().putString("response_router", callbackID));
+        sendMessage(routerID, message);
+    }
+
+    public void respond(Message request, Message response) {
+        if (!(request.player() instanceof ServerPlayer sender)) return;
+        String responseRouter = request.header.nbt().getString("response_router");
+        if (responseRouter.isEmpty()) return;
+        response.twc = this;
+        sendMessage(responseRouter, sender, response);
     }
 
     protected void routeMessage(Message message) {
@@ -342,7 +348,7 @@ public class TWC implements ITWC<TWC> {
     }
 
     // header data order is irrelevant, so nbt it is --Zeus
-        public record Header(CompoundTag nbt) {
+    public record Header(CompoundTag nbt) {
     }
 
     public static class Message {
@@ -419,6 +425,9 @@ public class TWC implements ITWC<TWC> {
 
         protected FriendlyByteBuf toBytes(String router) {
             var fullBuf = new FriendlyByteBuf(Unpooled.buffer());
+            // long and utf give a little bit
+            // too much overhead for my liking
+            // TODO: change this --Zeus
             fullBuf.writeLong(this.id = twc.data().msgID);
             fullBuf.writeUtf(this.router = router);
             fullBuf.writeNbt(header.nbt);
@@ -475,12 +484,6 @@ public class TWC implements ITWC<TWC> {
             incSentMessages();
         }
 
-        public void respond(Message request, Message response) {
-            String responseRouter = request.header.nbt.getString("response_router");
-            if (responseRouter.isEmpty()) return;
-            twc.middleWare().sendMessage(twc, responseRouter, response, List.of(request.player()));
-        }
-
         public Message last() {
             return last;
         }
@@ -500,7 +503,6 @@ public class TWC implements ITWC<TWC> {
         OPEN,
         CLOSED
     }
-
 
     public record SidedConfigurer(Side side, Consumer<TWC> configurer) {
 

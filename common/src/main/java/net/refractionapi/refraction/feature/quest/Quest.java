@@ -85,7 +85,13 @@ public abstract class Quest {
             this.onCompletion.accept(this);
         }
         this.questParts.clear();
-        RefractionMessages.sendToPlayer(new SyncQuestInfoS2CPacket(false, Component.empty(), Component.empty(), List.of(), new CompoundTag()), this.getPlayer());
+        RefractionMessages.sendToPlayer(new SyncQuestInfoS2CPacket(
+                false,
+                Component.Serializer.toJson(Component.empty(), this.getPlayer().registryAccess()),
+                Component.Serializer.toJson(Component.empty(), this.getPlayer().registryAccess()),
+                List.of(),
+                new CompoundTag()
+        ), this.getPlayer());
         this.removable = true;
     }
 

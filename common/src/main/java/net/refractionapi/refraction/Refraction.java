@@ -7,6 +7,7 @@ import net.refractionapi.refraction.config.RServerConfig;
 import net.refractionapi.refraction.data.PlrExtension;
 import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.debug.RDebugRenderers;
+import net.refractionapi.refraction.events.RefractionEvent;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.events.Scheduler;
 import net.refractionapi.refraction.feature.channel.SyncConfig;
@@ -18,6 +19,7 @@ import net.refractionapi.refraction.feature.examples.reconfig.ReConfigExample;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.feature.examples.subdivision.ExampleSubdivisionRegistry;
 import net.refractionapi.refraction.feature.examples.task.ExampleTaskRegistry;
+import net.refractionapi.refraction.feature.quest.QuestHandler;
 import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
 import net.refractionapi.refraction.feature.subdivision.Subdivision;
 import net.refractionapi.refraction.feature.task.PlayerTasks;
@@ -38,8 +40,6 @@ import net.refractionapi.refraction.helper.runnable.RunnableHandler;
 import net.refractionapi.refraction.helper.runnable.Runnabler;
 import net.refractionapi.refraction.helper.runnable.TickableProccesor;
 import net.refractionapi.refraction.init.Playground;
-import net.refractionapi.refraction.init.TestHooks;
-import net.refractionapi.refraction.init.TestHooksClient;
 import net.refractionapi.refraction.platform.RefractionServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +74,7 @@ public class Refraction {
         CLIComms.init();
         Scheduler.init();
         Subdivision.init();
+        QuestHandler.init();
 
         ExampleInteractionRegistry.init();
         ExampleScreenRegistry.init();
@@ -97,26 +98,24 @@ public class Refraction {
             new SubdivisionCommand(c);
         });
         RefractionEvents.SERVER_STARTED.register(TwoWayIntermediary::init);
-        if (RefractionServices.PLATFORM.isClient()) {
-            ClientData.load();
-        }
+        RefractionEvents.SERVER_STARTED.register(RefractionEvent.Priority.LOWEST, (ms) -> RRuntimeConfig.serverStarted = true);
+        if (RefractionServices.PLATFORM.isClient()) ClientData.load();
         ReConfigurer.registerCommon("refraction-common", ReConfigExample.builder);
         ReConfigurer.registerServer("refraction-server", RServerConfig.builder);
     }
 
     public static void startGui(long ptr) {
         if (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("mac")) return;
-        if (RefractionServices.PLATFORM.isClient()) {
-            RIMGuiInternal.gui = new RIMGuiInternal(
-                    ptr,
-                    new RIMDebuggers(),
-                    new RIMChannelAnalyzer(),
-                    new RIMNetworkActivity(),
-                    new RIMScreenInspector(),
-                    new RIMHealth(),
-                    new RIMCli()
-            );
-        }
+        if (!RefractionServices.PLATFORM.isClient()) return;
+        new RIMGuiInternal(
+                ptr,
+                new RIMDebuggers(),
+                new RIMChannelAnalyzer(),
+                new RIMNetworkActivity(),
+                new RIMScreenInspector(),
+                new RIMHealth(),
+                new RIMCli()
+        );
     }
 
     public static ResourceLocation id(String id) {

@@ -3,12 +3,12 @@ package net.refractionapi.refraction.feature.data;
 import net.minecraft.network.FriendlyByteBuf;
 import org.apache.commons.lang3.function.TriFunction;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class ClientSyncer<T extends Syncable<?>> {
     public static final HashMap<Class<? extends Syncable<?>>, ClientSyncer<?>> SERIALIZERS = new HashMap<>();
-    private static final HashMap<Class<? extends Syncable<?>>,TriFunction<Integer, FriendlyByteBuf, FriendlyByteBuf, ? extends Syncable<?>>> interceptors = new HashMap<>(); // can be unloaded, so it's static
+    private static final HashMap<Class<? extends Syncable<?>>, TriFunction<Integer, FriendlyByteBuf, FriendlyByteBuf, ? extends Syncable<?>>> interceptors = new HashMap<>(); // can be unloaded, so it's static
     private final HashMap<Integer, T> cache = new HashMap<>();
     private final Class<T> clazz;
 
@@ -18,7 +18,10 @@ public class ClientSyncer<T extends Syncable<?>> {
 
     @SuppressWarnings("unchecked")
     public static void handle(Class<?> clazz, int id, FriendlyByteBuf buf, FriendlyByteBuf constArgs) {
-        SERIALIZERS.computeIfAbsent((Class<? extends Syncable<?>>) clazz, (s) -> new ClientSyncer<>(clazz)).handleSerializer(clazz, id, buf, constArgs);
+        SERIALIZERS.computeIfAbsent(
+                (Class<? extends Syncable<?>>) clazz,
+                (s) -> new ClientSyncer<>(clazz)
+        ).handleSerializer(clazz, id, buf, constArgs);
     }
 
     @SuppressWarnings("unchecked")
@@ -30,9 +33,12 @@ public class ClientSyncer<T extends Syncable<?>> {
                 return;
             }
         }
-         this.cache.computeIfAbsent(id, (i) -> {
-            T byteBuf = createConstructed((Class<T>) clazz, constArgs);
-            return byteBuf == null ? createEmpty((Class<T>) clazz) : byteBuf;
+        this.cache.computeIfAbsent(id, (i) -> {
+            var castClass = (Class<T>) clazz;
+            T createConst = createConstructor(castClass, constArgs);
+            if (createConst != null) return createConst;
+            T byteBuf = createBufConstructor(castClass, constArgs);
+            return byteBuf == null ? createEmpty(castClass) : byteBuf;
         }).onSync(buf, id);
     }
 
@@ -48,11 +54,27 @@ public class ClientSyncer<T extends Syncable<?>> {
         }
     }
 
-    private T createConstructed(Class<T> clazz, FriendlyByteBuf buf) {
+    private T createBufConstructor(Class<T> clazz, FriendlyByteBuf buf) {
         try {
             return clazz.getConstructor(FriendlyByteBuf.class).newInstance(buf);
-        } catch (InstantiationException | IllegalAccessException |
-                 NoSuchMethodException | InvocationTargetException ignored) {
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private T createConstructor(Class<T> clazz, FriendlyByteBuf constArgs) {
+        try {
+            // find static field with class SyncConfigurer --Zeus
+            var configurerField = Arrays.stream(clazz.getFields())
+                    .filter(f -> f.getType().getSimpleName().equals("SyncConfigurer"))
+                    .findFirst()
+                    .orElse(null);
+            if (configurerField == null) return null;
+            if (!(configurerField.get(null) instanceof SyncConfigurer syncConfigurer)) return null;
+            var orderedClasses = syncConfigurer.getRegisteredClasses();
+            var decodedArgs = syncConfigurer.decodeAll(constArgs);
+            return clazz.getConstructor(orderedClasses).newInstance(decodedArgs);
+        } catch (Exception ignored) {
             return null;
         }
     }

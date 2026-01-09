@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class QuestHandler {
-
     public static final HashMap<UUID, Quest> QUESTS = new HashMap<>();
 
     public static void init() {
@@ -15,5 +14,4 @@ public class QuestHandler {
             QUESTS.entrySet().removeIf(entry -> entry.getValue().removable);
         });
     }
-
 }

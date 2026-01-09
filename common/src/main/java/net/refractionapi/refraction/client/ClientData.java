@@ -91,10 +91,12 @@ public class ClientData {
     }
 
     public static LivingEntity getEntity(int id) {
+        if (Minecraft.getInstance().level == null) return null;
         return Minecraft.getInstance().level.getEntity(id) instanceof LivingEntity livingEntity ? livingEntity : null;
     }
 
     public static Entity getEntityRaw(int id) {
+        if (Minecraft.getInstance().level == null) return null;
         return Minecraft.getInstance().level.getEntity(id);
     }
 

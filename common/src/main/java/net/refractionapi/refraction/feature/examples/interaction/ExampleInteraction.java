@@ -7,24 +7,23 @@ import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.feature.interaction.NPCInteraction;
 
 public class ExampleInteraction extends NPCInteraction {
-
     public ExampleInteraction(Player player) {
         super(ExampleInteractionRegistry.EXAMPLE_INTERACTION, player);
     }
 
     @Override
     public void init() {
-        this.newStage("start")
-                .addDialogue(Component.literal("hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"), 25)
-                .addOption(Component.literal("hello"), "hello", (i) -> Refraction.LOGGER.info(String.valueOf(i.getPlayer().level())))
-                .addOption(Component.literal("bye"), "bye")
-                .newStage("hello")
-                .addDialogue(Component.literal("hello"), 10)
-                .addOption(Component.literal("bye"), "bye")
-                .newStage("bye")
-                .addDialogue(Component.literal("bye"), 5)
-                .onSwitch(NPCInteraction::sendToServer)
-                .end();
+        var start = this.newStage("start");
+        start.addDialogue(Component.literal("hiii"), 25);
+        start.addOption(Component.literal("hello"), "hello", (i) -> Refraction.LOGGER.info(String.valueOf(i.getPlayer().level())));
+        start.addOption(Component.literal("bye"), "bye");
+        var hello = newStage("hello");
+        hello.addDialogue(Component.literal("hello"), 10);
+        hello.addOption(Component.literal("bye"), "bye");
+        var bye = newStage("bye");
+        bye.addDialogue(Component.literal("bye"), 5);
+        bye.onSwitch(NPCInteraction::sendToServer);
+        bye.end();
     }
 
     @Override

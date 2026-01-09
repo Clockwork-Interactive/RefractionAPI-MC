@@ -72,7 +72,7 @@ public class RefractionEventsNeo implements RefractionEvents {
 
     @SubscribeEvent
     public static void loadLevel(LevelEvent.Load event) {
-        RefractionEvents.LOAD_LEVEL.invoker().onLoad(event.getLevel());
+        RefractionEvents.LOAD_LEVEL.invoker().onEvent(event.getLevel());
     }
 
     @SubscribeEvent

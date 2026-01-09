@@ -8,7 +8,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import java.awt.*;
 
 public class QuestRenderer {
-
     public static void quest(GuiGraphics guiGraphics, DeltaTracker partial) {
         if (!ClientQuestInfo.defaultRenderer || !ClientQuestInfo.inQuest) return;
 
@@ -28,5 +27,4 @@ public class QuestRenderer {
         guiGraphics.fill(screenWidth - offset - 100, 70, screenWidth - offset / 2 + 45, yMax + 20, new Color(0, 0, 0, 70).getRGB());
 
     }
-
 }

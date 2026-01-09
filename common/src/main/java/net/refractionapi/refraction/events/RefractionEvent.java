@@ -10,11 +10,23 @@ public abstract class RefractionEvent<T> {
         
     }
 
-    public abstract T register(T listener);
+    public T register(T listener) {
+        return register(Priority.NORMAL, listener);
+    }
+
+    public abstract T register(Priority priority, T listener);
 
     public abstract void unregister(T listener);
 
     public T invoker() {
         return event;
+    }
+
+    public enum Priority {
+        LOWEST,
+        LOW,
+        NORMAL,
+        HIGH,
+        HIGHEST
     }
 }
