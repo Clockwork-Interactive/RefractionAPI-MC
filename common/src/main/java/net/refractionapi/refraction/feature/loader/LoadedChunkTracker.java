@@ -2,12 +2,12 @@ package net.refractionapi.refraction.feature.loader;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import jdk.jfr.Experimental;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.storage.LevelResource;
-import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.helper.misc.TagIO;
 import net.refractionapi.refraction.mixininterfaces.ILevel;
 import net.refractionapi.refraction.util.FileUtil;
@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 // lightweight entity chunk loader --Zeus
+@Experimental // yk this needs a lot of testing, so marking it as such for now --Zeus
 public class LoadedChunkTracker {
     private static final HashMap<ServerLevel, LoadedChunkTracker> TRACKERS = new HashMap<>();
     private static final LevelResource RESOURCE = FileUtil.createResource("chunkTrackers");
