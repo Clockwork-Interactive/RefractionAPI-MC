@@ -17,6 +17,7 @@ import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.atda.Atda;
 import net.refractionapi.refraction.feature.atda.AtdaData;
 import net.refractionapi.refraction.feature.atda.IAtdaProvider;
+import net.refractionapi.refraction.feature.loader.LoadedChunkTracker;
 import net.refractionapi.refraction.feature.task.LevelTasks;
 import net.refractionapi.refraction.helper.misc.TagIO;
 import net.refractionapi.refraction.mixininterfaces.ILevel;
@@ -63,6 +64,7 @@ public abstract class ServerLevelMixin implements ILevel {
     public void save(ProgressListener progress, boolean flush, boolean skipSave, CallbackInfo ci) {
         assureTasks();
         levelTasks.saveToDisk();
+        LoadedChunkTracker.saveCache((ServerLevel) (Object) this);
         var nbt = new CompoundTag();
         var data = Atda.serializeAll(this);
         nbt.put("refraction_reserved_atda", data);

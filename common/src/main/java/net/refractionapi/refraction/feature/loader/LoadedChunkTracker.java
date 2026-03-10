@@ -61,7 +61,6 @@ public class LoadedChunkTracker {
             var refresh = force ? allocateChunk(chunkID, entID) : deallocateChunk(chunkID, entID);
             if (refresh) forceChunk(pos, force);
         });
-        saveCache();
     }
 
     protected void iterateNear(ChunkPos origin, Consumer<ChunkPos> posConsumer) {
@@ -116,6 +115,11 @@ public class LoadedChunkTracker {
         if (force && !entity.isAlive()) return;
         var tracker = TRACKERS.get(serverLevel);
         if (tracker != null) tracker.updateLoader(loader, force);
+    }
+
+    public static void saveCache(ServerLevel serverLevel) {
+        var tracker = TRACKERS.get(serverLevel);
+        if (tracker != null) tracker.saveCache();
     }
 
     public static void initTracker(ServerLevel serverLevel) {
