@@ -138,7 +138,6 @@ public class Reprocessor {
                     (Class<? extends RScreen>) cl
             );
         }).dispatchOnRegister();
-
     }
 
     public static Reprocessor instance() {

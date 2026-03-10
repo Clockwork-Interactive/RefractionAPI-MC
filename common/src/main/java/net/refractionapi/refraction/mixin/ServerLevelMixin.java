@@ -12,6 +12,7 @@ import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.ServerLevelData;
+import net.refractionapi.refraction.debug.RDebugRenderers;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.atda.Atda;
 import net.refractionapi.refraction.feature.atda.AtdaData;
@@ -26,6 +27,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -42,6 +44,11 @@ public abstract class ServerLevelMixin implements ILevel {
 
     private LevelResource resource = FileUtil.createResource("atda");
     private TagIO tagIO;
+
+    @Inject(at = @At("RETURN"), method = "setChunkForced")
+    public void onChunkForced(int chunkX, int chunkZ, boolean add, CallbackInfoReturnable<Boolean> cir) {
+        RDebugRenderers.instance().updateForcedChunks(((ServerLevel) getLevel()).getForcedChunks());
+    }
 
     @Inject(at = @At("TAIL"), method = "<init>")
     public void initServer(MinecraftServer server, Executor dispatcher, LevelStorageSource.LevelStorageAccess levelStorageAccess, ServerLevelData serverLevelData, ResourceKey dimension, LevelStem levelStem, ChunkProgressListener progressListener, boolean isDebug, long biomeZoomSeed, List customSpawners, boolean tickTime, RandomSequences randomSequences, CallbackInfo ci) {
@@ -76,6 +83,11 @@ public abstract class ServerLevelMixin implements ILevel {
 
     @Override
     public String getSyncID() {
+        return prettyID();
+    }
+
+    @Override
+    public String prettyID() {
         return "%s".formatted(getLevel().dimensionTypeRegistration().getRegisteredName().replaceAll("[^a-zA-Z0-9\\.\\-]", "_"));
     }
 

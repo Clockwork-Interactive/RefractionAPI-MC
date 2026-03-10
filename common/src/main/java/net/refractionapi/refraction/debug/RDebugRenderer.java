@@ -14,10 +14,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.refractionapi.refraction.Refraction;
-import net.refractionapi.refraction.debug.debuggers.AABBRenderer;
-import net.refractionapi.refraction.debug.debuggers.PathfindingRenderer;
-import net.refractionapi.refraction.debug.debuggers.RAABBRenderer;
-import net.refractionapi.refraction.debug.debuggers.TraceEntitiesRenderer;
+import net.refractionapi.refraction.debug.debuggers.*;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.helper.vec3.RAAB;
 import org.joml.Matrix4f;
@@ -45,6 +42,7 @@ public abstract class RDebugRenderer {
     public static RAABBRenderer raabbRenderer;
     public static PathfindingRenderer pathfindingRenderer;
     public static TraceEntitiesRenderer traceEntitiesRenderer;
+    public static ForcedChunkRenderer forcedChunkRenderer;
 
     public RDebugRenderer(String id) {
         this.minecraft = Minecraft.getInstance();
@@ -217,5 +215,6 @@ public abstract class RDebugRenderer {
         raabbRenderer = new RAABBRenderer();
         pathfindingRenderer = new PathfindingRenderer();
         traceEntitiesRenderer = new TraceEntitiesRenderer();
+        forcedChunkRenderer = new ForcedChunkRenderer();
     }
 }

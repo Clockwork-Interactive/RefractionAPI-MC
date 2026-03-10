@@ -5,4 +5,6 @@ import net.refractionapi.refraction.feature.task.LevelTasks;
 
 public interface ILevel extends IAtdaProvider {
     LevelTasks tasks();
+
+    String prettyID();
 }

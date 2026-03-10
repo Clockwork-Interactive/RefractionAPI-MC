@@ -11,6 +11,8 @@ import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.atda.Atda;
 import net.refractionapi.refraction.feature.atda.AtdaData;
 import net.refractionapi.refraction.feature.atda.IAtdaProvider;
+import net.refractionapi.refraction.feature.loader.ChunkLoader;
+import net.refractionapi.refraction.feature.loader.LoadedChunkTracker;
 import net.refractionapi.refraction.feature.quest.QuestHandler;
 import net.refractionapi.refraction.feature.quest.points.InteractionPoint;
 import net.refractionapi.refraction.mixininterfaces.IEntity;
@@ -26,9 +28,23 @@ import java.util.Optional;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin implements IEntity {
-    @Shadow public abstract int getId();
+    @Shadow
+    public abstract int getId();
 
-    @Shadow public abstract Level level();
+    @Shadow
+    public abstract Level level();
+
+    @Inject(method = "setPosRaw", at = @At("HEAD"))
+    public void updateTrackerStart(double x, double y, double z, CallbackInfo ci) {
+        if (!(this instanceof ChunkLoader<?> loader)) return;
+        LoadedChunkTracker.notifyChanged(loader, false);
+    }
+
+    @Inject(method = "setPosRaw", at = @At("RETURN"))
+    public void updateTrackerEnd(double x, double y, double z, CallbackInfo ci) {
+        if (!(this instanceof ChunkLoader<?> loader)) return;
+        LoadedChunkTracker.notifyChanged(loader, true);
+    }
 
     @Inject(at = @At("RETURN"), method = "interact")
     public void interact(Player pPlayer, InteractionHand pHand, CallbackInfoReturnable<InteractionResult> cir) {
@@ -46,11 +62,15 @@ public abstract class EntityMixin implements IEntity {
     @Inject(at = @At("TAIL"), method = "<init>")
     public void initEntity(EntityType<?> pEntityType, Level pLevel, CallbackInfo ci) {
         RefractionEvents.REGISTER_ATDA.invoker().register(this);
+        if (!(this instanceof ChunkLoader<?> loader)) return;
+        LoadedChunkTracker.notifyChanged(loader, true);
     }
 
     @Inject(at = @At("TAIL"), method = "setRemoved")
     public void removeEntity(Entity.RemovalReason reason, CallbackInfo ci) {
         Atda.markDiscarded(this);
+        if (!(this instanceof ChunkLoader<?> loader)) return;
+        LoadedChunkTracker.notifyChanged(loader, false);
     }
 
     @Inject(at = @At("RETURN"), method = "saveWithoutId", cancellable = true)

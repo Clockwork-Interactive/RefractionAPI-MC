@@ -1,10 +1,12 @@
 package net.refractionapi.refraction.debug;
 
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.Target;
@@ -16,6 +18,7 @@ import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.helper.vec3.RAAB;
 import net.refractionapi.refraction.mixininterfaces.IPath;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class RDebugRenderers implements IRDebugRenderers {
@@ -57,6 +60,14 @@ public class RDebugRenderers implements IRDebugRenderers {
         buf.writeFloat(maxDistance);
         path.writeToStream(buf);
         send("pathfinding", buf);
+    }
+
+    @Override
+    public void updateForcedChunks(LongSet positions) {
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        buf.writeInt(positions.size());
+        positions.forEach(buf::writeLong);
+        send("forced_chunks", buf);
     }
 
     public void send(String id, FriendlyByteBuf buf) {

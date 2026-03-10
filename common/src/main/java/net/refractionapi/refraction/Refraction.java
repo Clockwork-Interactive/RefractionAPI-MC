@@ -1,6 +1,7 @@
 package net.refractionapi.refraction;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.config.ExampleServerConfig;
 import net.refractionapi.refraction.config.RRuntimeConfig;
@@ -22,6 +23,7 @@ import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistr
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenScheme;
 import net.refractionapi.refraction.feature.examples.subdivision.ExampleSubdivisionRegistry;
 import net.refractionapi.refraction.feature.examples.task.ExampleTaskRegistry;
+import net.refractionapi.refraction.feature.loader.LoadedChunkTracker;
 import net.refractionapi.refraction.feature.quest.QuestHandler;
 import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
 import net.refractionapi.refraction.feature.subdivision.Subdivision;
@@ -95,6 +97,10 @@ public class Refraction {
         RBlocks.init();
         RItems.init();
 
+        RefractionEvents.LOAD_LEVEL.register((level) -> {
+            if (!(level instanceof ServerLevel serverLevel)) return;
+            LoadedChunkTracker.initTracker(serverLevel);
+        });
         RefractionEvents.PLAYER_JOINED.register((player) -> {
             RefractionData.get(player);
             PlayerTasks.get(player);
