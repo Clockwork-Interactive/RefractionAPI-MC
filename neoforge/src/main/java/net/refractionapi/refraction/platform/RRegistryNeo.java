@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.platform;
 
+import com.google.auto.service.AutoService;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -10,6 +11,7 @@ import net.refractionapi.refraction.helper.registry.RRegistry;
 
 import java.util.function.Supplier;
 
+@AutoService(RRegistry.class)
 public class RRegistryNeo implements RRegistry {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Refraction.MOD_ID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Refraction.MOD_ID);

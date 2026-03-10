@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.util;
 
+import com.google.gson.JsonObject;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.world.level.storage.LevelResource;
@@ -8,6 +9,7 @@ import net.refractionapi.refraction.Refraction;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class FileUtil {
@@ -97,6 +99,18 @@ public class FileUtil {
         } catch (IOException e) {
             Refraction.LOGGER.error("Failed to load compound from {}", path, e);
             return null;
+        }
+    }
+
+    public static void writeJsonToFile(File file, JsonObject json) {
+        try {
+            if (!createPath(file.getParent())) {
+                Refraction.LOGGER.error("Failed to create path {}", file.getParent());
+                return;
+            }
+            Files.writeString(file.toPath(), json.toString());
+        } catch (IOException e) {
+            Refraction.LOGGER.error("Failed to write JSON to file {}", file.getPath(), e);
         }
     }
 }

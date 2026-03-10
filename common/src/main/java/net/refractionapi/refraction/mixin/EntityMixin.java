@@ -48,6 +48,11 @@ public abstract class EntityMixin implements IEntity {
         RefractionEvents.REGISTER_ATDA.invoker().register(this);
     }
 
+    @Inject(at = @At("TAIL"), method = "setRemoved")
+    public void removeEntity(Entity.RemovalReason reason, CallbackInfo ci) {
+        Atda.markDiscarded(this);
+    }
+
     @Inject(at = @At("RETURN"), method = "saveWithoutId", cancellable = true)
     public void addInject(CompoundTag pCompound, CallbackInfoReturnable<CompoundTag> cir) {
         CompoundTag tag = Atda.serializeAll(this);

@@ -312,6 +312,11 @@ public class TWC implements ITWC<TWC> {
             instance.get().post(routerID, message, callback);
         }
 
+        @Override
+        public void respond(Message request, Message response) {
+            instance.get().respond(request, response);
+        }
+
         public Sided configure(Consumer<TWC> consumer) {
             this.configurer.add(new TWC.SidedConfigurer(Side.COMMON, consumer));
             return this;

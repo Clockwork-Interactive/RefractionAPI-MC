@@ -55,7 +55,10 @@ public class RefArmorRenderer<T extends LivingEntity, M extends EntityModel<T>> 
         if (entity.isInvisible()) return;
         iterateSlots(entity, (stack, equipmentSlot) -> {
             if (stack.isEmpty()) active.remove(equipmentSlot);
-            if (!(stack.getItem() instanceof ArmorRegister ext) || !(stack.getItem() instanceof ArmorItem)) return;
+            if (!(stack.getItem() instanceof ArmorRegister ext) || !(stack.getItem() instanceof ArmorItem)) {
+                active.remove(equipmentSlot);
+                return;
+            }
             safeTryPut(equipmentSlot, ext);
         });
         for (Map.Entry<EquipmentSlot, EntityModel<?>> entry : active.entrySet()) {
@@ -74,6 +77,11 @@ public class RefArmorRenderer<T extends LivingEntity, M extends EntityModel<T>> 
             if (this.getParentModel() instanceof HumanoidModel<?> parentHumanoid) {
                 humanoidModel.head.copyFrom(parentHumanoid.head);
                 humanoidModel.hat.copyFrom(parentHumanoid.hat);
+                humanoidModel.leftArm.copyFrom(parentHumanoid.leftArm);
+                humanoidModel.rightArm.copyFrom(parentHumanoid.rightArm);
+                humanoidModel.body.copyFrom(parentHumanoid.body);
+                humanoidModel.leftLeg.copyFrom(parentHumanoid.leftLeg);
+                humanoidModel.rightLeg.copyFrom(parentHumanoid.rightLeg);
             }
             castedModel.prepareMobModel((T) entity, limbSwing, limbSwingAmount, packedLight);
             castedModel.setupAnim((T) entity, limbSwing, limbSwingAmount, age, netHeadYaw, headPitch);
@@ -108,14 +116,10 @@ public class RefArmorRenderer<T extends LivingEntity, M extends EntityModel<T>> 
                 model.rightArm.visible = true;
                 model.leftArm.visible = true;
                 break;
-            case LEGS:
-                model.body.visible = true;
+            case LEGS, FEET:
                 model.rightLeg.visible = true;
                 model.leftLeg.visible = true;
                 break;
-            case FEET:
-                model.rightLeg.visible = true;
-                model.leftLeg.visible = true;
         }
     }
 

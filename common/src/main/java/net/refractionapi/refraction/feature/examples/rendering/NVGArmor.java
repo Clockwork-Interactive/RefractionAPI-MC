@@ -42,11 +42,6 @@ public class NVGArmor<T extends LivingEntity> extends ArmorModelType<T> {
     }
 
     @Override
-    public void setupAnim(T t, float v, float v1, float v2, float v3, float v4) {
-
-    }
-
-    @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packerLight, int packedOverlay, int color) {
         nvg.render(poseStack, vertexConsumer, packerLight, packedOverlay, color);
     }

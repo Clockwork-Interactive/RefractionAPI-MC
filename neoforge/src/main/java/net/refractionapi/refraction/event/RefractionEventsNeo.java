@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.event;
 
+import com.google.auto.service.AutoService;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,6 +19,7 @@ import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.events.event.RefractionCommonData;
 
+@AutoService(RefractionEvents.class)
 @EventBusSubscriber(modid = Refraction.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class RefractionEventsNeo implements RefractionEvents {
     @SubscribeEvent

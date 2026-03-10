@@ -19,4 +19,9 @@ public class ClazzUtil {
             return null;
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public static <T, V extends T> V createExtended(Class<T> clazz, Object... args) {
+        return (V) create(clazz, args);
+    }
 }

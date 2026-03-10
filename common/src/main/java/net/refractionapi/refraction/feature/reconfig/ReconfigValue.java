@@ -1,11 +1,13 @@
 package net.refractionapi.refraction.feature.reconfig;
 
 import com.google.gson.JsonObject;
+import lombok.Getter;
 import net.refractionapi.refraction.Refraction;
 
 import java.util.Objects;
 
 public abstract class ReconfigValue<T> {
+    @Getter
     protected T value;
     protected RCBuilder builder;
 
@@ -15,10 +17,6 @@ public abstract class ReconfigValue<T> {
 
     public ReconfigValue() {
         this.value = null;
-    }
-
-    public T getValue() {
-        return value;
     }
 
     public T get() {

@@ -49,12 +49,13 @@ public class TickableProccesor {
         RefractionEvents.LEVEL_TICK.register((level, post) -> {
             RUNNABLES.keySet().removeIf(processor -> {
                 boolean stop = !processor.running || !processor.supplier.getAsBoolean();
-                if (stop) {
-                    processor.stop();
-                }
+                if (stop) processor.stop();
                 return stop;
             });
-            RUNNABLES.entrySet().stream().filter((entry) -> entry.getValue().equals(level)).forEach((processor) -> processor.getKey().process.accept(level, post));
+            RUNNABLES.entrySet()
+                    .stream()
+                    .filter((entry) -> entry.getValue().equals(level))
+                    .forEach((processor) -> processor.getKey().process.accept(level, post));
         });
     }
 }

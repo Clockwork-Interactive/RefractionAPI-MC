@@ -25,6 +25,7 @@ import net.refractionapi.refraction.feature.screen.ClientScreenHandler;
 import net.refractionapi.refraction.feature.screen.ScreenBuilder;
 import net.refractionapi.refraction.feature.sound.TrackingSound;
 import net.refractionapi.refraction.helper.math.EasingFunctions;
+import net.refractionapi.refraction.init.ClientReservice;
 import net.refractionapi.refraction.util.Keybindings;
 
 import java.util.ArrayList;

@@ -1,27 +1,20 @@
 package net.refractionapi.refraction.util;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Objects;
+
 public class Pair<F, S> {
+    @Setter
+    @Getter
     public F first;
+    @Setter
+    @Getter
     public S second;
 
     public Pair(F first, S second) {
         this.first = first;
-        this.second = second;
-    }
-
-    public F getFirst() {
-        return first;
-    }
-
-    public S getSecond() {
-        return second;
-    }
-
-    public void setFirst(F first) {
-        this.first = first;
-    }
-
-    public void setSecond(S second) {
         this.second = second;
     }
 
@@ -33,10 +26,12 @@ public class Pair<F, S> {
         return new Pair<>(first, second);
     }
 
+    @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Pair<?, ?> pair) {
-            return pair.first.equals(first) && pair.second.equals(second);
-        }
-        return false;
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Pair<?, ?> pair = (Pair<?, ?>) obj;
+        return Objects.equals(first, pair.first) &&
+                Objects.equals(second, pair.second);
     }
 }

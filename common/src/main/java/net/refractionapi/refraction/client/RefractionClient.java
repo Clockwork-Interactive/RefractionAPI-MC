@@ -1,15 +1,15 @@
 package net.refractionapi.refraction.client;
 
+import com.google.auto.service.AutoService;
 import net.minecraft.client.Minecraft;
-import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.feature.scheme.ScreenRegistry;
 import net.refractionapi.refraction.helper.vfx.VFXer;
-import net.refractionapi.refraction.util.InitSelf;
+import net.refractionapi.refraction.init.services.InitClient;
 
 import java.io.File;
 
-@InitSelf(false)
-public class RefractionClient {
+@AutoService(InitClient.class)
+public class RefractionClient implements InitClient {
     private static RefractionClient INSTANCE;
     public static ScreenRegistry screenRegistry = new ScreenRegistry();
 
@@ -26,7 +26,11 @@ public class RefractionClient {
     }
 
     static {
-        RefractionClientEvents.CLIENT_PLAYER_LEAVE.register(ClientData::reset);
         VFXer.init();
+    }
+
+    @Override
+    public void close() {
+        ClientData.reset();
     }
 }

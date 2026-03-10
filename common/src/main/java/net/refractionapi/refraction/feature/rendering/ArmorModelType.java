@@ -10,5 +10,9 @@ public abstract class ArmorModelType<T extends LivingEntity> extends HumanoidMod
         super(root);
     }
 
+    @Override
+    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    }
+
     public abstract ResourceLocation texture();
 }

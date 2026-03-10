@@ -10,4 +10,6 @@ public interface ITWC<T extends ITWC<T>> {
     void sendMessage(String routerID, TWC.Message message);
 
     void post(String routerID, TWC.Message message, Consumer<TWC.Message> callback);
+
+    void respond(TWC.Message request, TWC.Message response);
 }

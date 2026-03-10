@@ -17,6 +17,7 @@ import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,6 +38,7 @@ public class Atda<E, D extends AtdaData<D>> {
     static final ConcurrentHashMap<ResourceLocation, Atda<?, ?>> REGISTRY = new ConcurrentHashMap<>();
     final ConcurrentHashMap<E, IAtdaProvider> providers = new ConcurrentHashMap<>();
     final HashMap<String, D> clientLookup = new HashMap<>();
+    final HashSet<E> markedDiscarded = new HashSet<>();
     final ResourceLocation id;
     final Class<E> clazz;
     private TriConsumer<MinecraftServer, E, D> attachHook = (server, obj, rawData) -> {
@@ -55,16 +57,35 @@ public class Atda<E, D extends AtdaData<D>> {
         attachHook(atda, (server, obj, raw) -> raw.sync(obj));
     }
 
+    // E needs to be an IAtdaProvider! --Zeus
     public void add(E obj, IAtdaProvider provider) {
         if (!this.clazz.isInstance(obj)) return;
         if (provider instanceof AtdaProvider<?, ?> atdaProvider)
             atdaProvider.setType(this.clazz);
+        if (!(obj instanceof IAtdaProvider atdaProvider)) return;
+        if (atdaProvider.getLevel() == null || atdaProvider.getLevel().isClientSide) return;
         this.providers.put(obj, provider);
         var raw = getRaw(obj);
-        if (provider.getLevel() == null || provider.getLevel().isClientSide) return;
-        var server = provider.getLevel().getServer();
+        var server = atdaProvider.getLevel().getServer();
         attachHook.accept(server, obj, raw);
         raw.onAttach(obj, server);
+    }
+
+    private void tryDereferenceObj(E obj) {
+        if (!markedDiscarded.contains(obj)) return;
+        markedDiscarded.remove(obj);
+        providers.remove(obj);
+    }
+
+    public void unregisterSelf(E obj) {
+        markedDiscarded.add(obj);
+    }
+
+    public static void markDiscarded(IAtdaProvider obj) {
+        var registeredTo = filterBy(obj);
+        for (Atda<IAtdaProvider, ?> atda : registeredTo) {
+            atda.unregisterSelf(obj);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -198,6 +219,7 @@ public class Atda<E, D extends AtdaData<D>> {
             provider.serialize(serialized);
             atdaData.put(provider.getClass().getName(), serialized);
             listTag.add(atdaData);
+            atda.tryDereferenceObj(lookup);
         }));
         tag.put("refraction_atda", listTag);
         return tag;

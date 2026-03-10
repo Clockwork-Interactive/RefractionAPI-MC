@@ -1,4 +1,4 @@
 package net.refractionapi.refraction.init;
 
-public record ModSpec(String modID, String pckgName) {
+public record ModSpec(String modID, String packageName) {
 }

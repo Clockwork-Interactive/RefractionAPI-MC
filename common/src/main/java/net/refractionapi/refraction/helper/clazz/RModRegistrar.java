@@ -2,8 +2,6 @@ package net.refractionapi.refraction.helper.clazz;
 
 import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.init.ModSpec;
-import net.refractionapi.refraction.platform.RefractionServices;
-import net.refractionapi.refraction.init.ClientInitializers;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,11 +25,10 @@ public class RModRegistrar {
     }
 
     public static void registerSelf(String modID) {
-        String sig = getSignature(walker.getCallerClass());
+        var callerClass = walker.getCallerClass();
+        String sig = getSignature(callerClass);
         modIDMap.put(sig, modID);
         retainers.put(modID, new ModSpec(modID, sig));
-        if (RefractionServices.PLATFORM.isClient())
-            ClientInitializers.scanMod(modID, sig);
     }
 
     /**

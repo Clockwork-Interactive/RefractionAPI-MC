@@ -67,7 +67,7 @@ public class Vec3Helper {
     public static boolean isInAngle(Vec3 from, Vec3 to, float xRot, float yRot, double angle) {
         Vec3 dirVec = new Vec3(to.x - from.x, to.y - from.y, to.z - from.z).normalize();
         double dot = dirVec.dot(calculateViewVector(xRot, yRot).normalize());
-        return dot >= (Mth.lerp(angle / 360, 1.0F, -1.0F));
+        return dot >= Mth.cos((float) Math.toRadians(angle / 2));
     }
 
     /**

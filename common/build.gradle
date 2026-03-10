@@ -27,6 +27,8 @@ dependencies {
     }
     implementation "io.github.classgraph:classgraph:$classgraph_version"
     implementation "io.github.toolfactory:narcissus:$narcissus_version"
+    implementation "org.reflections:reflections:0.10.2"
+    implementation "com.google.auto.service:auto-service:1.1.1"
 
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
@@ -54,6 +56,6 @@ artifacts {
 
 java {
     toolchain {
-    languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }

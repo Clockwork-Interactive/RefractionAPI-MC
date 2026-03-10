@@ -65,6 +65,17 @@ public class RefractionClientEvents {
         }
         return tools;
     });
+    public static final RefractionEvent<KeyInput> KEY_INPUT = new RefractionEventCaller<>(KeyInput.class, listeners -> (key, scancode, action, mods) -> {
+        for (KeyInput listener : listeners) {
+            listener.onKeyInput(key, scancode, action, mods);
+        }
+    });
+
+
+    @FunctionalInterface
+    public interface KeyInput {
+        void onKeyInput(int key, int scancode, int action, int mods);
+    }
 
     @FunctionalInterface
     public interface RIMToolRegistry {

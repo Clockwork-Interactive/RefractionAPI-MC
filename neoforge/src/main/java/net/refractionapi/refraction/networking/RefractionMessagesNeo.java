@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.networking;
 
+import com.google.auto.service.AutoService;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -14,6 +15,7 @@ import net.refractionapi.refraction.Refraction;
 
 import java.util.function.Consumer;
 
+@AutoService(RefractionMessages.class)
 public class RefractionMessagesNeo implements RefractionMessages {
     private static PayloadRegistrar registrar = null;
 

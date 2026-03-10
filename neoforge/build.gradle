@@ -44,16 +44,28 @@ repositories {
 }
 
 dependencies {
-    jarJar(api(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-binding:$imgui_version")))
+    jarJar(api(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-binding:$imgui_version"))) {
+        exclude group: 'org.ow2.asm'
+    }
     jarJar(api(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-lwjgl3:$imgui_version"))) {
+        exclude group: 'org.ow2.asm'
         exclude group: 'org.lwjgl'
         exclude group: 'org.lwjgl.lwjgl'
     }
     jarJar(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-natives-windows:$imgui_version"))
+    jarJar(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-natives-linux:$imgui_version"))
     jarJar(clientAdditionalRuntimeClasspath("io.github.spair:imgui-java-natives-macos:$imgui_version"))
+    jarJar(api(clientAdditionalRuntimeClasspath("org.reflections:reflections:0.10.2")))
 
     jarJar(api(clientAdditionalRuntimeClasspath("io.github.classgraph:classgraph:$classgraph_version")))
     jarJar(api(clientAdditionalRuntimeClasspath("io.github.toolfactory:narcissus:$narcissus_version")))
+    jarJar(api(clientAdditionalRuntimeClasspath("com.google.auto.service:auto-service:1.1.1")))
+
+    annotationProcessor 'com.google.auto.service:auto-service:1.1.1'
+    compileOnly 'com.google.auto.service:auto-service-annotations:1.1.1'
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
 jar {

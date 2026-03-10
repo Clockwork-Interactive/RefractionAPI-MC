@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.util;
 
+import com.google.auto.service.AutoService;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -9,6 +10,7 @@ import net.refractionapi.refraction.Refraction;
 import java.util.ArrayList;
 import java.util.List;
 
+@AutoService(Keybindings.class)
 public class KeybindingsNeo implements Keybindings {
     private static final List<Mapping> mappings = new ArrayList<>();
 

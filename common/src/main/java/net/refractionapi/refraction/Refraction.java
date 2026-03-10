@@ -2,6 +2,7 @@ package net.refractionapi.refraction;
 
 import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.client.ClientData;
+import net.refractionapi.refraction.config.ExampleServerConfig;
 import net.refractionapi.refraction.config.RRuntimeConfig;
 import net.refractionapi.refraction.config.RServerConfig;
 import net.refractionapi.refraction.data.PlrExtension;
@@ -12,11 +13,13 @@ import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.events.Scheduler;
 import net.refractionapi.refraction.feature.channel.SyncConfig;
 import net.refractionapi.refraction.feature.channel.TwoWayIntermediary;
+import net.refractionapi.refraction.feature.config.RCRegister;
 import net.refractionapi.refraction.feature.cutscenes.CutsceneHandler;
 import net.refractionapi.refraction.feature.examples.atda.AtdaExampleRegistry;
 import net.refractionapi.refraction.feature.examples.interaction.ExampleInteractionRegistry;
 import net.refractionapi.refraction.feature.examples.reconfig.ReConfigExample;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
+import net.refractionapi.refraction.feature.examples.screen.ExampleScreenScheme;
 import net.refractionapi.refraction.feature.examples.subdivision.ExampleSubdivisionRegistry;
 import net.refractionapi.refraction.feature.examples.task.ExampleTaskRegistry;
 import net.refractionapi.refraction.feature.quest.QuestHandler;
@@ -39,7 +42,10 @@ import net.refractionapi.refraction.helper.runnable.RunnableCooldownHandler;
 import net.refractionapi.refraction.helper.runnable.RunnableHandler;
 import net.refractionapi.refraction.helper.runnable.Runnabler;
 import net.refractionapi.refraction.helper.runnable.TickableProccesor;
+import net.refractionapi.refraction.init.ClientReservice;
 import net.refractionapi.refraction.init.Playground;
+import net.refractionapi.refraction.init.Reprocessor;
+import net.refractionapi.refraction.init.ServerReservice;
 import net.refractionapi.refraction.platform.RefractionServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +68,11 @@ public class Refraction {
     public static void init() {
         if (RefractionServices.PLATFORM.isDevelopmentEnvironment()) Playground.init();
         RModRegistrar.registerSelf(MOD_ID);
+        if (RefractionServices.PLATFORM.isClient()) ClientReservice.init();
+        ServerReservice.init();
+        Reprocessor.queueClient(reprocessor -> {
+            reprocessor.registerClient(ExampleScreenScheme.class);
+        });
         data = new PlrExtension(RModRegistrar.getSpec());
         RIMServer.init();
         RDebugRenderers.init();
@@ -102,6 +113,7 @@ public class Refraction {
         if (RefractionServices.PLATFORM.isClient()) ClientData.load();
         ReConfigurer.registerCommon("refraction-common", ReConfigExample.builder);
         ReConfigurer.registerServer("refraction-server", RServerConfig.builder);
+        RCRegister.registerServer("reconfig-server", ExampleServerConfig.EXAMPLE);
     }
 
     public static void startGui(long ptr) {
