@@ -8,7 +8,7 @@ import net.refractionapi.refraction.feature.scheme.ServerScheme;
 import static net.refractionapi.refraction.Refraction.LOGGER;
 
 public class ExampleServerScheme extends ServerScheme {
-    public ExampleServerScheme(ServerPlayer player) {
+    public ExampleServerScheme(ServerPlayer player, Object... args) {
         super(ExampleScreenRegistry.EXAMPLE_SCHEME, player);
     }
 

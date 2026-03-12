@@ -3,7 +3,6 @@ package net.refractionapi.refraction.feature.screen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
-import net.refractionapi.refraction.client.screen.RDashboard;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreen;
 import net.refractionapi.refraction.feature.examples.screen.ExampleScreenRegistry;
 import net.refractionapi.refraction.networking.C2S.SendScreenDataC2SPacket;
@@ -96,6 +95,5 @@ public class ClientScreenHandler {
 
     public static void init() {
         registerScreen(ExampleScreenRegistry.EXAMPLE_SCREEN, ExampleScreen.class);
-        registerScreen(ExampleScreenRegistry.DASHBOARD, RDashboard.class);
     }
 }

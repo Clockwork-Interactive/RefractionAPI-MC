@@ -2,15 +2,16 @@ package net.refractionapi.refraction.feature.subdivision;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Rotation;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.helper.randomizer.WeightedRandom;
+import net.refractionapi.refraction.helper.vec3.Vec3Helper;
+import net.refractionapi.refraction.util.Tuple;
 
 import java.util.Arrays;
-import java.util.Set;
 
 public class SubdivisionGenerator {
     final MinecraftServer server;
@@ -20,95 +21,84 @@ public class SubdivisionGenerator {
     }
 
     public void generate(SubdivisionSet set, ServerLevel serverLevel, BlockPos center) {
-        SubdivisionPiece.Configurer origin = set.origin();
+        var origin = set.origin();
         if (origin == null) return;
-        SubdivisionPiece originPiece = place(
+        var originPiece = generateSingle(
                 serverLevel,
                 center,
                 origin,
                 0
         );
-        for (SubdivisionPiece.Door door : originPiece.struct.doors()) {
-            Refraction.LOGGER.info(String.valueOf(door.direction()));
-        }
         if (originPiece == null) return;
-        WeightedRandom<SubdivisionPiece.Configurer> toPlace = set.pieces();
+        var toPlace = set.pieces();
         int maxDepth = set.maxDepth;
         for (int i = 0; i < maxDepth; i++) {
-            SubdivisionPiece lastPiece = originPiece;
+            var lastPiece = originPiece;
             int attempts = (lastPiece.struct.doors().size() - lastPiece.takenDoors.size()) * 2;
             for (int j = 0; j < attempts; j++) {
-                SubdivisionPiece.Configurer nextConfig = toPlace.get();
-                SubdivisionPiece newPiece = place(serverLevel, lastPiece, nextConfig);
+                var nextConfig = toPlace.get();
+                var newPiece = place(serverLevel, lastPiece, nextConfig);
                 lastPiece = newPiece == null ? lastPiece : newPiece;
             }
         }
     }
 
-    protected SubdivisionPiece place(ServerLevel serverLevel, BlockPos center, SubdivisionPiece.Configurer piece, int rotation) {
-        Subdivision.StructCache struct = get(piece.id);
+    protected SubdivisionPiece generateSingle(ServerLevel serverLevel, BlockPos center, SubdivisionPiece.Configurer piece, int rotationSteps) {
+        var struct = get(piece.id);
         if (struct == null) return null;
-        Vec3i size = struct.template().getSize();
-        BlockPos spawn = center.offset(-size.getX() / 2, 0, -size.getZ() / 2);
-        return addPiece(piece.factory.create(piece.id, serverLevel, null, spawn, BlockPos.ZERO), null, rotation);
+        var size = struct.template().getSize();
+        var spawn = center.offset(-size.getX() / 2, 0, -size.getZ() / 2);
+        return addPiece(piece.factory.create(piece.id, serverLevel, null, spawn), null, rotationSteps);
     }
 
     private SubdivisionPiece place(ServerLevel serverLevel, SubdivisionPiece previous, SubdivisionPiece.Configurer piece) {
-        Subdivision.StructCache newStruct = get(piece.id);
-        Subdivision.StructCache oldStruct = previous.struct;
+        var newStruct = get(piece.id);
+        var previousStruct = previous.struct;
         if (newStruct == null) return null;
-        Vec3i previousSize = previous.size;
-        Vec3i newSize = newStruct.template().getSize();
-        Set<SubdivisionPiece.Door> oldDoors = oldStruct.doors();
-        Set<SubdivisionPiece.Door> newDoors = newStruct.doors();
-        SubdivisionPiece.Door matchOld = null;
-        SubdivisionPiece.Door matchNew = null;
-        for (SubdivisionPiece.Door oldDoor : oldDoors)
-            for (SubdivisionPiece.Door newDoor : newDoors) {
-                if (!previous.isDoorTaken(oldDoor) && Arrays.equals(oldDoor.size(), newDoor.size())) {
-                    matchOld = oldDoor;
-                    matchNew = newDoor;
-                    previous.occupyDoor(oldDoor);
-                    break;
-                }
+        // find matching (same size) door pair that hasn't been taken
+        // <currDoor, prevDoor> --Zeus
+        Tuple<SubdivisionPiece.Door, SubdivisionPiece.Door> doorPair = null;
+        for (var door : newStruct.doors()) {
+            if (doorPair != null) break;
+            if (previous.isDoorTaken(door)) continue;
+            for (var previousDoor : previousStruct.doors()) {
+                if (previous.isDoorTaken(previousDoor)) continue;
+                if (!Arrays.equals(door.size(), previousDoor.size())) continue;
+                doorPair = new Tuple<>(door, previousDoor);
+                break;
             }
-        if (matchOld == null) return null;
-        // based on the rotation needed to align the doors,
-        // calculate the new spawn position and rotation --Zeus
-        Direction oldDir = matchOld.direction().getOpposite();
-        Direction newDir = matchNew.direction();
-        int previousRotation = previous.rotationSteps;
-        //int rotationSteps = (newDir.get2DDataValue() - oldDir.get2DDataValue() + 4) % 4;
-        int rotationSteps = (newDir.get2DDataValue() - oldDir.get2DDataValue() + previousRotation) % 4;
-        Direction finalDir = Direction.from2DDataValue(rotationSteps);
-        BlockPos doorCenterPrevious = matchOld.doorCenter();
-        BlockPos doorCenterNew = matchNew.doorCenter();
-        Refraction.LOGGER.info("{} {} {}", oldDir, newDir, finalDir);
+        }
+        if (doorPair == null) return null;
+        var currDoor = doorPair.first();
+        var prevDoor = doorPair.second();
+        previous.occupyDoor(prevDoor);
+        var currDoorDirection = currDoor.direction().get2DDataValue();
+        var prevRotationSteps = previous.rotationSteps;
+        var prevDoorDirection = (prevDoor.direction().get2DDataValue() + prevRotationSteps) % 4;
+        var rotationSteps = (prevDoorDirection - currDoorDirection + 6) % 4;
+        var prevSpawn = previous.spawn();
+        // offset in the direction of the door, using struct sizes --Zeus
+        var offset = Direction.from2DDataValue(prevDoorDirection).step();
+        var newStructSize = newStruct.template().getSize();
+        var blockOffset = BlockPos.containing(
+                offset.x * newStructSize.getX(),
+                offset.y * newStructSize.getY(),
+                offset.z * newStructSize.getZ()
+        );
         return addPiece(piece.factory.create(
                 piece.id,
                 serverLevel,
                 previous,
-                previous.spawnAbsolute.offset(10,0,10),
-                BlockPos.ZERO
-        ), matchNew, rotationSteps);
+                prevSpawn.offset(blockOffset)
+        ), currDoor, rotationSteps);
     }
 
     private SubdivisionPiece addPiece(SubdivisionPiece piece, SubdivisionPiece.Door door, int rotationSteps) {
-        piece.rotationSteps = rotationSteps;
-        piece.place(door);
+        piece.place(door, rotationSteps);
         return piece;
     }
 
     private Subdivision.StructCache get(ResourceLocation id) {
         return Subdivision.getInstance().get(id);
-    }
-
-    private Direction dir(BlockPos from, BlockPos to) {
-        BlockPos diff = to.subtract(from);
-        if (Math.abs(diff.getX()) > Math.abs(diff.getZ())) {
-            return diff.getX() > 0 ? Direction.EAST : Direction.WEST;
-        } else {
-            return diff.getZ() > 0 ? Direction.SOUTH : Direction.NORTH;
-        }
     }
 }

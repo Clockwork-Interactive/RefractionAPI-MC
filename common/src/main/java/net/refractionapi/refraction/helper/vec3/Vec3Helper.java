@@ -2,17 +2,20 @@ package net.refractionapi.refraction.helper.vec3;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.Vec3;
 import net.refractionapi.refraction.helper.math.EasingFunctions;
 import net.refractionapi.refraction.helper.runnable.Runnabler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Vec3Helper {
     private static final RandomSource random = RandomSource.create();
@@ -288,5 +291,42 @@ public class Vec3Helper {
         }
 
         return ret;
+    }
+
+    public static Vec3i getMin(Set<BlockPos> positions) {
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int minZ = Integer.MAX_VALUE;
+        for (BlockPos pos : positions) {
+            if (pos.getX() < minX) minX = pos.getX();
+            if (pos.getY() < minY) minY = pos.getY();
+            if (pos.getZ() < minZ) minZ = pos.getZ();
+        }
+        return new Vec3i(minX, minY, minZ);
+    }
+
+    public static Vec3i getMax(Set<BlockPos> positions) {
+        int maxX = Integer.MIN_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        int maxZ = Integer.MIN_VALUE;
+        for (BlockPos pos : positions) {
+            if (pos.getX() > maxX) maxX = pos.getX();
+            if (pos.getY() > maxY) maxY = pos.getY();
+            if (pos.getZ() > maxZ) maxZ = pos.getZ();
+        }
+        return new Vec3i(maxX, maxY, maxZ);
+    }
+
+    public static BlockPos rotate(Vec3i vec3i, int rotationSteps) {
+        rotationSteps = rotationSteps % 4;
+        if (rotationSteps < 0) rotationSteps += 4;
+        var rotated = BlockPos.ZERO.immutable();
+        switch (rotationSteps) {
+            case 0 -> rotated = new BlockPos(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+            case 1 -> rotated = new BlockPos(-vec3i.getZ(), vec3i.getY(), vec3i.getX());
+            case 2 -> rotated = new BlockPos(-vec3i.getX(), vec3i.getY(), -vec3i.getZ());
+            case 3 -> rotated = new BlockPos(vec3i.getZ(), vec3i.getY(), -vec3i.getX());
+        }
+        return rotated;
     }
 }

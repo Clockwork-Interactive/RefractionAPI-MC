@@ -15,6 +15,7 @@ import net.refractionapi.refraction.helper.vec3.Vec3Helper;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class SubdivisionPiece {
@@ -24,22 +25,18 @@ public class SubdivisionPiece {
     protected final HashSet<Door> takenDoors = new HashSet<>();
     final ServerLevel serverLevel;
     final SubdivisionPiece connecting;
-    final BlockPos spawn;
-    protected BlockPos spawnAbsolute;
-    final BlockPos offset;
+    BlockPos spawn;
     int rotationSteps = 0;
 
     public SubdivisionPiece(
             ResourceLocation location,
             ServerLevel serverLevel,
             SubdivisionPiece connecting,
-            BlockPos spawn,
-            BlockPos offset
+            BlockPos spawn
     ) {
         this.location = location;
         this.serverLevel = serverLevel;
         this.connecting = connecting;
-        this.offset = offset;
         this.spawn = spawn;
         this.struct = getStruct();
         this.size = struct.template().getSize();
@@ -62,36 +59,20 @@ public class SubdivisionPiece {
         return takenDoors.contains(door);
     }
 
-    public void place(Door door) {
+    public void place(Door door, int rotationSteps) {
+        this.rotationSteps = rotationSteps;
         if (door != null) occupyDoor(door);
-        Refraction.LOGGER.info("{} {} {}", spawn.offset(offset), rotationSteps, id());
-
-        Rotation rotation = switch (rotationSteps % 4) {
-            case 1 -> Rotation.CLOCKWISE_90;
-            case 2 -> Rotation.CLOCKWISE_180;
-            case 3, -1 -> Rotation.COUNTERCLOCKWISE_90;
-            default -> Rotation.NONE;
-        };
-
-        BlockPos rotationPivot = door == null ? BlockPos.ZERO : door.doorCenter().below();
-
+        var rotation = Rotation.values()[rotationSteps % 4];
+        Refraction.LOGGER.info("{}", rotation);
         struct.template().placeInWorld(
                 serverLevel,
-                spawnAbsolute = spawn.offset(rotationPivot),
+                spawn,
                 BlockPos.ZERO,
-                new StructurePlaceSettings().setRotation(rotation),
+                new StructurePlaceSettings().setRotationPivot(relativeCenter()).setRotation(rotation),
                 serverLevel.random,
                 18
         );
-        struct.doors().forEach((dr) -> {
-            BlockPos doorCenter = dr.doorCenter();
-            BlockPos rotatedDoor = dr.doorCenter().rotate(rotation);
-            serverLevel.setBlock(spawnAbsolute.offset(rotatedDoor), Blocks.DIAMOND_BLOCK.defaultBlockState(), 2);
-            serverLevel.setBlock(spawnAbsolute.offset(doorCenter), Blocks.DIAMOND_BLOCK.defaultBlockState(), 2);
-        });
-        serverLevel.setBlock(spawnAbsolute, Blocks.IRON_BLOCK.defaultBlockState(), 2);
     }
-
 
     public BlockPos relativeCenter() {
         return BlockPos.containing(
@@ -114,6 +95,31 @@ public class SubdivisionPiece {
             BlockPos doorCenter,
             Direction direction
     ) {
+    }
+
+    public static class DoorBuilder {
+        public Set<BlockPos> positions = new HashSet<>();
+        public int[] size;
+        public BlockPos doorCenter;
+        public Direction direction;
+
+        public Door create(Vec3i structSize) {
+            if (positions.isEmpty()) return null;
+            var min = Vec3Helper.getMin(positions);
+            var max = Vec3Helper.getMax(positions);
+            int xSize = max.getX() - min.getX() + 1;
+            int ySize = max.getY() - min.getY() + 1;
+            int zSize = max.getZ() - min.getZ() + 1;
+            int longestWidth = Math.max(xSize, zSize);
+            size = new int[]{longestWidth, ySize};
+            doorCenter = BlockPos.containing(
+                    (double) (min.getX() + max.getX()) / 2,
+                    (double) (min.getY() + max.getY()) / 2,
+                    (double) (min.getZ() + max.getZ()) / 2
+            );
+            direction = Subdivision.getDirection(structSize, doorCenter);
+            return new Door(size, doorCenter, direction);
+        }
     }
 
     public static class Configurer {
@@ -158,8 +164,7 @@ public class SubdivisionPiece {
                 ResourceLocation id,
                 ServerLevel serverLevel,
                 SubdivisionPiece connecting,
-                BlockPos spawn,
-                BlockPos offset
+                BlockPos spawn
         );
     }
 }

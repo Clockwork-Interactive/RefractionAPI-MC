@@ -1,12 +1,10 @@
 package net.refractionapi.refraction.feature.subdivision;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtUtils;
@@ -17,22 +15,23 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.helper.registry.RBlocks;
-import net.refractionapi.refraction.helper.vec3.Vec3Helper;
 import net.refractionapi.refraction.mixininterfaces.IStructureTemplate;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Heavy WIP
  * Do not use yet
+ *
  * @author Zeus
  */
 public class Subdivision {
@@ -68,74 +67,35 @@ public class Subdivision {
     }
 
     private void parseStruct(ResourceLocation location, InputStream stream) throws IOException {
-        CompoundTag tag = NbtIo.readCompressed(stream, NbtAccounter.unlimitedHeap());
-        StructureTemplate structureTemplate = new StructureTemplate();
-        int version = NbtUtils.getDataVersion(tag, 500);
+        var tag = NbtIo.readCompressed(stream, NbtAccounter.unlimitedHeap());
+        var structureTemplate = new StructureTemplate();
+        var version = NbtUtils.getDataVersion(tag, 500);
         structureTemplate.load(
                 this.holderGetter,
                 DataFixTypes.STRUCTURE.updateToCurrentVersion(this.server.getFixerUpper(), tag, version)
         );
-        IStructureTemplate str = (IStructureTemplate) structureTemplate;
-        List<StructureTemplate.Palette> palettes = str.palettes();
-        // we only get the first pallet cause Subdivision has its own mechanism --Zeus
-        StructureTemplate.Palette firstPalette = palettes.getFirst();
-        Block matching = RBlocks.DOORWAY.get();
-        Set<SubdivisionPiece.Door> doors = new HashSet<>();
-        Int2ObjectArrayMap<List<BlockPos>> doorPositions = new Int2ObjectArrayMap<>();
-        Vec3i center = structureTemplate.getSize();
+        var str = (IStructureTemplate) structureTemplate;
+        var palettes = str.palettes();
+        var firstPalette = palettes.getFirst();
+        var doorBlock = RBlocks.DOORWAY.get();
         // find door positions --Zeus
-        for (StructureTemplate.StructureBlockInfo block : firstPalette.blocks()) {
-            boolean isDoor = block.state().is(matching);
+        var doorPositions = new HashSet<BlockPos>();
+        for (var block : firstPalette.blocks()) {
+            Refraction.LOGGER.info("{} {}", block.state().toString(), block.pos().toShortString());
+            boolean isDoor = block.state().is(doorBlock);
             if (!isDoor) continue;
-            BlockPos pos = block.pos();
-            boolean added = false;
-            for (Map.Entry<Integer, List<BlockPos>> entry : doorPositions.entrySet()) {
-                for (BlockPos pos1 : entry.getValue()) {
-                    if (Math.abs(pos1.getX() - pos.getX()) <= 1 &&
-                            Math.abs(pos1.getY() - pos.getY()) <= 1 &&
-                            Math.abs(pos1.getZ() - pos.getZ()) <= 1) {
-                        entry.getValue().add(pos);
-                        added = true;
-                        break;
-                    }
-                }
-                if (added) break;
-            }
-            if (!added) {
-                int index = doorPositions.size();
-                List<BlockPos> positions = new ArrayList<>();
-                positions.add(pos);
-                doorPositions.put(index, positions);
-            }
+            doorPositions.add(block.pos());
         }
-        // group door positions into doors + their width --Zeus
-        doorPositions.forEach((index, positions) -> {
-            int minX = positions.stream().mapToInt(BlockPos::getX).min().orElse(0);
-            int maxX = positions.stream().mapToInt(BlockPos::getX).max().orElse(0);
-            int minY = positions.stream().mapToInt(BlockPos::getY).min().orElse(0);
-            int maxY = positions.stream().mapToInt(BlockPos::getY).max().orElse(0);
-            int minZ = positions.stream().mapToInt(BlockPos::getZ).min().orElse(0);
-            int maxZ = positions.stream().mapToInt(BlockPos::getZ).max().orElse(0);
-
-            int width = Math.max(maxX - minX, maxZ - minZ) + 1;
-            int height = maxY - minY + 1;
-
-            BlockPos doorCenter = new BlockPos(
-                    (minX + maxX) / 2,
-                    minY,
-                    (minZ + maxZ) / 2
-            );
-
-            Direction direction = Vec3Helper.getDirection(doorCenter.getCenter(), doorCenter.rotate(Rotation.CLOCKWISE_180).getCenter());
-
-            doors.add(new SubdivisionPiece.Door(
-                    new int[]{width, height},
-                    doorCenter,
-                    direction
-            ));
-        });
-
-        String[] parts = location.getPath().split("/");
+        var doorBuilders = new HashSet<SubdivisionPiece.DoorBuilder>();
+        for (var doorPosition : doorPositions) {
+            var foundBuilder = doorBuilders.stream().filter((b) -> isNextTo(b.positions, doorPosition)).findFirst();
+            var builder = foundBuilder.isEmpty() ? new SubdivisionPiece.DoorBuilder() : foundBuilder.get();
+            builder.positions.add(doorPosition);
+            doorBuilders.add(builder);
+        }
+        var doors = new HashSet<SubdivisionPiece.Door>();
+        doorBuilders.forEach(builder -> doors.add(builder.create(structureTemplate.getSize())));
+        var parts = location.getPath().split("/");
         location = ResourceLocation.fromNamespaceAndPath(location.getNamespace(), parts[parts.length - 1].replace(".nbt", ""));
         cache.put(location, new StructCache(
                 structureTemplate,
@@ -143,6 +103,35 @@ public class Subdivision {
                 doors
         ));
     }
+
+    public boolean isNextTo(Set<BlockPos> posSet, BlockPos pos) {
+        return posSet.stream().anyMatch(otherPos -> {
+            var xDiff = Math.abs(otherPos.getX() - pos.getX());
+            var yDiff = Math.abs(otherPos.getY() - pos.getY());
+            var zDiff = Math.abs(otherPos.getZ() - pos.getZ());
+            return xDiff + yDiff + zDiff == 1;
+        });
+    }
+
+    // calc the direction of the position from structSize center --Zeus
+    public static Direction getDirection(Vec3i structSize, BlockPos pos) {
+        var centerX = structSize.getX() / 2F;
+        var centerY = structSize.getY() / 2F;
+        var centerZ = structSize.getZ() / 2F;
+        var posX = pos.getX() + 0.5F;
+        var posY = pos.getY() + 0.5F;
+        var posZ = pos.getZ() + 0.5F;
+        var deltaX = posX - centerX;
+        var deltaY = posY - centerY;
+        var deltaZ = posZ - centerZ;
+        var absDeltaX = Math.abs(deltaX);
+        var absDeltaY = Math.abs(deltaY);
+        var absDeltaZ = Math.abs(deltaZ);
+        if (absDeltaX > absDeltaY && absDeltaX > absDeltaZ) return deltaX > 0 ? Direction.EAST : Direction.WEST;
+        if (absDeltaZ > absDeltaY) return deltaZ > 0 ? Direction.SOUTH : Direction.NORTH;
+        return deltaY > 0 ? Direction.UP : Direction.DOWN;
+    }
+
 
     public boolean exists(ResourceLocation id) {
         return cache.containsKey(id);
@@ -157,7 +146,7 @@ public class Subdivision {
     }
 
     public static void placePiece(SubdivisionPiece.Configurer configurer, ServerLevel serverLevel, BlockPos pos, int rotation) {
-        getInstance().generator.place(serverLevel, pos, configurer, rotation);
+        getInstance().generator.generateSingle(serverLevel, pos, configurer, rotation);
     }
 
     public static Subdivision getInstance() {

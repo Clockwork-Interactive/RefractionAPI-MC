@@ -29,7 +29,7 @@ public class SubdivisionSet {
         var config = configurer(id);
         consumer.accept(config);
         this.origin = config;
-        return this.add(config);
+        return this;
     }
 
     public SubdivisionSet add(ResourceLocation id, Consumer<SubdivisionPiece.Configurer> consumer) {

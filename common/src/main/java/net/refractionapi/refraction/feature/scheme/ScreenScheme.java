@@ -8,7 +8,6 @@ import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.client.RefractionClient;
 import net.refractionapi.refraction.data.PlrExtension;
-import net.refractionapi.refraction.data.RefractionData;
 import net.refractionapi.refraction.data.TData;
 import net.refractionapi.refraction.feature.channel.NamedAPI;
 import net.refractionapi.refraction.feature.channel.ThreadedAPI;
@@ -25,6 +24,7 @@ import java.util.function.Function;
  * Updated system of the old @ServerBuilder <br>
  * Registration example in @ExampleScreenRegistry <br>
  * Use @RegisterScreen annotation on client screens <br>
+ *
  * @param <T>
  */
 public class ScreenScheme<T> {
@@ -35,7 +35,7 @@ public class ScreenScheme<T> {
     protected final BiFunction<ScreenScheme<?>, Object[], Object> clientScreenCreator;
     private final Class<? extends ServerScheme> schemeClass;
     protected final TriConsumer<ServerScheme, Code, FriendlyByteBuf> serverHandler;
-    protected final Function<ServerPlayer, ServerScheme> serverScreenCreator;
+    protected final ScreenCreator serverScreenCreator;
     protected final boolean clientAccessible;
     static ResourceLocation SCREEN_ID = Refraction.id("screen");
     static ThreadedAPI SCREEN_API = NamedAPI.create(SCREEN_ID)
@@ -50,7 +50,7 @@ public class ScreenScheme<T> {
             BiFunction<ScreenScheme<?>, Object[], Object> clientScreenCreator,
             Class<? extends ServerScheme> schemeClass,
             TriConsumer<ServerScheme, Code, FriendlyByteBuf> serverHandler,
-            Function<ServerPlayer, ServerScheme> serverScreenCreator,
+            ScreenCreator serverScreenCreator,
             boolean clientAccessible
     ) {
         if (builders.containsKey(id)) {
@@ -100,7 +100,7 @@ public class ScreenScheme<T> {
      */
     public T open(Player player, Object... args) {
         if (!(player instanceof ServerPlayer serverPlayer)) return null;
-        ServerScheme scheme = this.serverScreenCreator.apply(serverPlayer);
+        ServerScheme scheme = this.serverScreenCreator.create(serverPlayer, args);
         if (scheme == null || !scheme.canOpen()) return null;
         PlrExtension data = data(player);
         if (data.scheme != null) data.scheme.close();
@@ -152,6 +152,11 @@ public class ScreenScheme<T> {
         }
     }
 
+    @FunctionalInterface
+    public interface ScreenCreator {
+        ServerScheme create(ServerPlayer player, Object... args);
+    }
+
     /**
      * Most overrides are just for convenience. <br>
      * Default handling is good for 99% of cases.
@@ -166,7 +171,7 @@ public class ScreenScheme<T> {
         });
         private BiFunction<ScreenScheme<?>, Object[], Object> clientScreenCreator = ScreenRegistry::createScreen;
         private TriConsumer<ServerScheme, Code, FriendlyByteBuf> serverHandler = ServerScheme::handleMsg;
-        private Function<ServerPlayer, ServerScheme> serverScreenCreator;
+        private ScreenCreator serverScreenCreator;
         private Class<? extends ServerScheme> schemeClass;
         private boolean clientAccessible = false;
 
@@ -211,7 +216,7 @@ public class ScreenScheme<T> {
             return this;
         }
 
-        public Builder<T> serverScreenCreator(Class<? extends ServerScheme> schemeClass, Function<ServerPlayer, ServerScheme> serverScreenCreator) {
+        public Builder<T> serverScreenCreator(Class<? extends ServerScheme> schemeClass, ScreenCreator serverScreenCreator) {
             this.serverScreenCreator = serverScreenCreator;
             this.schemeClass = schemeClass;
             return this;
