@@ -66,6 +66,7 @@ public abstract class ServerLevelMixin implements ILevel {
         levelTasks.saveToDisk();
         LoadedChunkTracker.saveCache((ServerLevel) (Object) this);
         var nbt = new CompoundTag();
+        Atda.tryDereferenceAll();
         var data = Atda.serializeAll(this);
         nbt.put("refraction_reserved_atda", data);
         getIO().save(getSyncID(), nbt);

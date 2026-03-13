@@ -1,4 +1,4 @@
-package net.refractionapi.refraction.helper.command;
+package net.refractionapi.refraction.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;

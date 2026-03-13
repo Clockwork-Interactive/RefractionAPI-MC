@@ -57,6 +57,10 @@ public class Atda<E, D extends AtdaData<D>> {
         attachHook(atda, (server, obj, raw) -> raw.sync(obj));
     }
 
+    public static void tryDereferenceAll() {
+        REGISTRY.forEach((rl, atda) -> atda.providers.forEach((obj, provider) -> atda.tryDereferenceObj(obj)));
+    }
+
     // E needs to be an IAtdaProvider! --Zeus
     public void add(E obj, IAtdaProvider provider) {
         if (!this.clazz.isInstance(obj)) return;
@@ -71,7 +75,7 @@ public class Atda<E, D extends AtdaData<D>> {
         raw.onAttach(obj, server);
     }
 
-    private void tryDereferenceObj(E obj) {
+    private void tryDereferenceObj(Object obj) {
         if (!markedDiscarded.contains(obj)) return;
         markedDiscarded.remove(obj);
         providers.remove(obj);
@@ -219,7 +223,6 @@ public class Atda<E, D extends AtdaData<D>> {
             provider.serialize(serialized);
             atdaData.put(provider.getClass().getName(), serialized);
             listTag.add(atdaData);
-            atda.tryDereferenceObj(lookup);
         }));
         tag.put("refraction_atda", listTag);
         return tag;

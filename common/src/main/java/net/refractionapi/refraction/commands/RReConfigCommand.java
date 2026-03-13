@@ -1,12 +1,9 @@
-package net.refractionapi.refraction.helper.command;
+package net.refractionapi.refraction.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.refractionapi.refraction.Refraction;
-import net.refractionapi.refraction.config.RRuntimeConfig;
 import net.refractionapi.refraction.feature.reconfig.ReConfigurer;
 import net.refractionapi.refraction.util.Side;
 

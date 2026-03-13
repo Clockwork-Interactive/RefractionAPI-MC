@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 
 public class RBlocks {
     public static RRegister<Block> DOORWAY = register("doorway", () -> new Block(Block.Properties.of().noCollission().noLootTable().noOcclusion()));
-    public static RRegister<Block> BLOCK = register("block_randomizer", () -> new Block(Block.Properties.of().noLootTable()));
+    public static RRegister<Block> RANDOMIZER = register("block_randomizer", () -> new Block(Block.Properties.of().noLootTable()));
     public static RRegister<Block> STRUCT = register("struct_randomizer", () -> new Block(Block.Properties.of().noLootTable()));
 
     public static RRegister<Block> register(String id, Supplier<Block> block) {

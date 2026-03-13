@@ -16,7 +16,6 @@ import static net.refractionapi.refraction.helper.vec3.Vec3Helper.max;
 import static net.refractionapi.refraction.helper.vec3.Vec3Helper.min;
 
 public class FloodFiller {
-
     protected final Level level;
     protected BlockPos origin;
     protected int maxSpread = 64;
@@ -134,5 +133,4 @@ public class FloodFiller {
         }
 
     }
-
 }

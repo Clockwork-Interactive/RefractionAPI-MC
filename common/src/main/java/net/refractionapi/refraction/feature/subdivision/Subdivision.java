@@ -1,5 +1,6 @@
 package net.refractionapi.refraction.feature.subdivision;
 
+import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderGetter;
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Heavy WIP
@@ -35,6 +37,7 @@ import java.util.Set;
  * @author Zeus
  */
 public class Subdivision {
+    @Getter
     private static Subdivision instance;
     private final MinecraftServer server;
     private final ResourceManager manager;
@@ -81,7 +84,6 @@ public class Subdivision {
         // find door positions --Zeus
         var doorPositions = new HashSet<BlockPos>();
         for (var block : firstPalette.blocks()) {
-            Refraction.LOGGER.info("{} {}", block.state().toString(), block.pos().toShortString());
             boolean isDoor = block.state().is(doorBlock);
             if (!isDoor) continue;
             doorPositions.add(block.pos());
@@ -99,7 +101,7 @@ public class Subdivision {
         location = ResourceLocation.fromNamespaceAndPath(location.getNamespace(), parts[parts.length - 1].replace(".nbt", ""));
         cache.put(location, new StructCache(
                 structureTemplate,
-                palettes.getFirst(),
+                firstPalette,
                 doors
         ));
     }
@@ -127,17 +129,25 @@ public class Subdivision {
         var absDeltaX = Math.abs(deltaX);
         var absDeltaY = Math.abs(deltaY);
         var absDeltaZ = Math.abs(deltaZ);
+        // TODO up / down --Zeus
         if (absDeltaX > absDeltaY && absDeltaX > absDeltaZ) return deltaX > 0 ? Direction.EAST : Direction.WEST;
         if (absDeltaZ > absDeltaY) return deltaZ > 0 ? Direction.SOUTH : Direction.NORTH;
         return deltaY > 0 ? Direction.UP : Direction.DOWN;
     }
 
+    public Set<ResourceLocation> getStructIDs() {
+        return cache.keySet();
+    }
 
-    public boolean exists(ResourceLocation id) {
+    public Set<String> getStructIDStrings() {
+        return cache.keySet().stream().map(ResourceLocation::toString).collect(Collectors.toSet());
+    }
+
+    public boolean pieceExists(ResourceLocation id) {
         return cache.containsKey(id);
     }
 
-    public StructCache get(ResourceLocation id) {
+    public StructCache getPiece(ResourceLocation id) {
         return cache.get(id);
     }
 
@@ -146,11 +156,7 @@ public class Subdivision {
     }
 
     public static void placePiece(SubdivisionPiece.Configurer configurer, ServerLevel serverLevel, BlockPos pos, int rotation) {
-        getInstance().generator.generateSingle(serverLevel, pos, configurer, rotation);
-    }
-
-    public static Subdivision getInstance() {
-        return instance;
+        getInstance().generator.generateSingle(serverLevel, pos, null, configurer, rotation);
     }
 
     public static void init() {
@@ -165,6 +171,5 @@ public class Subdivision {
             StructureTemplate.Palette palette,
             Set<SubdivisionPiece.Door> doors
     ) {
-
     }
 }

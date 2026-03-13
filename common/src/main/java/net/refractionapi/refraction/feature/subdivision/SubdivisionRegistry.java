@@ -4,7 +4,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class SubdivisionRegistry {
     private static final HashMap<ResourceLocation, SubdivisionSet> registries = new HashMap<>();
@@ -18,6 +20,14 @@ public class SubdivisionRegistry {
 
     public static SubdivisionSet register(String id, Consumer<SubdivisionSet> consumer) {
         return register(RModRegistrar.id(id, 2), consumer);
+    }
+
+    public static Set<ResourceLocation> getIDs() {
+        return registries.keySet();
+    }
+
+    public static Set<String> getIDStrings() {
+        return registries.keySet().stream().map(ResourceLocation::toString).collect(Collectors.toSet());
     }
 
     public static SubdivisionSet get(ResourceLocation id) {

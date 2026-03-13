@@ -7,25 +7,22 @@ import net.refractionapi.refraction.feature.subdivision.SubdivisionSet;
 
 public class ExampleSubdivisionRegistry {
     public static final SubdivisionSet EXAMPLE = SubdivisionRegistry.register("example", (set) -> {
-        set.setOrigin(Refraction.id("test1"), (configurer -> {
-            configurer.setRandomBlocks(0, (random) -> {
-                random.add(Blocks.BASALT.defaultBlockState(), 1);
-            });
+        var base = set.createBlockSet("base", (blocks) -> {
+            blocks.add(Blocks.BASALT.defaultBlockState(), 1);
+        });
+
+        // TODO subsets --Zeus
+
+        set.addOrigin(Refraction.id("test1"), (configurer -> {
+            configurer.setRandomBlocks(0, base);
         }));
         set.add(Refraction.id("test2"), (configurer -> {
-            configurer.setRandomBlocks(0, (random) -> {
-                random.add(Blocks.BASALT.defaultBlockState(), 1);
-            });
         }));
         set.add(Refraction.id("test3"), (configurer -> {
-            configurer.setRandomBlocks(0, (random) -> {
-                random.add(Blocks.BASALT.defaultBlockState(), 1);
-            });
         }));
         set.add(Refraction.id("test4"), (configurer -> {
-            configurer.setRandomBlocks(0, (random) -> {
-                random.add(Blocks.BASALT.defaultBlockState(), 1);
-            });
+        }));
+        set.add(Refraction.id("test5"), (configurer -> {
         }));
     });
 

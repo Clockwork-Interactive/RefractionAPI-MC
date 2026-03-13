@@ -5,11 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.helper.randomizer.WeightedRandom;
 import net.refractionapi.refraction.helper.vec3.Vec3Helper;
 
@@ -51,27 +47,16 @@ public class SubdivisionPiece {
         // the bounding box of the struct --Zeus
     }
 
+    public int maxDoorCount() {
+        return struct.doors().size();
+    }
+
     public void occupyDoor(Door door) {
         takenDoors.add(door);
     }
 
     public boolean isDoorTaken(Door door) {
         return takenDoors.contains(door);
-    }
-
-    public void place(Door door, int rotationSteps) {
-        this.rotationSteps = rotationSteps;
-        if (door != null) occupyDoor(door);
-        var rotation = Rotation.values()[rotationSteps % 4];
-        Refraction.LOGGER.info("{}", rotation);
-        struct.template().placeInWorld(
-                serverLevel,
-                spawn,
-                BlockPos.ZERO,
-                new StructurePlaceSettings().setRotationPivot(relativeCenter()).setRotation(rotation),
-                serverLevel.random,
-                18
-        );
     }
 
     public BlockPos relativeCenter() {
@@ -87,7 +72,7 @@ public class SubdivisionPiece {
     }
 
     private Subdivision.StructCache getStruct() {
-        return Subdivision.getInstance().get(id());
+        return Subdivision.getInstance().getPiece(id());
     }
 
     public record Door(
@@ -133,10 +118,18 @@ public class SubdivisionPiece {
             this.id = id;
         }
 
+        public BlockState pullRandomBlock(int id) {
+            return randomBlockSet.containsKey(id) ? randomBlockSet.get(id).get() : null;
+        }
+
         public Configurer setRandomBlocks(int id, Consumer<WeightedRandom<BlockState>> consumer) {
             WeightedRandom<BlockState> weightedRandom = new WeightedRandom<>();
             consumer.accept(weightedRandom);
-            randomBlockSet.put(id, weightedRandom);
+            return setRandomBlocks(id, weightedRandom);
+        }
+
+        public Configurer setRandomBlocks(int id, WeightedRandom<BlockState> random) {
+            randomBlockSet.put(id, random);
             return this;
         }
 
