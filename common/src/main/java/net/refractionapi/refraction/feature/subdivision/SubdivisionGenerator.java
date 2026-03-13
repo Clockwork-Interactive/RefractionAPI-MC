@@ -90,7 +90,13 @@ public class SubdivisionGenerator {
         return piece.takenDoors.size() >= piece.maxDoorCount();
     }
 
-    protected SubdivisionPiece generateSingle(ServerLevel serverLevel, BlockPos center, @Nullable SubdivisionSet set, SubdivisionPiece.Configurer piece, int rotationSteps) {
+    protected SubdivisionPiece generateSingle(
+            ServerLevel serverLevel,
+            BlockPos center,
+            @Nullable SubdivisionSet set,
+            SubdivisionPiece.Configurer piece,
+            int rotationSteps
+    ) {
         var struct = cache(piece.id);
         if (struct == null) return null;
         var size = struct.template().getSize();
@@ -98,7 +104,13 @@ public class SubdivisionGenerator {
         return place(set, piece.factory.create(piece.id, serverLevel, null, spawn), null, rotationSteps);
     }
 
-    private SubdivisionPiece place(GeneratedSet generatedSet, SubdivisionSet set, ServerLevel serverLevel, SubdivisionPiece previous, SubdivisionPiece.Configurer piece) {
+    private SubdivisionPiece place(
+            GeneratedSet generatedSet,
+            SubdivisionSet set,
+            ServerLevel serverLevel,
+            SubdivisionPiece previous,
+            SubdivisionPiece.Configurer piece
+    ) {
         var newStruct = cache(piece.id);
         var previousStruct = previous.struct;
         if (newStruct == null) return null;
