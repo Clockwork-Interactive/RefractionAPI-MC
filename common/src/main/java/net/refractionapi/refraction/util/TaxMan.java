@@ -47,16 +47,18 @@ public class TaxMan {
      * The - Bold, Honored - GOLD, One - BLUE
      */
     public TaxMan formatted(String c, ChatFormatting... format) {
-        String[] split = c.split("\\$f\\{");
-        for (int i = 0; i < split.length; i++) {
-            String part = split[i];
+        var split = c.split("\\$f\\{");
+        if (split.length == 0) return this;
+        for (var i = 0; i < split.length; i++) {
+            var part = split[i];
             if (!part.contains("}")) {
                 append(part);
                 continue;
             }
-            String toFormat = part.substring(0, part.indexOf("}"));
-            String rest = part.substring(part.indexOf("}") + 1);
-            ChatFormatting style = i - 1 < format.length ? format[i - 1] : ChatFormatting.RESET;
+            var toFormat = part.substring(0, part.indexOf("}"));
+            var rest = part.substring(part.indexOf("}") + 1);
+            var style = ChatFormatting.RESET;
+            if (i > 0 && (i - 1) < format.length) style = format[i - 1];
             append(Component.literal(toFormat).withStyle(style));
             append(Component.literal(rest));
         }

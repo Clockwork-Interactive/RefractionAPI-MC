@@ -11,6 +11,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.events.RefractionClientEvents;
 import net.refractionapi.refraction.feature.rendering.ArmorRegister;
+import net.refractionapi.refraction.feature.rendering.LayerHelper;
 import net.refractionapi.refraction.feature.rendering.RefArmorRenderer;
 import net.refractionapi.refraction.feature.rendering.RenderDispatcherContext;
 import org.spongepowered.asm.mixin.Final;
@@ -25,11 +26,15 @@ import java.util.Map;
 
 @Mixin(EntityRenderDispatcher.class)
 public abstract class EntityRenderDispatcherMixin {
-    @Shadow private Map<PlayerSkin.Model, EntityRenderer<? extends Player>> playerRenderers;
+    @Shadow
+    private Map<PlayerSkin.Model, EntityRenderer<? extends Player>> playerRenderers;
 
-    @Shadow private Map<EntityType<?>, EntityRenderer<?>> renderers;
+    @Shadow
+    private Map<EntityType<?>, EntityRenderer<?>> renderers;
 
-    @Shadow @Final private EntityModelSet entityModels;
+    @Shadow
+    @Final
+    private EntityModelSet entityModels;
 
     @Inject(
             method = "onResourceManagerReload",
@@ -41,6 +46,8 @@ public abstract class EntityRenderDispatcherMixin {
             if (item instanceof ArmorRegister)
                 RefArmorRenderer.cacheRenderer(item);
         });
-        RefArmorRenderer.registerOnAll(new RenderDispatcherContext(playerRenderers, renderers), entityModels);
+        var ctx = new RenderDispatcherContext(playerRenderers, renderers);
+        LayerHelper.registerOnAll(ctx, entityModels, RefArmorRenderer::new);
+        RefractionClientEvents.REGISTER_LAYER.invoker().register(ctx, entityModels);
     }
 }

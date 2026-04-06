@@ -1,5 +1,7 @@
 package net.refractionapi.refraction.util;
 
+import net.minecraft.nbt.CompoundTag;
+
 public class Result<V> {
     private final V value;
     private final String error;
@@ -31,5 +33,39 @@ public class Result<V> {
 
     public String errorMsg() {
         return error;
+    }
+
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
+        if (isOk()) {
+            tag.putBoolean("ok", true);
+            tag.putString("value", value.toString());
+        } else {
+            tag.putBoolean("ok", false);
+            tag.putString("error", error);
+        }
+        return tag;
+    }
+
+    public static <V> Result<V> fromTag(CompoundTag tag, ValueParser<V> parser) {
+        boolean ok = tag.getBoolean("ok");
+        if (ok) {
+            V value = parser.parse(tag.getString("value"));
+            return Result.ok(value);
+        } else {
+            String error = tag.getString("error");
+            return Result.error(error);
+        }
+    }
+
+    @FunctionalInterface
+    public interface ValueParser<V> {
+        V parse(String value);
+    }
+
+    public class Parsers {
+        public static ValueParser<Integer> INTEGER = Integer::parseInt;
+        public static ValueParser<Float> FLOAT = Float::parseFloat;
+        public static ValueParser<String> STRING = value -> value;
     }
 }

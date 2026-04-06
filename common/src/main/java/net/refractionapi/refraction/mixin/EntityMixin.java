@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.mixin;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -10,6 +11,7 @@ import net.minecraft.world.level.Level;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.atda.Atda;
 import net.refractionapi.refraction.feature.atda.AtdaData;
+import net.refractionapi.refraction.feature.atda.FragmentHolder;
 import net.refractionapi.refraction.feature.atda.IAtdaProvider;
 import net.refractionapi.refraction.feature.loader.ChunkLoader;
 import net.refractionapi.refraction.feature.loader.LoadedChunkTracker;
@@ -19,15 +21,22 @@ import net.refractionapi.refraction.mixininterfaces.IEntity;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 @Mixin(Entity.class)
-public abstract class EntityMixin implements IEntity {
+public abstract class EntityMixin implements IEntity, FragmentHolder {
+    @Unique
+    public final HashMap<ResourceLocation, IAtdaProvider> providers = new HashMap<>();
+
     @Shadow
     public abstract int getId();
 
@@ -68,7 +77,6 @@ public abstract class EntityMixin implements IEntity {
 
     @Inject(at = @At("TAIL"), method = "setRemoved")
     public void removeEntity(Entity.RemovalReason reason, CallbackInfo ci) {
-        Atda.markDiscarded(this);
         if (!(this instanceof ChunkLoader<?> loader)) return;
         LoadedChunkTracker.notifyChanged(loader, false);
     }
@@ -92,16 +100,21 @@ public abstract class EntityMixin implements IEntity {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C, D extends IAtdaProvider> void addData(Atda<C, ?> registry, D providers) {
+    public <C, D extends IAtdaProvider> void addData(Atda<C, ?> registry, D provider) {
         if (registry == null) throw new UnsupportedOperationException("Registry can't be null");
-        if (providers == null) throw new UnsupportedOperationException("Provider can't be null");
-        registry.add((C) this, providers);
+        if (provider == null) throw new UnsupportedOperationException("Provider can't be null");
+        registry.add((C) this, provider);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public @NotNull <O, D extends AtdaData<D>> Optional<D> getAtda(Atda<O, D> holder) {
         return Atda.get(holder, (O) this);
+    }
+
+    @Override
+    public HashMap<ResourceLocation, IAtdaProvider> fragments() {
+        return providers;
     }
 
     @Override

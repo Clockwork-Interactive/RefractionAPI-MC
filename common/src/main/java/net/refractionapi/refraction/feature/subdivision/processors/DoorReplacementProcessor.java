@@ -12,8 +12,8 @@ import net.refractionapi.refraction.helper.registry.RBlocks;
 import org.jetbrains.annotations.Nullable;
 
 public class DoorReplacementProcessor extends SubdivisionProcessor {
-    public DoorReplacementProcessor(SubdivisionSet set, SubdivisionPiece piece, SubdivisionPiece.Door door) {
-        super(set, piece, door);
+    public DoorReplacementProcessor(SubdivisionSet set, SubdivisionPiece piece) {
+        super(set, piece);
     }
 
     @Override
@@ -27,6 +27,8 @@ public class DoorReplacementProcessor extends SubdivisionProcessor {
     ) {
         if (set == null) return currBlock;
         if (!currBlock.state().is(RBlocks.DOORWAY.get())) return currBlock;
+        var takenDoor = piece.getTakenDoor(blockInfo.pos());
+        if (takenDoor != null && takenDoor.failed()) return new StructureTemplate.StructureBlockInfo(currBlock.pos(), Blocks.DIAMOND_BLOCK.defaultBlockState(), new CompoundTag());
         return new StructureTemplate.StructureBlockInfo(currBlock.pos(), Blocks.AIR.defaultBlockState(), new CompoundTag());
     }
 }

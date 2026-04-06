@@ -69,6 +69,11 @@ public class TWC implements ITWC<TWC> {
         return new Sided(apiKey);
     }
 
+    public TWC validator(Predicate<Message> validator) {
+        data().validator = validator;
+        return this;
+    }
+
     public TWC preSendHook(Function<Message, Message> hook) {
         this.preSendHook = hook;
         return this;
@@ -214,6 +219,7 @@ public class TWC implements ITWC<TWC> {
 
     protected void routeMessage(Message message) {
         if (!data().canReceiveFrom.test(message.player)) return;
+        if (!data().validator.test(message)) return;
         safeRouter(message.router, (router) -> router.receive(message));
     }
 
@@ -346,6 +352,7 @@ public class TWC implements ITWC<TWC> {
         protected final Level level;
         protected State channelState = State.CLOSED;
         protected Predicate<Player> canReceiveFrom = (player) -> true;
+        private Predicate<Message> validator = (twc) -> true;
 
         public ThreadSafeData(Level level) {
             this.level = level;

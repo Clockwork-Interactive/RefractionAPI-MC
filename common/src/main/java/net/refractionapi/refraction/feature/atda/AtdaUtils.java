@@ -13,9 +13,9 @@ public class AtdaUtils {
     // because we're using mixin shenanigans to add IAtdaProvider to existing classes --Zeus
     public static <O, I extends IAtdaProvider> void attachAtda(O atdaObj, Atda<O, ?> holder, I provider) {
         if (atdaObj == null) return;
-        if (!(atdaObj instanceof IAtdaProvider atda))
+        if (!(atdaObj instanceof FragmentHolder atda))
             throw new IllegalArgumentException("Object %s does not implement IAtdaProvider".formatted(atdaObj.toString()));
-        if (atda.getAtda(holder).isPresent()) return;
+        if (atda.getFragment(holder.id) != null) return;
         atda.addData(holder, provider);
     }
 }

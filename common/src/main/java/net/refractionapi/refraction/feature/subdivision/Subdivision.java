@@ -95,8 +95,16 @@ public class Subdivision {
             builder.positions.add(doorPosition);
             doorBuilders.add(builder);
         }
+        var mergedDoorBuilders = new HashSet<SubdivisionPiece.DoorBuilder>();
+        for (var builder : doorBuilders) {
+            var foundMerged = mergedDoorBuilders.stream()
+                    .filter(merged -> builder.positions.stream().anyMatch(pos -> isNextTo(merged.positions, pos)))
+                    .findFirst();
+            if (foundMerged.isPresent()) foundMerged.get().positions.addAll(builder.positions);
+            else mergedDoorBuilders.add(builder);
+        }
         var doors = new HashSet<SubdivisionPiece.Door>();
-        doorBuilders.forEach(builder -> doors.add(builder.create(structureTemplate.getSize())));
+        mergedDoorBuilders.forEach(builder -> doors.add(builder.create(structureTemplate.getSize())));
         var parts = location.getPath().split("/");
         location = ResourceLocation.fromNamespaceAndPath(location.getNamespace(), parts[parts.length - 1].replace(".nbt", ""));
         cache.put(location, new StructCache(
@@ -108,10 +116,10 @@ public class Subdivision {
 
     public boolean isNextTo(Set<BlockPos> posSet, BlockPos pos) {
         return posSet.stream().anyMatch(otherPos -> {
-            var xDiff = Math.abs(otherPos.getX() - pos.getX());
-            var yDiff = Math.abs(otherPos.getY() - pos.getY());
-            var zDiff = Math.abs(otherPos.getZ() - pos.getZ());
-            return xDiff + yDiff + zDiff == 1;
+            for (var value : Direction.values()) {
+                if (pos.offset(value.getStepX(), value.getStepY(), value.getStepZ()).equals(otherPos)) return true;
+            }
+            return false;
         });
     }
 

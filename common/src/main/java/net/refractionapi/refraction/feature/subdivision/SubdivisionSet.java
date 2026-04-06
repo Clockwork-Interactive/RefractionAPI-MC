@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 public class SubdivisionSet {
     private final WeightedRandom<SubdivisionPiece.Configurer> pieces = new WeightedRandom<>();
     private final List<SubdivisionPiece.Configurer> origin = new ArrayList<>();
-    protected int maxDepth = 5;
+    protected int maxDepth = 32;
 
     public SubdivisionSet() {
 
@@ -20,8 +20,8 @@ public class SubdivisionSet {
     public SubdivisionPiece.Configurer configurer(ResourceLocation id) {
         // could be better lol --Zeus
         var origin = this.origin.stream().filter(config -> config.id.equals(id)).findFirst();
-        return origin.orElseGet(() -> pieces.getPercentages().entrySet().stream().filter(config -> config.getKey().id.equals(id)).findFirst()
-                .map(Map.Entry::getKey).orElse(new SubdivisionPiece.Configurer(id)));
+        return origin.orElseGet(() -> pieces.getItems().stream().filter(config -> config.id.equals(id)).findFirst()
+                .orElse(new SubdivisionPiece.Configurer(id)));
     }
 
     public SubdivisionSet maxDepth(int depth) {
@@ -34,6 +34,10 @@ public class SubdivisionSet {
         consumer.accept(config);
         this.origin.add(config);
         return this;
+    }
+
+    public SubdivisionSet addOrigin(ResourceLocation id) {
+        return this.addOrigin(id, configurer -> {});
     }
 
     public WeightedRandom<BlockState> createBlockSet(String id, Consumer<WeightedRandom<BlockState>> consumer) {
@@ -51,6 +55,10 @@ public class SubdivisionSet {
     public SubdivisionSet add(SubdivisionPiece.Configurer config) {
         this.pieces.add(config, config.weight);
         return this;
+    }
+
+    public SubdivisionSet add(ResourceLocation id) {
+        return this.add(new SubdivisionPiece.Configurer(id));
     }
 
     public WeightedRandom<SubdivisionPiece.Configurer> pieces() {

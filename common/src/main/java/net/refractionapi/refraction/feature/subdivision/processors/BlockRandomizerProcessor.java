@@ -10,8 +10,8 @@ import net.refractionapi.refraction.helper.registry.RBlocks;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockRandomizerProcessor extends SubdivisionProcessor {
-    public BlockRandomizerProcessor(SubdivisionSet set, SubdivisionPiece piece, SubdivisionPiece.Door door) {
-        super(set, piece, door);
+    public BlockRandomizerProcessor(SubdivisionSet set, SubdivisionPiece piece) {
+        super(set, piece);
     }
 
     @Override

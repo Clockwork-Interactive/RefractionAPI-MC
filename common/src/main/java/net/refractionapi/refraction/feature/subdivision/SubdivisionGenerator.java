@@ -6,10 +6,9 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-import net.minecraft.world.phys.AABB;
-import net.refractionapi.refraction.debug.RDebugRenderers;
 import net.refractionapi.refraction.feature.subdivision.processors.BlockRandomizerProcessor;
 import net.refractionapi.refraction.feature.subdivision.processors.DoorReplacementProcessor;
 import net.refractionapi.refraction.helper.randomizer.WeightedRandom;
@@ -41,18 +40,18 @@ public class SubdivisionGenerator {
         if (originPiece == null) return;
         generatedSet.addPiece(originPiece);
         var toPlace = set.pieces();
-        int maxDepth = 32; // hard cap for now, will be changeable through code later --Zeus
+        int maxDepth = set.maxDepth;
         var branchQueue = new LinkedList<SubdivisionPiece>();
         branchQueue.add(originPiece);
         // (might need optimizations for big dungeons)
         // branching algo
         // might redo idk --Zeus
-        processBranches(generatedSet, set, serverLevel, toPlace, branchQueue, maxDepth);
+        processBranches(generatedSet, serverLevel, toPlace, branchQueue, maxDepth);
+        generatedSet.pieces().forEach(piece -> place(set, piece, piece.pivot));
     }
-    
+
     private void processBranches(
             GeneratedSet generatedSet,
-            SubdivisionSet set,
             ServerLevel serverLevel,
             WeightedRandom<SubdivisionPiece.Configurer> toPlace,
             Queue<SubdivisionPiece> branchQueue,
@@ -62,14 +61,13 @@ public class SubdivisionGenerator {
         while (!branchQueue.isEmpty() && depth < maxDepth) {
             var currentPiece = branchQueue.poll();
             if (currentPiece == null) continue;
-            tryGenerateBranches(generatedSet, set, serverLevel, toPlace, currentPiece, branchQueue);
+            tryGenerateBranches(generatedSet, serverLevel, toPlace, currentPiece, branchQueue);
             depth++;
         }
     }
-    
+
     private void tryGenerateBranches(
             GeneratedSet generatedSet,
-            SubdivisionSet set,
             ServerLevel serverLevel,
             WeightedRandom<SubdivisionPiece.Configurer> toPlace,
             SubdivisionPiece currentPiece,
@@ -79,13 +77,32 @@ public class SubdivisionGenerator {
         int branchAttempts = currentPiece.maxDoorCount();
         for (int i = 0; i < branchAttempts; i++) {
             if (maxDoorsReached(currentPiece)) break;
-            var nextPieceConfig = toPlace.get();
+            var nextPieceConfig = findMatchingDoor(generatedSet, currentPiece, toPlace);
             if (nextPieceConfig == null) continue;
-            var newPiece = place(generatedSet, set, serverLevel, currentPiece, nextPieceConfig);
+            var newPiece = generateNext(generatedSet, serverLevel, currentPiece, nextPieceConfig);
             if (newPiece != null) branchQueue.add(newPiece);
         }
     }
-    
+
+    private SubdivisionPiece.Configurer findMatchingDoor(
+            GeneratedSet set,
+            SubdivisionPiece piece,
+            WeightedRandom<SubdivisionPiece.Configurer> toPlace
+    ) {
+        var availableDoors = piece.availableDoors();
+        if (availableDoors.isEmpty()) return null;
+        var onlyMatchingWeights = new WeightedRandom<SubdivisionPiece.Configurer>();
+        for (var config : toPlace.getItems()) {
+            var struct = cache(config.id);
+            if (struct == null) continue;
+            if (config.budget == 0 && set.count(config.id) >= config.budget) continue;
+            var hasMatchingDoor = availableDoors.stream().anyMatch(door -> struct.doors().stream()
+                    .anyMatch(structDoor -> Arrays.equals(door.size(), structDoor.size())));
+            if (hasMatchingDoor) onlyMatchingWeights.add(config, config.weight);
+        }
+        return onlyMatchingWeights.get();
+    }
+
     private boolean maxDoorsReached(SubdivisionPiece piece) {
         return piece.takenDoors.size() >= piece.maxDoorCount();
     }
@@ -101,12 +118,12 @@ public class SubdivisionGenerator {
         if (struct == null) return null;
         var size = struct.template().getSize();
         var spawn = center.offset(-size.getX() / 2, 0, -size.getZ() / 2);
-        return place(set, piece.factory.create(piece.id, serverLevel, null, spawn), null, rotationSteps);
+        var gen = piece.factory.create(piece.id, serverLevel, null, spawn);
+        return place(set, markForGeneration(gen, null, rotationSteps), gen.relativeCenter());
     }
 
-    private SubdivisionPiece place(
+    private SubdivisionPiece generateNext(
             GeneratedSet generatedSet,
-            SubdivisionSet set,
             ServerLevel serverLevel,
             SubdivisionPiece previous,
             SubdivisionPiece.Configurer piece
@@ -114,8 +131,6 @@ public class SubdivisionGenerator {
         var newStruct = cache(piece.id);
         var previousStruct = previous.struct;
         if (newStruct == null) return null;
-        // find matching (same size) door pair that hasn't been taken
-        // <currDoor, prevDoor> --Zeus
         Tuple<SubdivisionPiece.Door, SubdivisionPiece.Door> doorPair = null;
         for (var door : newStruct.doors()) {
             if (doorPair != null) break;
@@ -145,13 +160,18 @@ public class SubdivisionGenerator {
                 offset.z * newStructSize.getZ()
         );
         var newSpawn = prevSpawn.offset(blockOffset);
-        if (isColliding(generatedSet, newSpawn, newStructSize)) return null;
-        var newPiece = place(set, piece.factory.create(
+        if (isColliding(generatedSet, newSpawn, newStructSize)) {
+            var prev = previous.getTakenDoor(prevDoor);
+            if (prev != null) prev.markFailed();
+            return null;
+        }
+        var newPiece = markForGeneration(piece.factory.create(
                 piece.id,
                 serverLevel,
                 previous,
-                prevSpawn.offset(blockOffset)
+                newSpawn
         ), currDoor, rotationSteps);
+        newPiece.pivot = newPiece.relativeCenter();
         generatedSet.addPiece(newPiece);
         return newPiece;
     }
@@ -160,27 +180,32 @@ public class SubdivisionGenerator {
         return set.isColliding(spawn, size);
     }
 
-    private SubdivisionPiece place(SubdivisionPiece piece, SubdivisionPiece.Door door, int rotationSteps) {
-        return place(null, piece, door, rotationSteps);
-    }
-
-    private SubdivisionPiece place(SubdivisionSet set, SubdivisionPiece piece, SubdivisionPiece.Door door, int rotationSteps) {
+    private SubdivisionPiece markForGeneration(SubdivisionPiece piece, SubdivisionPiece.Door door, int rotationSteps) {
         piece.rotationSteps = rotationSteps;
         if (door != null) piece.occupyDoor(door);
-        var rotation = Rotation.values()[rotationSteps % 4];
-        // TODO fallback w place check and cache --Zeus
+        return piece;
+    }
+
+
+    private SubdivisionPiece place(SubdivisionSet set, SubdivisionPiece piece, BlockPos pivot) {
+        var rotation = Rotation.values()[piece.rotationSteps % 4];
         piece.struct.template().placeInWorld(
                 piece.serverLevel,
                 piece.spawn,
                 BlockPos.ZERO,
                 new StructurePlaceSettings()
-                        .addProcessor(new BlockRandomizerProcessor(set, piece, door))
-                        .addProcessor(new DoorReplacementProcessor(set, piece, door))
-                        .setRotationPivot(piece.relativeCenter())
+                        .addProcessor(new BlockRandomizerProcessor(set, piece))
+                        .addProcessor(new DoorReplacementProcessor(set, piece))
+                        .setRotationPivot(pivot)
                         .setRotation(rotation),
                 piece.serverLevel.random,
                 18
         );
+        // add diamond blocks at doors for debugging --Zeus
+        piece.struct.doors().forEach(door -> {
+            var doorPos = piece.spawn.offset(door.doorCenter().rotate(rotation));
+            piece.serverLevel.setBlock(doorPos.rotate(rotation), Blocks.EMERALD_BLOCK.defaultBlockState(), 3);
+        });
         return piece;
     }
 

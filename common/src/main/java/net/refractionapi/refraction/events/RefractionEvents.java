@@ -52,9 +52,14 @@ public interface RefractionEvents {
             listener.onEvent(server);
         }
     });
-    RefractionEvent<PlayerJoin> PLAYER_JOINED = new RefractionEventCaller<>(PlayerJoin.class, listeners -> player -> {
-        for (PlayerJoin listener : listeners) {
-            listener.onJoin(player);
+    RefractionEvent<Player> PLAYER_JOINED = new RefractionEventCaller<>(Player.class, listeners -> player -> {
+        for (Player listener : listeners) {
+            listener.onChange(player);
+        }
+    });
+    RefractionEvent<Player> PLAYER_LEAVE = new RefractionEventCaller<>(Player.class, listeners -> player -> {
+        for (Player listener : listeners) {
+            listener.onChange(player);
         }
     });
     RefractionEvent<RegisterCommands> REGISTER_COMMANDS = new RefractionEventCaller<>(RegisterCommands.class, listeners -> stack -> {
@@ -121,8 +126,8 @@ public interface RefractionEvents {
     }
 
     @FunctionalInterface
-    interface PlayerJoin {
-        void onJoin(ServerPlayer serverPlayer);
+    interface Player {
+        void onChange(ServerPlayer serverPlayer);
     }
 
     @FunctionalInterface

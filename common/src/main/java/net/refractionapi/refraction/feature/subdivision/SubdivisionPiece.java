@@ -5,20 +5,21 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.refractionapi.refraction.helper.randomizer.WeightedRandom;
 import net.refractionapi.refraction.helper.vec3.Vec3Helper;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import javax.annotation.Nullable;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class SubdivisionPiece {
     private final ResourceLocation location;
     protected final Subdivision.StructCache struct;
     protected final Vec3i size;
-    protected final HashSet<Door> takenDoors = new HashSet<>();
+    protected final HashMap<Door, TakenDoor> takenDoors = new HashMap<>();
+    BlockPos pivot;
     final ServerLevel serverLevel;
     final SubdivisionPiece connecting;
     BlockPos spawn;
@@ -36,6 +37,7 @@ public class SubdivisionPiece {
         this.spawn = spawn;
         this.struct = getStruct();
         this.size = struct.template().getSize();
+        pivot = relativeCenter();
     }
 
     public ResourceLocation id() {
@@ -47,16 +49,32 @@ public class SubdivisionPiece {
         // the bounding box of the struct --Zeus
     }
 
+    public Rotation rotation() {
+        return Rotation.values()[rotationSteps % 4];
+    }
+
+    public @Nullable TakenDoor getTakenDoor(Door door) {
+        return takenDoors.get(door);
+    }
+
+    public @Nullable TakenDoor getTakenDoor(BlockPos pos) {
+        return takenDoors.values().stream().filter(takenDoor -> takenDoor.isApartOfDoor(pos)).findFirst().orElse(null);
+    }
+
+    public List<Door> availableDoors() {
+        return struct.doors().stream().filter(door -> !isDoorTaken(door)).toList();
+    }
+
     public int maxDoorCount() {
         return struct.doors().size();
     }
 
     public void occupyDoor(Door door) {
-        takenDoors.add(door);
+        takenDoors.put(door, new TakenDoor(this, door));
     }
 
     public boolean isDoorTaken(Door door) {
-        return takenDoors.contains(door);
+        return takenDoors.containsKey(door);
     }
 
     public BlockPos relativeCenter() {
@@ -75,10 +93,38 @@ public class SubdivisionPiece {
         return Subdivision.getInstance().getPiece(id());
     }
 
+    public static class TakenDoor {
+        final SubdivisionPiece piece;
+        final Door door;
+        boolean failedToGenerate = false;
+
+        public TakenDoor(SubdivisionPiece piece, Door door) {
+            this.piece = piece;
+            this.door = door;
+        }
+
+        public boolean isApartOfDoor(BlockPos pos) {
+            return door.positions().stream().anyMatch(doorPos -> doorPos.equals(pos));
+        }
+
+        public Door door() {
+            return door;
+        }
+
+        public boolean failed() {
+            return failedToGenerate;
+        }
+
+        public void markFailed() {
+            this.failedToGenerate = true;
+        }
+    }
+
     public record Door(
             int[] size,
             BlockPos doorCenter,
-            Direction direction
+            Direction direction,
+            Set<BlockPos> positions
     ) {
     }
 
@@ -103,7 +149,7 @@ public class SubdivisionPiece {
                     (double) (min.getZ() + max.getZ()) / 2
             );
             direction = Subdivision.getDirection(structSize, doorCenter);
-            return new Door(size, doorCenter, direction);
+            return new Door(size, doorCenter, direction, positions);
         }
     }
 
@@ -113,6 +159,7 @@ public class SubdivisionPiece {
         protected final ResourceLocation id;
         protected Factory factory = SubdivisionPiece::new;
         protected float weight = 1.0F;
+        protected int budget = 0;
 
         public Configurer(ResourceLocation id) {
             this.id = id;
@@ -149,6 +196,11 @@ public class SubdivisionPiece {
             this.weight = weight;
             return this;
         }
+
+        public Configurer setBudget(int budget) {
+            this.budget = budget;
+            return this;
+        }
     }
 
     @FunctionalInterface
@@ -161,3 +213,4 @@ public class SubdivisionPiece {
         );
     }
 }
+

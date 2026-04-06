@@ -61,7 +61,7 @@ public class RefractionEventsForge implements RefractionEvents {
     @SubscribeEvent
     public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer)
-            RefractionEvents.PLAYER_JOINED.invoker().onJoin(serverPlayer);
+            RefractionEvents.PLAYER_JOINED.invoker().onChange(serverPlayer);
     }
 
     @SubscribeEvent

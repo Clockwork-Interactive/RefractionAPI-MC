@@ -80,7 +80,13 @@ public class RefractionEventsNeo implements RefractionEvents {
     @SubscribeEvent
     public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer)
-            RefractionEvents.PLAYER_JOINED.invoker().onJoin(serverPlayer);
+            RefractionEvents.PLAYER_JOINED.invoker().onChange(serverPlayer);
+    }
+
+    @SubscribeEvent
+    public static void playerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer)
+            RefractionEvents.PLAYER_LEAVE.invoker().onChange(serverPlayer);
     }
 
     @SubscribeEvent

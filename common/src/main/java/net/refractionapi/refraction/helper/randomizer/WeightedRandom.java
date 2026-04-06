@@ -1,6 +1,7 @@
 package net.refractionapi.refraction.helper.randomizer;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class WeightedRandom<T> {
     public final HashMap<T, Float> weightedRandomList = new HashMap<>();
@@ -27,6 +28,10 @@ public class WeightedRandom<T> {
             }
         }
         return null;
+    }
+
+    public Set<T> getItems() {
+        return this.weightedRandomList.keySet();
     }
 
     public HashMap<T, Float> getPercentages() {

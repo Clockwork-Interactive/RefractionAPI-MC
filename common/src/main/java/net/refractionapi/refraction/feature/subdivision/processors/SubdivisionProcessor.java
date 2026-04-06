@@ -13,12 +13,10 @@ import org.jetbrains.annotations.Nullable;
 public class SubdivisionProcessor extends StructureProcessor {
     final SubdivisionSet set;
     final SubdivisionPiece piece;
-    final SubdivisionPiece.Door door;
 
-    public SubdivisionProcessor(SubdivisionSet set, SubdivisionPiece piece, SubdivisionPiece.Door door) {
+    public SubdivisionProcessor(SubdivisionSet set, SubdivisionPiece piece) {
         this.set = set;
         this.piece = piece;
-        this.door = door;
     }
 
     @Override

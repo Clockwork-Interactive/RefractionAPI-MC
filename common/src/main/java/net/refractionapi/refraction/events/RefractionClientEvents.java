@@ -1,6 +1,9 @@
 package net.refractionapi.refraction.events;
 
+import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.resources.ResourceLocation;
+import net.refractionapi.refraction.feature.rendering.LayerHelper;
+import net.refractionapi.refraction.feature.rendering.RenderDispatcherContext;
 import net.refractionapi.refraction.gui.RIMTool;
 import net.refractionapi.refraction.gui.cli.CLI;
 import net.refractionapi.refraction.mixininterfaces.IParticleEngine;
@@ -70,7 +73,16 @@ public class RefractionClientEvents {
             listener.onKeyInput(key, scancode, action, mods);
         }
     });
+    public static final RefractionEvent<RegisterLayer> REGISTER_LAYER = new RefractionEventCaller<>(RegisterLayer.class, listeners -> (context, modelSet) -> {
+        for (RegisterLayer listener : listeners) {
+            listener.register(context, modelSet);
+        }
+    });
 
+    @FunctionalInterface
+    public interface RegisterLayer {
+        void register(RenderDispatcherContext context, EntityModelSet modelSet);
+    }
 
     @FunctionalInterface
     public interface KeyInput {

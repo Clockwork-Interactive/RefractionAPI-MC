@@ -7,7 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import net.refractionapi.refraction.feature.data.Syncable;
 
 public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
-    IAtdaProvider provider;
+    FragmentHolder holder;
     Atda<?, ?> atdaSync;
     boolean first = true;
 
@@ -15,10 +15,9 @@ public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
         this.setSynced();
     }
 
-    AtdaData<T> setSyncables(IAtdaProvider providerSync, Atda<?, ?> atda) {
-        this.provider = providerSync;
+    void setSyncables(FragmentHolder holder, Atda<?, ?> atda) {
+        this.holder = holder;
         this.atdaSync = atda;
-        return this;
     }
 
     public void onFirstLoad(CompoundTag tag) {
@@ -37,7 +36,7 @@ public abstract class AtdaData<T extends AtdaData<T>> implements Syncable<T> {
     public void write(FriendlyByteBuf buf) {
         CompoundTag tag = new CompoundTag();
         this.save(tag);
-        buf.writeUtf(this.provider.getSyncID());
+        buf.writeUtf(this.holder.getSyncID());
         buf.writeUtf(this.atdaSync.id.toString());
         buf.writeNbt(tag);
     }

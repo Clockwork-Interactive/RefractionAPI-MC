@@ -17,7 +17,6 @@ public class RIMCli extends RIMTool {
     @Override
     public void render() {
         ImGui.begin("Refraction CLI");
-        // window history + command input
         for (String s : cli.history()) {
             ImGui.text(s);
         }
@@ -29,9 +28,6 @@ public class RIMCli extends RIMTool {
             String[] args = input.get().split(" ");
             cli.runCommand(args);
             input.set("");
-        }
-        // auto focus text
-        if (!ImGui.isMouseClicked(0) && !ImGui.isAnyMouseDown() && ImGui.isWindowHovered() && ImGui.isWindowFocused() && ImGui.isItemFocused()) {
             ImGui.setKeyboardFocusHere(-1);
         }
         ImGui.end();

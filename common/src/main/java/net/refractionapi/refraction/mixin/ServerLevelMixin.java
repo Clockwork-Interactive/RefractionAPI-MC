@@ -2,6 +2,7 @@ package net.refractionapi.refraction.mixin;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.progress.ChunkProgressListener;
@@ -16,6 +17,7 @@ import net.refractionapi.refraction.debug.RDebugRenderers;
 import net.refractionapi.refraction.events.RefractionEvents;
 import net.refractionapi.refraction.feature.atda.Atda;
 import net.refractionapi.refraction.feature.atda.AtdaData;
+import net.refractionapi.refraction.feature.atda.FragmentHolder;
 import net.refractionapi.refraction.feature.atda.IAtdaProvider;
 import net.refractionapi.refraction.feature.loader.LoadedChunkTracker;
 import net.refractionapi.refraction.feature.task.LevelTasks;
@@ -25,18 +27,24 @@ import net.refractionapi.refraction.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
 @Mixin(ServerLevel.class)
-public abstract class ServerLevelMixin implements ILevel {
+public abstract class ServerLevelMixin implements ILevel, FragmentHolder {
+    @Unique
+    public final HashMap<ResourceLocation, IAtdaProvider> providers = new HashMap<>();
+
     public LevelTasks levelTasks;
 
     @Shadow
@@ -66,7 +74,6 @@ public abstract class ServerLevelMixin implements ILevel {
         levelTasks.saveToDisk();
         LoadedChunkTracker.saveCache((ServerLevel) (Object) this);
         var nbt = new CompoundTag();
-        Atda.tryDereferenceAll();
         var data = Atda.serializeAll(this);
         nbt.put("refraction_reserved_atda", data);
         getIO().save(getSyncID(), nbt);
@@ -82,6 +89,11 @@ public abstract class ServerLevelMixin implements ILevel {
     @Override
     public @NotNull <O, D extends AtdaData<D>> Optional<D> getAtda(Atda<O, D> holder) {
         return Atda.get(holder, (O) this);
+    }
+
+    @Override
+    public HashMap<ResourceLocation, IAtdaProvider> fragments() {
+        return providers;
     }
 
     @Override
