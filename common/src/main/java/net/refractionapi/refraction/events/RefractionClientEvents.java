@@ -1,8 +1,7 @@
 package net.refractionapi.refraction.events;
 
-import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.resources.ResourceLocation;
-import net.refractionapi.refraction.feature.rendering.LayerHelper;
+import net.refractionapi.refraction.events.wrappers.ModelSet;
 import net.refractionapi.refraction.feature.rendering.RenderDispatcherContext;
 import net.refractionapi.refraction.gui.RIMTool;
 import net.refractionapi.refraction.gui.cli.CLI;
@@ -81,7 +80,7 @@ public class RefractionClientEvents {
 
     @FunctionalInterface
     public interface RegisterLayer {
-        void register(RenderDispatcherContext context, EntityModelSet modelSet);
+        void register(RenderDispatcherContext context, ModelSet modelSet);
     }
 
     @FunctionalInterface

@@ -10,6 +10,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.events.RefractionClientEvents;
+import net.refractionapi.refraction.events.wrappers.ModelSet;
 import net.refractionapi.refraction.feature.rendering.ArmorRegister;
 import net.refractionapi.refraction.feature.rendering.LayerHelper;
 import net.refractionapi.refraction.feature.rendering.RefArmorRenderer;
@@ -48,6 +49,6 @@ public abstract class EntityRenderDispatcherMixin {
         });
         var ctx = new RenderDispatcherContext(playerRenderers, renderers);
         LayerHelper.registerOnAll(ctx, entityModels, RefArmorRenderer::new);
-        RefractionClientEvents.REGISTER_LAYER.invoker().register(ctx, entityModels);
+        RefractionClientEvents.REGISTER_LAYER.invoker().register(ctx, new ModelSet(entityModels));
     }
 }
