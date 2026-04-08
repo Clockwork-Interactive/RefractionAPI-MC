@@ -1,4 +1,4 @@
- package net.refractionapi.refraction.feature.twc;
+package net.refractionapi.refraction.feature.twc;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.CompoundTag;
@@ -140,6 +140,10 @@ public class TWC implements ITWC<TWC> {
             else if (!level().isClientSide && sidedConfigurer.side.equals(Side.SERVER))
                 sidedConfigurer.configurer.accept(this);
         });
+        if (level().isClientSide) postClientOpen();
+    }
+
+    protected void postClientOpen() {
     }
 
     public TWC close() {

@@ -164,12 +164,6 @@ public abstract class Atda<E, D extends AtdaData<D>> {
         return tag;
     }
 
-    public void serialize(E obj, CompoundTag tag) {
-        var provider = ((FragmentHolder) obj).getFragment(this.id);
-        if (provider == null) return;
-        provider.serialize(tag);
-    }
-
     public static <O extends FragmentHolder> void deserializeAll(O lookup, CompoundTag serialized) {
         if (serialized == null || !serialized.contains("refraction_reserved_atda")) return;
         var serializedData = serialized.getCompound("refraction_reserved_atda");
