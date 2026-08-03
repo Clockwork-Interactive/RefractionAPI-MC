@@ -61,6 +61,10 @@ public class TWC implements ITWC<TWC> {
         return new TWC(level);
     }
 
+    public static TWC unnamed(Level level, UUID uuid) {
+        return new TWC(level, uuid);
+    }
+
     public static Sided unnamed() {
         return new Sided(null);
     }
@@ -209,7 +213,7 @@ public class TWC implements ITWC<TWC> {
             unregisterListener(callbackID, "prim");
         });
         message.twc = this;
-        message.header((header) -> header.nbt().putString("response_router", callbackID));
+        message.headerTag((header) -> header.putString("response_router", callbackID));
         sendMessage(routerID, message);
     }
 
@@ -365,13 +369,16 @@ public class TWC implements ITWC<TWC> {
 
     // header data order is irrelevant, so nbt it is --Zeus
     public record Header(CompoundTag nbt) {
+        public static Header empty() {
+            return new Header(new CompoundTag());
+        }
     }
 
     public static class Message {
         private long id;
         private String router = "";
         private FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        private Header header = new Header(new CompoundTag());
+        private Header header = Header.empty();
         private Player player;
         private TWC twc;
 
@@ -386,6 +393,11 @@ public class TWC implements ITWC<TWC> {
 
         public Message header(Consumer<Header> header) {
             header.accept(this.header);
+            return this;
+        }
+
+        public Message headerTag(Consumer<CompoundTag> header) {
+            header.accept(headerTag());
             return this;
         }
 
@@ -425,6 +437,10 @@ public class TWC implements ITWC<TWC> {
 
         public Header header() {
             return header;
+        }
+
+        public CompoundTag headerTag() {
+            return header().nbt();
         }
 
         public Player player() {

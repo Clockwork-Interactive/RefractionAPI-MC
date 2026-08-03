@@ -3,14 +3,19 @@ package net.refractionapi.refraction.feature.scheme;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.refractionapi.refraction.client.RefractionClient;
+import net.refractionapi.refraction.feature.twc.TWC;
 
 import java.util.function.Consumer;
 
 public interface RScreen {
     void handle(ScreenScheme.ScreenMessage screenMessage);
 
+    default void handleMenuInit(ScreenScheme.ScreenMessage screenMessage) {
+
+    }
+
     default void sendNbt(CompoundTag tag) {
-        RefractionClient.screenRegistry.screenChannel.send("default", (buf) -> buf.writeNbt(tag));
+        RefractionClient.screenRegistry.screenChannel.sendMessage("default", TWC.message().buf((buf) -> buf.writeNbt(tag)));
     }
 
     default void sendNbt(Consumer<CompoundTag> tag) {
@@ -20,6 +25,6 @@ public interface RScreen {
     }
 
     default void sendBuf(Consumer<FriendlyByteBuf> friendlyByteBuf) {
-        RefractionClient.screenRegistry.screenChannel.send("default", friendlyByteBuf::accept);
+        RefractionClient.screenRegistry.screenChannel.sendMessage("default", TWC.message().buf(friendlyByteBuf));
     }
 }

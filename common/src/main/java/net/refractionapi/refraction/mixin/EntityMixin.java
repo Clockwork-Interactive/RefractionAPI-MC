@@ -27,10 +27,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin implements IEntity, FragmentHolder {
@@ -42,6 +39,9 @@ public abstract class EntityMixin implements IEntity, FragmentHolder {
 
     @Shadow
     public abstract Level level();
+
+    @Shadow
+    public abstract UUID getUUID();
 
     @Inject(method = "setPosRaw", at = @At("HEAD"))
     public void updateTrackerStart(double x, double y, double z, CallbackInfo ci) {
@@ -119,7 +119,7 @@ public abstract class EntityMixin implements IEntity, FragmentHolder {
 
     @Override
     public String getSyncID() {
-        return "" + this.getId();
+        return "" + this.getUUID();
     }
 
     @Override

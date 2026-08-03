@@ -4,20 +4,21 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.refractionapi.refraction.Refraction;
 import net.refractionapi.refraction.client.RefractionClient;
 import net.refractionapi.refraction.data.PlrExtension;
 import net.refractionapi.refraction.data.TData;
-import net.refractionapi.refraction.feature.channel.NamedAPI;
-import net.refractionapi.refraction.feature.channel.ThreadedAPI;
-import net.refractionapi.refraction.feature.channel.TwoWayChannel;
+import net.refractionapi.refraction.events.Scheduler;
+import net.refractionapi.refraction.feature.twc.TWC;
 import net.refractionapi.refraction.helper.clazz.RModRegistrar;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.HashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -38,9 +39,12 @@ public class ScreenScheme<T> {
     protected final ScreenCreator serverScreenCreator;
     protected final boolean clientAccessible;
     static ResourceLocation SCREEN_ID = Refraction.id("screen");
-    static ThreadedAPI SCREEN_API = NamedAPI.create(SCREEN_ID)
-            .configureClient(twc -> twc.registerListener((plr, buf) -> RefractionClient.screenRegistry.handle(Code.OPEN, buf)))
-            .configureServer(twc -> twc.registerListener(ScreenScheme::handleOpen))
+    static TWC.Sided SCREEN_API = TWC.named(SCREEN_ID)
+            .configureClient(twc -> {
+                twc.listener((msg) -> RefractionClient.screenRegistry.handle(Code.OPEN, msg.buf()));
+                twc.listener("menu", (msg) -> RefractionClient.screenRegistry.handle(Code.MENU, msg.buf()));
+            })
+            .configureServer(twc -> twc.listener(ScreenScheme::handleOpen))
             .initCommon();
 
     private ScreenScheme(
@@ -67,13 +71,17 @@ public class ScreenScheme<T> {
         builders.put(id, this);
     }
 
-    protected int handleServer(ServerScheme screen, TwoWayChannel.ReceivedHeader header, FriendlyByteBuf buf) {
-        Code code = header.header().contains("code") ? Code.values()[header.header().getInt("code")] : Code.DATA;
+    protected int handleServer(ServerScheme screen, TWC.Message message) {
+        var header = message.headerTag();
+        var buf = message.buf();
+        var code = header.contains("code") ? Code.values()[header.getInt("code")] : Code.DATA;
         this.serverHandler.accept(screen, code, buf);
         return 0;
     }
 
-    protected static int handleOpen(Player player, FriendlyByteBuf buf) {
+    protected static int handleOpen(TWC.Message message) {
+        var player = message.player();
+        var buf = message.buf();
         if (data(player).scheme != null || !(player instanceof ServerPlayer serverPlayer)) return 0;
         ScreenScheme<?> scheme = builders.get(buf.readResourceLocation());
         if (scheme == null || !scheme.clientAccessible) {
@@ -105,17 +113,43 @@ public class ScreenScheme<T> {
         PlrExtension data = data(player);
         if (data.scheme != null) data.scheme.close();
         data.scheme = scheme;
-        SCREEN_API.channel().send(
-                player,
-                "default",
-                (friendlyByteBuf) -> {
-                    friendlyByteBuf.writeResourceLocation(this.id);
-                    friendlyByteBuf.writeUUID(scheme.channel.id());
-                    this.serializer.accept(args, friendlyByteBuf);
-                },
-                (rt, ct) -> ct.putInt("code", 2)
-        );
+        sendPacket(serverPlayer, Code.OPEN, (buf) -> {
+            buf.writeResourceLocation(this.id);
+            buf.writeUUID(scheme.channel.id());
+            this.serializer.accept(args, buf);
+        });
         return (T) scheme;
+    }
+
+    public T openMenu(Player player, MenuProvider provider, Object... args) {
+        if (!(player instanceof ServerPlayer serverPlayer)) return null;
+        var scheme = this.serverScreenCreator.create(serverPlayer, args);
+        if (scheme == null || !scheme.canOpen()) return null;
+        var opt = serverPlayer.openMenu(provider);
+        if (opt.isEmpty()) {
+            scheme.close();
+            return null;
+        }
+        var data = data(player);
+        if (data.scheme != null) data.scheme.close();
+        data.scheme = scheme;
+        Scheduler.addTask(false, () -> sendPacket(serverPlayer, "menu", Code.MENU, (buf) -> {
+            buf.writeResourceLocation(id);
+            buf.writeUUID(scheme.channel.id());
+            serializer.accept(args, buf);
+        }));
+        return (T) scheme;
+    }
+
+    public void sendPacket(ServerPlayer serverPlayer, String router, Code code, Consumer<FriendlyByteBuf> consumer) {
+        var msg = TWC.message();
+        msg.buf(consumer);
+        msg.headerTag((header) -> header.putInt("code", code.ordinal()));
+        SCREEN_API.sendMessage(router, serverPlayer, msg);
+    }
+
+    public void sendPacket(ServerPlayer serverPlayer, Code code, Consumer<FriendlyByteBuf> consumer) {
+        sendPacket(serverPlayer, "default", code, consumer);
     }
 
     /**
@@ -123,14 +157,13 @@ public class ScreenScheme<T> {
      * If marked with #clientAccessible().
      */
     public void open(Object... args) {
-        SCREEN_API.channel().send(
-                "default",
-                (friendlyByteBuf) -> {
-                    friendlyByteBuf.writeResourceLocation(this.id);
-                    this.serializer.accept(args, friendlyByteBuf);
-                },
-                (rt, ct) -> ct.putInt("code", 2)
-        );
+        var msg = TWC.message();
+        msg.buf((buf) -> {
+            buf.writeResourceLocation(id);
+            serializer.accept(args, buf);
+        });
+        msg.headerTag((header) -> header.putInt("code", Code.OPEN.ordinal()));
+        SCREEN_API.sendMessage("default", msg);
     }
 
     public static <T extends ServerScheme> Builder<T> builder() {
@@ -146,7 +179,8 @@ public class ScreenScheme<T> {
     public enum Code {
         DATA,
         CLOSE,
-        OPEN;
+        OPEN,
+        MENU;
 
         Code() {
         }

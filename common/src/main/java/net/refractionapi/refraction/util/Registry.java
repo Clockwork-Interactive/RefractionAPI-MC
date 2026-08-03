@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class Registry<K, V> {
     final ResourceLocation registryID;
@@ -62,6 +63,10 @@ public class Registry<K, V> {
 
     public V getMapped(Object key) {
         return get(keyMappers.get(key.getClass()).apply(key));
+    }
+
+    public Collection<V> filterBy(Predicate<V> filter) {
+        return registry.values().stream().filter(filter).toList();
     }
 
     @SuppressWarnings("unchecked")

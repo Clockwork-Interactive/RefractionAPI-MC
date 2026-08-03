@@ -12,13 +12,12 @@ public class Scheduler {
     }
 
     private static void runAndDelete(boolean post) {
-        Iterator<Map.Entry<Runnable, Boolean>> it = tasks.entrySet().iterator();
+        var it = tasks.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<Runnable, Boolean> next = it.next();
-            if (post == next.getValue()) {
-                next.getKey().run();
-                it.remove();
-            }
+            var next = it.next();
+            if (post != next.getValue()) continue;
+            next.getKey().run();
+            it.remove();
         }
     }
 

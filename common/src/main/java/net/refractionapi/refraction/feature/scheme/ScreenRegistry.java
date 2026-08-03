@@ -2,10 +2,12 @@ package net.refractionapi.refraction.feature.scheme;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.refractionapi.refraction.client.ClientData;
 import net.refractionapi.refraction.feature.channel.TwoWayChannel;
+import net.refractionapi.refraction.feature.twc.TWC;
 import net.refractionapi.refraction.helper.clazz.ClazzUtil;
 import org.apache.logging.log4j.util.InternalApi;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +21,7 @@ public class ScreenRegistry {
     private RScreen screen = null;
     private ScreenScheme<?> scheme = null;
     private Screen previousScreen = null;
-    protected TwoWayChannel screenChannel = null;
+    protected TWC screenChannel = null;
 
     /**
      * Use @RegisterScreen
@@ -38,10 +40,8 @@ public class ScreenRegistry {
         this.screen = null;
         if (scheme == null) return;
         Object screen = scheme.clientScreenCreator.apply(scheme, creatorArgs);
-        if (screen instanceof Screen && screen instanceof RScreen)
-            this.screen = (RScreen) screen;
-        else
-            throw new IllegalArgumentException("Screen constructor must return an instance of Screen and implement RScreen!");
+        if (screen instanceof Screen && screen instanceof RScreen) this.screen = (RScreen) screen;
+        else throw new IllegalArgumentException("Screen constructor must implement RScreen!");
         this.setScreen((Screen) screen);
     }
 
@@ -55,25 +55,38 @@ public class ScreenRegistry {
         return 1;
     }
 
-    public final int open(ResourceLocation id, UUID uuid, FriendlyByteBuf buf) {
-        if (id == null || uuid == null) return 0;
+    public final int open(ResourceLocation id, UUID channelID, FriendlyByteBuf buf) {
+        if (id == null || channelID == null) return 0;
         ScreenScheme<?> scheme = ScreenScheme.builders.get(id);
         if (scheme == null) return 0;
         Object[] args = scheme.deserializer.apply(buf);
-        initChannel(uuid);
+        initChannel(channelID);
         setScreen(scheme, args);
+        return 1;
+    }
+
+    public final int openMenu(ResourceLocation id, UUID channelID, FriendlyByteBuf buf) {
+        if (id == null || channelID == null) return 0;
+        var scheme = ScreenScheme.builders.get(id);
+        if (scheme == null) return 0;
+        initChannel(channelID);
+        var curr = Minecraft.getInstance().screen;
+        if (curr instanceof RScreen rScreen && curr instanceof MenuAccess<?>) {
+            rScreen.handleMenuInit(new ScreenScheme.ScreenMessage(buf));
+            screen = rScreen;
+        } else throw new IllegalArgumentException("Current screen is either not MenuAccess or RScreen");
         return 1;
     }
 
     public final int close(boolean server) {
         if (!server && this.screenChannel != null) {
-            this.screenChannel.send("default", (buf) -> {
-            }, (router, nbt) -> nbt.putInt("code", ScreenScheme.Code.CLOSE.ordinal()));
+            var msg = TWC.message();
+            msg.headerTag((header) -> header.putInt("code", ScreenScheme.Code.CLOSE.ordinal()));
+            this.screenChannel.sendMessage("default", msg);
         } else {
             this.screen = null;
             this.scheme = null;
-            if (this.screenChannel != null)
-                this.screenChannel.close();
+            if (this.screenChannel != null) this.screenChannel.close();
             this.screenChannel = null;
             this.previousScreen = Minecraft.getInstance().screen;
             this.setScreen(null);
@@ -82,15 +95,17 @@ public class ScreenRegistry {
     }
 
     public final int handle(ScreenScheme.Code code, FriendlyByteBuf buf) {
-        if (code.equals(ScreenScheme.Code.DATA)) return handle(new ScreenScheme.ScreenMessage(buf));
-        else if (code.equals(ScreenScheme.Code.OPEN)) return open(buf.readResourceLocation(), buf.readUUID(), buf);
-        else close(true);
-        return 1;
+        return switch (code) {
+            case DATA -> handle(new ScreenScheme.ScreenMessage(buf));
+            case OPEN -> open(buf.readResourceLocation(), buf.readUUID(), buf);
+            case MENU -> openMenu(buf.readResourceLocation(), buf.readUUID(), buf);
+            default -> close(true);
+        };
     }
 
     public void initChannel(UUID id) {
-        screenChannel = new TwoWayChannel(ClientData.getPlayer().level(), id)
-                .registerListener((plr, buf) -> handle(ScreenScheme.Code.values()[screenChannel.header().header().getInt("code")], buf))
+        screenChannel = TWC.unnamed(ClientData.getPlayer().level(), id)
+                .listener((msg) -> handle(ScreenScheme.Code.values()[msg.headerTag().getInt("code")], msg.buf()))
                 .open();
     }
 }

@@ -2,6 +2,7 @@ package net.refractionapi.refraction.feature.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -52,7 +53,9 @@ public class RefArmorRenderer<T extends LivingEntity, M extends EntityModel<T>> 
     @SuppressWarnings("unchecked")
     @Override
     public void render(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float limbSwing, float limbSwingAmount, float partial, float age, float netHeadYaw, float headPitch) {
-        if (entity.isInvisible()) return;
+        var curr = Minecraft.getInstance().player;
+        if (curr == null) return;
+        if (entity.isInvisible() && entity.isInvisibleTo(curr)) return;
         iterateSlots(entity, (stack, equipmentSlot) -> {
             if (stack.isEmpty()) active.remove(equipmentSlot);
             if (!(stack.getItem() instanceof ArmorRegister ext) || !(stack.getItem() instanceof ArmorItem)) {

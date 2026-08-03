@@ -15,6 +15,8 @@ import org.apache.logging.log4j.util.TriConsumer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -83,6 +85,18 @@ public abstract class Atda<E, D extends AtdaData<D>> {
 
     public static <O, D extends AtdaData<D>> Optional<D> get(Atda<O, D> holder, O look) {
         return Optional.ofNullable(getRaw(holder, look));
+    }
+
+    public <T> T get(E look, Function<D, T> func) {
+        var raw = getRaw(look);
+        if (raw == null) return null;
+        return func.apply(raw);
+    }
+
+    public void run(E look, Consumer<D> consumer) {
+        var raw = getRaw(look);
+        if (raw == null) return;
+        consumer.accept(raw);
     }
 
     public Optional<D> get(E lookup) {
